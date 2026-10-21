@@ -1,0 +1,30 @@
+{
+  "intro": {
+    "header": "[ SYSTEM MESSAGE ]",
+    "lines": [
+      "Welcome, Player.",
+      "Your current level is {level}.",
+      "Your stats are weak. Your potential is unknown.",
+      "Complete your daily quests, grow stronger, defeat your weaknesses, and evolve into the strongest version of yourself.",
+      "YOUR QUEST STARTS NOW."
+    ],
+    "style": "typewriter, one line at a time, blue glow, soft system chime; tap to skip; button 'ACCEPT' at the end",
+    "show": "first launch only; replayable from Settings"
+  },
+  "onboarding_after_intro": [
+    "Honesty Oath",
+    "Choose mode: Normal (8 blocks) or Easy (6 blocks)",
+    "Confirm start date 2026-11-01"
+  ],
+  "before_day_1": "[ SYSTEM ] The Gate opens in {days} days. Prepare yourself.",
+  "daily_quest_arrived": "[ SYSTEM ] Daily Quest has arrived: Preparation to Become Strong.\n[ WARNING ] Failure to complete the quest will result in a penalty.",
+  "quest_complete": "[ SYSTEM ] Quest complete. +{xp} XP  +{mp} MP",
+  "all_clear": "[ SYSTEM ] All daily quests cleared. Bonus awarded.",
+  "penalty": "[ SYSTEM ] You failed to complete the daily quest. Penalty applied: {xp} XP.",
+  "rank_up": "[ SYSTEM ] Rank increased. You are now {rank}-Rank: {title}.",
+  "level_up": "[ SYSTEM ] LEVEL UP. You are now Level {level}.",
+  "shadow": "[ ARISE ] Shadow extracted: {chapter}. Shadows: {count} / 37.",
+  "raid_start": "[ SYSTEM ] Boss Raid initiated. Duration: 3 hours. Do not retreat.",
+  "raid_clear": "[ SYSTEM ] Raid complete. Reward: Monarch's Leisure Gate ({minutes} min).",
+  "final_day": "[ SYSTEM ] Day 45. The Monarch's Eve. Rest well, Player."
+}

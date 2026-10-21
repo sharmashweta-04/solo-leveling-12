@@ -1,0 +1,338 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+/* ─── System Window Design Tokens ─────────────────────────────────── */
+:root {
+  --sys-bg: #080c10;
+  --sys-panel: #0d1117;
+  --sys-panel-alt: #0a1520;
+  --sys-border: #00d4ff;
+  --sys-border-dim: #0088aa;
+  --sys-blue: #00d4ff;
+  --sys-blue-dim: #0088aa;
+  --sys-blue-glow: rgba(0, 212, 255, 0.2);
+  --sys-text: #c8e6f0;
+  --sys-text-dim: #5f8a9a;
+  --sys-green: #00ff88;
+  --sys-purple: #a855f7;
+  --sys-red: #ff3366;
+  --sys-yellow: #ffd700;
+}
+
+/* ─── Global Reset ────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--sys-bg);
+  color: var(--sys-text);
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  /* Subtle grid overlay for the "System Window" feel */
+  background-image:
+    linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ─── System Typography ───────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6,
+.font-mono, .sys-heading {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--sys-text);
+}
+
+/* ─── Holographic Panel ───────────────────────────────────────────── */
+.sys-panel {
+  background: var(--sys-panel);
+  border: 1px solid var(--sys-border-dim);
+  border-radius: 4px;
+  box-shadow:
+    0 0 20px rgba(0, 212, 255, 0.08),
+    inset 0 0 20px rgba(0, 212, 255, 0.03);
+  position: relative;
+  overflow: hidden;
+}
+
+.sys-panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--sys-blue), transparent);
+  opacity: 0.6;
+}
+
+.sys-panel-glow {
+  border-color: var(--sys-border);
+  box-shadow:
+    0 0 30px rgba(0, 212, 255, 0.2),
+    0 0 60px rgba(0, 212, 255, 0.08),
+    inset 0 0 30px rgba(0, 212, 255, 0.05);
+}
+
+/* ─── System Text Styles ─────────────────────────────────────────── */
+.sys-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--sys-blue-dim);
+}
+
+.sys-value {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--sys-blue);
+  font-weight: 600;
+}
+
+.sys-message {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--sys-blue);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.sys-warning {
+  color: var(--sys-red);
+}
+
+.sys-success {
+  color: var(--sys-green);
+}
+
+/* ─── Blue Glow Text ─────────────────────────────────────────────── */
+.glow-text {
+  text-shadow:
+    0 0 10px var(--sys-blue),
+    0 0 20px rgba(0, 212, 255, 0.5),
+    0 0 40px rgba(0, 212, 255, 0.2);
+}
+
+.glow-text-sm {
+  text-shadow: 0 0 8px rgba(0, 212, 255, 0.6);
+}
+
+/* ─── XP / Stat Progress Bar ─────────────────────────────────────── */
+.sys-bar-track {
+  background: rgba(0, 212, 255, 0.08);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+  height: 6px;
+}
+
+.sys-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--sys-blue-dim), var(--sys-blue));
+  box-shadow: 0 0 8px var(--sys-blue);
+  transition: width 0.6s ease-out;
+  border-radius: 2px;
+}
+
+.sys-bar-fill-green {
+  background: linear-gradient(90deg, #00aa55, var(--sys-green));
+  box-shadow: 0 0 8px var(--sys-green);
+}
+
+.sys-bar-fill-purple {
+  background: linear-gradient(90deg, #7c3aed, var(--sys-purple));
+  box-shadow: 0 0 8px var(--sys-purple);
+}
+
+/* ─── Rank Badge ─────────────────────────────────────────────────── */
+.rank-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  padding: 2px 8px;
+  border-radius: 2px;
+  border: 1px solid currentColor;
+}
+
+.rank-E { color: #888; border-color: #888; }
+.rank-D { color: #6dcfff; border-color: #6dcfff; text-shadow: 0 0 8px rgba(109, 207, 255, 0.5); }
+.rank-C { color: #00ff88; border-color: #00ff88; text-shadow: 0 0 8px rgba(0, 255, 136, 0.5); }
+.rank-B { color: #a855f7; border-color: #a855f7; text-shadow: 0 0 8px rgba(168, 85, 247, 0.5); }
+.rank-A { color: #ffd700; border-color: #ffd700; text-shadow: 0 0 8px rgba(255, 215, 0, 0.5); }
+.rank-S { color: #ff3366; border-color: #ff3366; text-shadow: 0 0 12px rgba(255, 51, 102, 0.8); animation: pulse-glow-red 2s ease-in-out infinite; }
+
+@keyframes pulse-glow-red {
+  0%, 100% { box-shadow: 0 0 10px rgba(255, 51, 102, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(255, 51, 102, 0.8); }
+}
+
+/* ─── System Button ──────────────────────────────────────────────── */
+.sys-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid var(--sys-blue);
+  color: var(--sys-blue);
+  padding: 10px 20px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.sys-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--sys-blue);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.sys-btn:hover::before { opacity: 0.1; }
+.sys-btn:hover {
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+  text-shadow: 0 0 8px rgba(0, 212, 255, 0.6);
+}
+.sys-btn:active { transform: scale(0.98); }
+
+.sys-btn-primary {
+  background: var(--sys-blue);
+  color: var(--sys-bg);
+  font-weight: 700;
+}
+.sys-btn-primary:hover {
+  background: #00eeff;
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.6);
+}
+
+.sys-btn-danger {
+  border-color: var(--sys-red);
+  color: var(--sys-red);
+}
+.sys-btn-danger:hover {
+  box-shadow: 0 0 20px rgba(255, 51, 102, 0.4);
+}
+
+.sys-btn-success {
+  border-color: var(--sys-green);
+  color: var(--sys-green);
+}
+
+/* ─── Quest Card ─────────────────────────────────────────────────── */
+.quest-card {
+  background: var(--sys-panel);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 4px;
+  padding: 12px 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.quest-card:hover {
+  border-color: rgba(0, 212, 255, 0.5);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.1);
+}
+
+.quest-card.completed {
+  border-color: rgba(0, 255, 136, 0.3);
+  background: rgba(0, 255, 136, 0.03);
+}
+
+/* ─── Gate Card (Dungeon) ────────────────────────────────────────── */
+.gate-card {
+  background: var(--sys-panel);
+  border: 1px solid rgba(0, 212, 255, 0.15);
+  border-radius: 4px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  min-height: 80px;
+}
+
+.gate-card.phy { border-color: rgba(0, 212, 255, 0.25); }
+.gate-card.chem { border-color: rgba(168, 85, 247, 0.25); }
+.gate-card.bio { border-color: rgba(0, 255, 136, 0.25); }
+
+.gate-card.cleared { opacity: 1; }
+.gate-card.shadow { border-color: rgba(255, 51, 102, 0.4); }
+.gate-card.locked { opacity: 0.5; cursor: not-allowed; }
+
+.gate-card:not(.locked):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 212, 255, 0.2);
+}
+
+/* ─── Toast / System Message ─────────────────────────────────────── */
+.sys-toast {
+  background: var(--sys-panel);
+  border: 1px solid var(--sys-border);
+  border-radius: 4px;
+  padding: 12px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--sys-blue);
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+  max-width: 360px;
+  backdrop-filter: blur(10px);
+}
+
+/* ─── Scrollbar Styling ──────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--sys-bg); }
+::-webkit-scrollbar-thumb { background: var(--sys-border-dim); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--sys-blue); }
+
+/* ─── Mobile Utilities ───────────────────────────────────────────── */
+.tap-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* ─── Animations ─────────────────────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes typewriter-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-fade-up {
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+.cursor-blink::after {
+  content: '█';
+  animation: typewriter-blink 1s step-end infinite;
+  color: var(--sys-blue);
+}
+
+/* ─── Mobile-first breakpoints for 380px ────────────────────────── */
+@media (max-width: 380px) {
+  .sys-btn { padding: 8px 14px; font-size: 0.7rem; }
+  .rank-badge { font-size: 0.65rem; padding: 2px 6px; }
+}

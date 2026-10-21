@@ -1,0 +1,43 @@
+{
+  "_note": "status: confirmed = I opened the video; to_confirm = fill after running yt-dlp (see PROMPTS.md Step 0) | Optional local notes: put PDFs in public/notes/ and add {\"title\":\"Notes\",\"url\":\"/notes/P1.pdf\"} to a chapter. Not required.",
+  "BIO": {
+    "playlist": "https://www.youtube.com/watch?v=Qbg54zDKBck&list=PL3m-p7hatfDpXCG9VrbS9LKbES-1ZcgOv",
+    "chapters": {
+      "B1": [{ "title": "TODO: find matching 'Complete Unit in One Shot' video in playlist", "url": null, "status": "to_confirm" }],
+      "B2": [{ "title": "TODO: find matching 'Complete Unit in One Shot' video in playlist", "url": null, "status": "to_confirm" }],
+      "B3": [{ "title": "TODO: find matching 'Complete Unit in One Shot' video in playlist", "url": null, "status": "to_confirm" }],
+      "B4": [{ "title": "Genetics (Part: 3) - Complete Unit in One Shot || NEET 2026 || Vipin Sir", "url": "https://www.youtube.com/watch?v=pmri1Q2j928", "status": "confirmed_exists_topics_to_confirm" }],
+      "B5": [{ "title": "Genetics (Part: 3) - Complete Unit in One Shot || NEET 2026 || Vipin Sir", "url": "https://www.youtube.com/watch?v=pmri1Q2j928", "status": "confirmed_exists_topics_to_confirm" }],
+      "B6": [{ "title": "TODO: find matching 'Complete Unit in One Shot' video in playlist", "url": null, "status": "to_confirm" }],
+      "B7": [{ "title": "TODO: find matching 'Complete Unit in One Shot' video in playlist", "url": null, "status": "to_confirm" }],
+      "B8": [{ "title": "TODO: find matching 'Complete Unit in One Shot' video in playlist", "url": null, "status": "to_confirm" }],
+      "B9": [{ "title": "TODO: find matching 'Complete Unit in One Shot' video in playlist", "url": null, "status": "to_confirm" }],
+      "B10": [{ "title": "TODO: find matching 'Complete Unit in One Shot' video in playlist", "url": null, "status": "to_confirm" }],
+      "B11": [{ "title": "TODO: find matching 'Complete Unit in One Shot' video in playlist", "url": null, "status": "to_confirm" }],
+      "B12": [{ "title": "TODO: find matching 'Complete Unit in One Shot' video in playlist", "url": null, "status": "to_confirm" }],
+      "B13": [{ "title": "TODO: find matching 'Complete Unit in One Shot' video in playlist", "url": null, "status": "to_confirm" }]
+    }
+  },
+  "PHY": {
+    "chapters": {
+      "P1": [], "P2": [], "P3": [], "P4": [], "P5": [], "P6": [], "P7": [],
+      "P8": [], "P9": [], "P10": [], "P11": [], "P12": [], "P13": [], "P14": []
+    }
+  },
+  "CHEM": {
+    "chapters": {
+      "C1": [], "C2": [], "C3": [], "C4": [], "C5": [],
+      "C6": [], "C7": [], "C8": [], "C9": [],
+      "C10": [
+        { "title": "Class-11 Cell/Biomolecules one-shot: Biomolecules (chapter start)", "url": "https://www.youtube.com/watch?v=Qbg54zDKBck&t=29460s", "status": "confirmed_timestamp", "note": "supplementary only; covers amino acids/proteins/carbs/nucleic acids, NOT vitamins/hormones" },
+        { "title": "Class-11 Cell/Biomolecules one-shot: Amino acids", "url": "https://www.youtube.com/watch?v=Qbg54zDKBck&t=32067s", "status": "confirmed_timestamp", "note": "supplementary only" },
+        { "title": "Class-11 Cell/Biomolecules one-shot: Proteins", "url": "https://www.youtube.com/watch?v=Qbg54zDKBck&t=33023s", "status": "confirmed_timestamp", "note": "supplementary only" },
+        { "title": "Class-11 Cell/Biomolecules one-shot: Carbohydrates & polysaccharides", "url": "https://www.youtube.com/watch?v=Qbg54zDKBck&t=33909s", "status": "confirmed_timestamp", "note": "supplementary only" },
+        { "title": "Class-11 Cell/Biomolecules one-shot: Lipids", "url": "https://www.youtube.com/watch?v=Qbg54zDKBck&t=35268s", "status": "confirmed_timestamp", "note": "supplementary only" },
+        { "title": "Class-11 Cell/Biomolecules one-shot: Nucleic acids", "url": "https://www.youtube.com/watch?v=Qbg54zDKBck&t=36377s", "status": "confirmed_timestamp", "note": "supplementary only" },
+        { "title": "Class-11 Cell/Biomolecules one-shot: Enzymes", "url": "https://www.youtube.com/watch?v=Qbg54zDKBck&t=37679s", "status": "confirmed_timestamp", "note": "supplementary only" }
+      ]
+    }
+  },
+  "mock_source": "PW app (tests are taken inside the PW app; this app only times the session and records the result)"
+}
