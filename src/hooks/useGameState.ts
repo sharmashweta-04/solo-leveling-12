@@ -9,6 +9,7 @@ import { computeRank, RankInfo } from '@/src/engine/rank';
 import { generateDailyQuests } from '@/src/engine/quests';
 import { awardXP } from '@/src/engine/xp';
 import { awardMP } from '@/src/engine/mana';
+import { runLazyEvaluation } from '@/src/engine/lazyEvaluation';
 import { QuestLog, DayPlan, DifficultyMode } from '@/src/types';
 import systemMessages from '@/config/system_messages.json';
 
@@ -41,6 +42,13 @@ export function useGameState() {
 
   const refreshState = useCallback(async () => {
     await seedDatabaseIfNeeded();
+
+    // Run lazy day evaluation for past unevaluated days
+    const evalResults = await runLazyEvaluation();
+    if (evalResults.length > 0) {
+      const last = evalResults[evalResults.length - 1];
+      setToastMessage(last.summaryMessage);
+    }
 
     // 1. Settings
     const introSet = await db.settings.get('intro_completed');
