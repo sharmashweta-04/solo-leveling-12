@@ -16,6 +16,7 @@ export const viewport: Viewport = {
 };
 
 import Navigation from '@/src/components/Navigation';
+import PWARegistration from '@/src/components/PWARegistration';
 
 export default function RootLayout({
   children,
@@ -25,6 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className="antialiased min-h-screen bg-hunter-950 text-hunter-100">
+        <PWARegistration />
         <main>{children}</main>
         <Navigation />
       </body>

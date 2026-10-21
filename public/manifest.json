@@ -1,0 +1,30 @@
+{
+  "name": "Solo Leveling: Class 12 PCB Dungeon",
+  "short_name": "Solo Leveling",
+  "description": "Gamified 45-day Class 12 PCB revision system. Arise, Hunter.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#080c10",
+  "theme_color": "#080c10",
+  "categories": ["education", "productivity", "games"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
