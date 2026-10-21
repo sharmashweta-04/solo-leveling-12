@@ -226,7 +226,7 @@ export default function GrimoirePage() {
                 <span className="font-bold">MISTAKE: </span>{entry.mistake}
               </div>
               <div className="text-[10px] text-green-300 bg-green-950/20 p-2 rounded border border-green-900/40">
-                <span className="font-bold">CORRECT: </span>{entry.correctApproach}
+                <span className="font-bold">CORRECT: </span>{entry.correct_approach}
               </div>
             </div>
           ))
