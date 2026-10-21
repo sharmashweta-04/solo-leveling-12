@@ -15,6 +15,8 @@ export const viewport: Viewport = {
   themeColor: '#080c10',
 };
 
+import Navigation from '@/src/components/Navigation';
+
 export default function RootLayout({
   children,
 }: {
@@ -22,7 +24,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className="antialiased">{children}</body>
+      <body className="antialiased min-h-screen bg-hunter-950 text-hunter-100">
+        <main>{children}</main>
+        <Navigation />
+      </body>
     </html>
   );
 }
