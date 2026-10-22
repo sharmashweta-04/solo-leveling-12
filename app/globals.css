@@ -1,5 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
+
+/* ─── Prefers Reduced Motion ───────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 
 /* ─── System Window Design Tokens ─────────────────────────────────── */
 :root {
@@ -12,7 +21,7 @@
   --sys-blue-dim: #0088aa;
   --sys-blue-glow: rgba(0, 212, 255, 0.2);
   --sys-text: #c8e6f0;
-  --sys-text-dim: #5f8a9a;
+  --sys-text-dim: #94a3b8; /* Enhanced contrast */
   --sys-green: #00ff88;
   --sys-purple: #a855f7;
   --sys-red: #ff3366;
@@ -35,7 +44,7 @@ html {
 body {
   background-color: var(--sys-bg);
   color: var(--sys-text);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
   min-height: 100dvh;
   overflow-x: hidden;
   /* Subtle grid overlay for the "System Window" feel */
@@ -48,7 +57,7 @@ body {
 /* ─── System Typography ───────────────────────────────────────────── */
 h1, h2, h3, h4, h5, h6,
 .font-mono, .sys-heading {
-  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  font-family: var(--font-mono), 'Courier New', monospace;
   font-weight: 600;
   letter-spacing: 0.05em;
   color: var(--sys-text);

@@ -58,7 +58,20 @@
 
 ---
 
+## Prompt B: Mobile UI Fix Pass (Completed)
+- [x] **5-Tab Navigation with MORE Sheet**: Reduced bottom bar from 7 tabs to 5 high-priority tabs (`SYSTEM`, `FOCUS`, `DUNGEON`, `SHOP`, `MORE`). The `MORE` button opens a slide-up drawer containing direct access to Quests, Raid, Grimoire, Review, Shadows, Stats, and Settings.
+- [x] **Safe-Area Inset & Minimum Tap Targets**: Integrated `env(safe-area-inset-bottom)` and minimum 44x44px touch targets across all interactive elements. Added shared padding wrapper in `app/layout.tsx` (`pb-[calc(5rem+env(safe-area-inset-bottom,0px))]`).
+- [x] **Typography & Contrast Standards**: Replaced all sub-12px text (`text-[9px]`, `text-[10px]`, `text-[11px]`) across the application with `text-xs` (12px). Boosted secondary text contrast `--sys-text-dim` to `#94a3b8` (WCAG AA compliant).
+- [x] **Offline Google Fonts via `next/font`**: Replaced render-blocking `@import` from Google Fonts with zero-runtime, offline-ready `next/font/google` for `Inter` and `JetBrains Mono`.
+- [x] **Static Generation for All 37 Gates**: Converted `/gate/[id]` dynamic route to static pre-rendering via `generateStaticParams()` and a dedicated client component (`GateDetailClient.tsx`). Production build generates 52/52 fully offline-accessible pages.
+- [x] **Restructured Dashboard Hierarchy**: Prioritized Day X of 45 progress, today's chapters, and next quest above the radar chart and secondary cards. Added pre-Day 1 countdown empty state.
+- [x] **Accessibility & Sound Control**: Added `prefers-reduced-motion` media queries in CSS and a Sound Effects toggle (ON/OFF) in Settings backed by local storage and Web Audio checks.
+- [x] **Viewport Zoom Enabled**: Removed `maximumScale: 1` from metadata viewport, allowing pinch-to-zoom for improved mobile accessibility.
+
+---
+
 ## Verification & Status
 - **Test Suite**: 26/26 Vitest tests passing across `engine.test.ts`, `lazyEvaluation.test.ts`, and `simulation.test.ts`.
-- **Build Status**: `npm run build` succeeds with zero errors across all 15 routes.
-- **Next Prompt**: Prompt B (Mobile UI fix pass).
+- **Build Status**: `npm run build` succeeds with zero errors across all 52 static routes.
+- **Next Prompt**: Prompt C (Supabase login, sign up, and cloud-saved progress).
+

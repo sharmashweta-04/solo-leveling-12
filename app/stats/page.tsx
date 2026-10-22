@@ -89,7 +89,7 @@ export default function StatsPage() {
           <h1 className="text-lg font-extrabold text-hunter-blue tracking-wider text-shadow-blue">
             [ HUNTER ANALYTICS ]
           </h1>
-          <p className="text-[10px] text-hunter-gray">
+          <p className="text-xs text-hunter-400">
             COMBAT STATS &bull; XP PROGRESSION &bull; MOCK TRENDS
           </p>
         </div>
@@ -110,16 +110,16 @@ export default function StatsPage() {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={xpHistory}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
-                    <XAxis dataKey="date" stroke="#5f8a9a" fontSize={10} tickLine={false} />
-                    <YAxis stroke="#5f8a9a" fontSize={10} tickLine={false} />
+                    <XAxis dataKey="date" stroke="#94a3b8" fontSize={11} tickLine={false} />
+                    <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} />
                     <Tooltip
-                      contentStyle={{ backgroundColor: '#0d1117', border: '1px solid #00d4ff', fontSize: '11px' }}
+                      contentStyle={{ backgroundColor: '#0d1117', border: '1px solid #00d4ff', fontSize: '12px' }}
                     />
                     <Line type="monotone" dataKey="cumulativeXp" stroke="#00d4ff" strokeWidth={2} dot={{ r: 2 }} />
                   </LineChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="h-full flex items-center justify-center text-xs text-hunter-gray italic">
+                <div className="h-full flex items-center justify-center text-xs text-hunter-400 italic">
                   Complete focus blocks to build XP curve.
                 </div>
               )}
@@ -130,17 +130,19 @@ export default function StatsPage() {
           <div className="border border-red-500/40 bg-hunter-900/80 rounded-lg p-3.5">
             <div className="flex justify-between items-center mb-2">
               <span className="text-xs font-bold text-red-400">[ PW MOCK SCORE TRAJECTORY ]</span>
-              <Link href="/raid" className="text-[10px] text-hunter-cyan underline">RECORD RAID ↗</Link>
+              <Link href="/raid" className="text-xs text-hunter-cyan underline font-bold min-h-[44px] flex items-center">
+                RECORD RAID ↗
+              </Link>
             </div>
             <div className="h-44 w-full">
               {mocks.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={mocks}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
-                    <XAxis dataKey="day_number" stroke="#5f8a9a" fontSize={10} tickFormatter={(v) => `D${v}`} />
-                    <YAxis stroke="#5f8a9a" fontSize={10} domain={[0, 720]} />
+                    <XAxis dataKey="day_number" stroke="#94a3b8" fontSize={11} tickFormatter={(v) => `D${v}`} />
+                    <YAxis stroke="#94a3b8" fontSize={11} domain={[0, 720]} />
                     <Tooltip
-                      contentStyle={{ backgroundColor: '#0d1117', border: '1px solid #ff3366', fontSize: '11px' }}
+                      contentStyle={{ backgroundColor: '#0d1117', border: '1px solid #ff3366', fontSize: '12px' }}
                     />
                     <Line type="monotone" dataKey="total_marks" stroke="#ff3366" strokeWidth={2} dot={{ r: 3 }} name="Total (/720)" />
                     <Line type="monotone" dataKey="physics_score" stroke="#3b82f6" strokeWidth={1} dot={false} name="PHY (/180)" />
@@ -149,7 +151,7 @@ export default function StatsPage() {
                   </LineChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="h-full flex items-center justify-center text-xs text-hunter-gray italic">
+                <div className="h-full flex items-center justify-center text-xs text-hunter-400 italic">
                   No Boss Raid mock results recorded yet.
                 </div>
               )}
@@ -163,10 +165,10 @@ export default function StatsPage() {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={subjectHours}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
-                  <XAxis dataKey="subject" stroke="#5f8a9a" fontSize={10} />
-                  <YAxis stroke="#5f8a9a" fontSize={10} unit="h" />
+                  <XAxis dataKey="subject" stroke="#94a3b8" fontSize={11} />
+                  <YAxis stroke="#94a3b8" fontSize={11} unit="h" />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#0d1117', border: '1px solid #00d4ff', fontSize: '11px' }}
+                    contentStyle={{ backgroundColor: '#0d1117', border: '1px solid #00d4ff', fontSize: '12px' }}
                   />
                   <Bar dataKey="hours" fill="#00d4ff" radius={[4, 4, 0, 0]} />
                 </BarChart>
@@ -177,20 +179,20 @@ export default function StatsPage() {
           {/* Weakest Chapters Retrospective */}
           <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5">
             <div className="text-xs font-bold text-purple-400 mb-2">[ WEAKEST CHAPTER RETROSPECTIVE ]</div>
-            <p className="text-[10px] text-hunter-gray mb-3">
+            <p className="text-xs text-hunter-400 mb-3">
               Identified by Grimoire error frequency. Target these in your next focus sessions.
             </p>
             {weakestChapters.length > 0 ? (
               <div className="space-y-1.5">
                 {weakestChapters.map((w, idx) => (
-                  <div key={idx} className="flex justify-between items-center text-xs p-2 bg-hunter-950 rounded border border-hunter-800">
+                  <div key={idx} className="flex justify-between items-center text-xs p-2.5 bg-hunter-950 rounded border border-hunter-800 min-h-[44px]">
                     <span className="font-bold text-hunter-cyan">{w.chapter}</span>
-                    <span className="text-[10px] text-red-400 font-semibold">{w.count} errors recorded</span>
+                    <span className="text-xs text-red-400 font-semibold">{w.count} errors recorded</span>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-hunter-gray italic text-center py-2">
+              <p className="text-xs text-hunter-400 italic text-center py-2">
                 No weak chapters logged yet. Keep solving DPPs!
               </p>
             )}

@@ -182,13 +182,13 @@ export default function FocusTimerPage() {
           <h1 className="text-lg font-extrabold text-hunter-blue tracking-wider text-shadow-blue">
             [ FOCUS CHAMBER ]
           </h1>
-          <p className="text-[10px] text-hunter-gray">
+          <p className="text-xs text-hunter-400">
             50-MINUTE PROTOCOL &bull; 90% THRESHOLD (45 MIN)
           </p>
         </div>
         <Link
           href="/"
-          className="text-xs text-hunter-blue border border-hunter-blue/40 px-2 py-1 rounded bg-hunter-blue/10 hover:bg-hunter-blue/30 font-bold"
+          className="text-xs text-hunter-blue border border-hunter-blue/40 px-2.5 py-1.5 rounded bg-hunter-blue/10 hover:bg-hunter-blue/30 font-bold min-h-[44px] flex items-center"
         >
           STATUS ⚡
         </Link>
@@ -202,7 +202,7 @@ export default function FocusTimerPage() {
 
         <div className="space-y-3 text-xs">
           <div>
-            <label className="text-[11px] text-hunter-gray block mb-1">SELECT SUBJECT:</label>
+            <label className="text-xs text-hunter-400 block mb-1">SELECT SUBJECT:</label>
             <div className="grid grid-cols-3 gap-2">
               {(['Physics', 'Chemistry', 'Biology'] as Subject[]).map((sub) => (
                 <button
@@ -214,10 +214,10 @@ export default function FocusTimerPage() {
                     const firstCh = CHAPTERS_DATA.find((c) => c.subject === sub);
                     if (firstCh) setChapterId(firstCh.id);
                   }}
-                  className={`py-2 px-1 rounded border text-center transition-all ${
+                  className={`min-h-[44px] py-2 px-1 rounded border text-center transition-all text-xs flex items-center justify-center ${
                     subject === sub
                       ? 'border-hunter-blue bg-hunter-blue/20 text-white font-bold shadow-[0_0_10px_rgba(0,217,255,0.3)]'
-                      : 'border-hunter-800 bg-hunter-950 text-hunter-gray hover:text-white'
+                      : 'border-hunter-800 bg-hunter-950 text-hunter-400 hover:text-white'
                   } ${isActive ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {sub}
@@ -227,12 +227,12 @@ export default function FocusTimerPage() {
           </div>
 
           <div>
-            <label className="text-[11px] text-hunter-gray block mb-1">SELECT CHAPTER GATE:</label>
+            <label className="text-xs text-hunter-400 block mb-1">SELECT CHAPTER GATE:</label>
             <select
               value={chapterId}
               disabled={isActive}
               onChange={(e) => setChapterId(e.target.value)}
-              className="w-full bg-hunter-950 border border-hunter-800 rounded p-2 text-hunter-100 focus:border-hunter-blue focus:outline-none"
+              className="min-h-[44px] w-full bg-hunter-950 border border-hunter-800 rounded p-2 text-xs text-hunter-100 focus:border-hunter-blue focus:outline-none"
             >
               {availableChapters.map((ch) => (
                 <option key={ch.id} value={ch.id}>
@@ -246,7 +246,7 @@ export default function FocusTimerPage() {
 
       {/* Holographic Timer Display */}
       <div className="border-2 border-hunter-blue bg-hunter-900/90 rounded-2xl p-6 text-center shadow-[0_0_30px_rgba(0,217,255,0.25)] mb-6">
-        <div className="text-[11px] text-hunter-gray tracking-widest uppercase mb-1">
+        <div className="text-xs text-hunter-400 tracking-widest uppercase mb-1">
           {subject} &bull; {chapterId}
         </div>
 
@@ -262,7 +262,7 @@ export default function FocusTimerPage() {
           />
         </div>
 
-        <div className="flex justify-between text-[10px] text-hunter-gray mb-4">
+        <div className="flex justify-between text-xs text-hunter-400 mb-4">
           <span>PROGRESS: {Math.floor(progressPercent)}%</span>
           <span>
             {interruptions > 0 ? (
@@ -278,14 +278,14 @@ export default function FocusTimerPage() {
           {!isActive ? (
             <button
               onClick={handleStartTimer}
-              className="w-full py-3 bg-hunter-blue hover:bg-hunter-cyan text-black font-extrabold rounded-lg tracking-widest uppercase transition-all shadow-[0_0_20px_rgba(0,217,255,0.4)] active:scale-95"
+              className="min-h-[48px] w-full py-3 bg-hunter-blue hover:bg-hunter-cyan text-black font-extrabold rounded-lg tracking-widest uppercase transition-all shadow-[0_0_20px_rgba(0,217,255,0.4)] active:scale-95 flex items-center justify-center text-xs"
             >
               START 50-MIN FOCUS
             </button>
           ) : (
             <button
               onClick={() => handleCompleteBlock(false)}
-              className="w-full py-3 bg-red-600/20 hover:bg-red-600/40 border border-red-500 text-red-300 font-bold rounded-lg tracking-widest uppercase transition-all"
+              className="min-h-[48px] w-full py-3 bg-red-600/20 hover:bg-red-600/40 border border-red-500 text-red-300 font-bold rounded-lg tracking-widest uppercase transition-all flex items-center justify-center text-xs"
             >
               FINISH / ABORT BLOCK
             </button>

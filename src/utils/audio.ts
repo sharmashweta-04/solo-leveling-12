@@ -1,7 +1,20 @@
 /**
- * Soft holographic system chime using Web Audio API (zero audio files needed).
+ * Sound preferences helpers & Soft holographic system chime using Web Audio API (zero audio files needed).
  */
+
+export function isSoundEnabled(): boolean {
+  if (typeof window === 'undefined') return true;
+  return localStorage.getItem('sound_enabled') !== 'false';
+}
+
+export function setSoundEnabled(enabled: boolean): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem('sound_enabled', enabled ? 'true' : 'false');
+}
+
 export function playSystemChime(): void {
+  if (!isSoundEnabled()) return;
+
   try {
     const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
     if (!AudioContextClass) return;

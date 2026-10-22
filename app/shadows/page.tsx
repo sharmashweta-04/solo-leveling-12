@@ -26,13 +26,13 @@ export default function ShadowsPage() {
           <h1 className="text-lg font-extrabold text-purple-400 tracking-wider flex items-center gap-2">
             <span>[ SHADOW MONARCH ARMY ]</span>
           </h1>
-          <p className="text-[10px] text-hunter-gray">
+          <p className="text-xs text-hunter-400">
             EXTRACTED REVISION SOULS &bull; {shadows.length} / 37 ACTIVE
           </p>
         </div>
         <Link
           href="/dungeon"
-          className="text-xs text-hunter-cyan border border-hunter-blue/40 px-2 py-1 rounded bg-hunter-blue/10"
+          className="text-xs text-hunter-cyan border border-hunter-blue/40 px-2.5 py-1.5 rounded bg-hunter-blue/10 min-h-[44px] flex items-center"
         >
           DUNGEON ⛩️
         </Link>
@@ -46,12 +46,12 @@ export default function ShadowsPage() {
         <div className="border border-purple-500/30 bg-purple-950/20 rounded-xl p-8 text-center space-y-3">
           <div className="text-3xl animate-pulse">🌑</div>
           <h2 className="text-sm font-bold text-purple-300">[ NO SHADOWS EXTRACTED YET ]</h2>
-          <p className="text-xs text-hunter-gray leading-relaxed">
+          <p className="text-xs text-hunter-400 leading-relaxed">
             Clear Gate Boss tests (score ≥ 75% on PW DPPs) in the Dungeon to extract chapters into your Shadow Army.
           </p>
           <Link
             href="/dungeon"
-            className="inline-block mt-2 px-4 py-2 bg-purple-600/30 hover:bg-purple-600/50 border border-purple-400 text-purple-200 rounded text-xs font-bold uppercase tracking-wider"
+            className="min-h-[44px] inline-flex items-center mt-2 px-4 py-2 bg-purple-600/30 hover:bg-purple-600/50 border border-purple-400 text-purple-200 rounded text-xs font-bold uppercase tracking-wider"
           >
             ENTER THE DUNGEON
           </Link>
@@ -62,17 +62,17 @@ export default function ShadowsPage() {
             <Link
               key={sh.id}
               href={`/gate/${sh.id}`}
-              className="block p-3.5 rounded-lg bg-purple-950/30 border border-purple-500/40 hover:border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.2)] transition-all"
+              className="min-h-[44px] block p-3.5 rounded-lg bg-purple-950/30 border border-purple-500/40 hover:border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.2)] transition-all"
             >
               <div className="flex justify-between items-center mb-1">
                 <span className="font-extrabold text-sm text-purple-300">{sh.id} &bull; {sh.name}</span>
-                <span className="text-[10px] px-1.5 py-0.5 bg-purple-900/60 rounded text-purple-200 font-bold">
+                <span className="text-xs px-2 py-0.5 bg-purple-900/60 rounded text-purple-200 font-bold">
                   PW SCORE: {sh.boss_score}/20
                 </span>
               </div>
-              <div className="flex justify-between text-[10px] text-hunter-gray pt-1 border-t border-purple-900/40">
+              <div className="flex justify-between text-xs text-hunter-400 pt-1 border-t border-purple-900/40">
                 <span className="uppercase">{sh.subject} SOLDIER</span>
-                <span className="text-hunter-cyan underline">VIEW GATE ↗</span>
+                <span className="text-hunter-cyan underline font-bold">VIEW GATE ↗</span>
               </div>
             </Link>
           ))}

@@ -85,13 +85,13 @@ export default function GrimoirePage() {
           <h1 className="text-lg font-extrabold text-purple-400 tracking-wider flex items-center gap-1.5">
             <span>[ ERROR GRIMOIRE ]</span>
           </h1>
-          <p className="text-[10px] text-hunter-gray">
+          <p className="text-xs text-hunter-400">
             DEATH & MISTAKE CHRONICLES &bull; {entries.length} RECORDED
           </p>
         </div>
         <Link
           href="/review"
-          className="text-xs text-hunter-cyan border border-hunter-blue/40 px-2 py-1 rounded bg-hunter-blue/10"
+          className="text-xs text-hunter-cyan border border-hunter-blue/40 px-2.5 py-1.5 rounded bg-hunter-blue/10 min-h-[44px] flex items-center font-bold"
         >
           SRS REVIEW 📜
         </Link>
@@ -103,7 +103,7 @@ export default function GrimoirePage() {
 
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="text-[10px] text-hunter-gray block mb-1">SUBJECT:</label>
+            <label className="text-xs text-hunter-400 block mb-1">SUBJECT:</label>
             <select
               value={subject}
               onChange={(e) => {
@@ -112,7 +112,7 @@ export default function GrimoirePage() {
                 const first = CHAPTERS_DATA.find((c) => c.subject === sub);
                 if (first) setChapterId(first.id);
               }}
-              className="w-full bg-hunter-950 border border-hunter-800 rounded p-1.5 text-hunter-100 focus:outline-none"
+              className="min-h-[44px] w-full bg-hunter-950 border border-hunter-800 rounded p-2 text-xs text-hunter-100 focus:outline-none"
             >
               <option value="Physics">Physics</option>
               <option value="Chemistry">Chemistry</option>
@@ -121,11 +121,11 @@ export default function GrimoirePage() {
           </div>
 
           <div>
-            <label className="text-[10px] text-hunter-gray block mb-1">CHAPTER GATE:</label>
+            <label className="text-xs text-hunter-400 block mb-1">CHAPTER GATE:</label>
             <select
               value={chapterId}
               onChange={(e) => setChapterId(e.target.value)}
-              className="w-full bg-hunter-950 border border-hunter-800 rounded p-1.5 text-hunter-100 focus:outline-none"
+              className="min-h-[44px] w-full bg-hunter-950 border border-hunter-800 rounded p-2 text-xs text-hunter-100 focus:outline-none"
             >
               {availableChapters.map((ch) => (
                 <option key={ch.id} value={ch.id}>
@@ -137,17 +137,17 @@ export default function GrimoirePage() {
         </div>
 
         <div>
-          <label className="text-[10px] text-hunter-gray block mb-1">ERROR TAG:</label>
+          <label className="text-xs text-hunter-400 block mb-1">ERROR TAG:</label>
           <div className="grid grid-cols-4 gap-1.5 text-center">
             {(['concept', 'calculation', 'formula', 'misread'] as const).map((t) => (
               <button
                 key={t}
                 type="button"
                 onClick={() => setTag(t)}
-                className={`py-1 rounded uppercase text-[10px] font-bold border transition-all ${
+                className={`min-h-[44px] py-1.5 rounded uppercase text-xs font-bold border transition-all flex items-center justify-center ${
                   tag === t
-                    ? 'border-purple-400 bg-purple-900/40 text-purple-200'
-                    : 'border-hunter-800 bg-hunter-950 text-hunter-gray'
+                    ? 'border-purple-400 bg-purple-900/40 text-purple-200 shadow-[0_0_8px_rgba(168,85,247,0.4)]'
+                    : 'border-hunter-800 bg-hunter-950 text-hunter-400'
                 }`}
               >
                 {t}
@@ -157,44 +157,44 @@ export default function GrimoirePage() {
         </div>
 
         <div>
-          <label className="text-[10px] text-hunter-gray block mb-1">THE QUESTION:</label>
+          <label className="text-xs text-hunter-400 block mb-1">THE QUESTION:</label>
           <textarea
             required
             rows={2}
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             placeholder="What question tricked or defeated you?"
-            className="w-full bg-hunter-950 border border-hunter-800 rounded p-2 text-hunter-100 focus:border-purple-500 focus:outline-none"
+            className="w-full bg-hunter-950 border border-hunter-800 rounded p-2 text-xs text-hunter-100 focus:border-purple-500 focus:outline-none"
           />
         </div>
 
         <div>
-          <label className="text-[10px] text-red-400 block mb-1">MY FLAWED THOUGHT PROCESS (THE MISTAKE):</label>
+          <label className="text-xs text-red-400 block mb-1">MY FLAWED THOUGHT PROCESS (THE MISTAKE):</label>
           <textarea
             required
             rows={2}
             value={mistake}
             onChange={(e) => setMistake(e.target.value)}
             placeholder="Why did you pick the wrong option or miscalculate?"
-            className="w-full bg-hunter-950 border border-red-900/60 rounded p-2 text-hunter-100 focus:border-red-500 focus:outline-none"
+            className="w-full bg-hunter-950 border border-red-900/60 rounded p-2 text-xs text-hunter-100 focus:border-red-500 focus:outline-none"
           />
         </div>
 
         <div>
-          <label className="text-[10px] text-hunter-green block mb-1">CORRECT HUNTER APPROACH:</label>
+          <label className="text-xs text-hunter-green block mb-1">CORRECT HUNTER APPROACH:</label>
           <textarea
             required
             rows={2}
             value={correctApproach}
             onChange={(e) => setCorrectApproach(e.target.value)}
             placeholder="The definitive theorem, formula, or shortcut."
-            className="w-full bg-hunter-950 border border-green-900/60 rounded p-2 text-hunter-100 focus:border-green-500 focus:outline-none"
+            className="w-full bg-hunter-950 border border-green-900/60 rounded p-2 text-xs text-hunter-100 focus:border-green-500 focus:outline-none"
           />
         </div>
 
         <button
           type="submit"
-          className="w-full py-2.5 bg-purple-600/30 hover:bg-purple-600/50 border border-purple-400 text-purple-200 font-extrabold rounded tracking-widest uppercase transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)]"
+          className="min-h-[48px] w-full py-3 bg-purple-600/30 hover:bg-purple-600/50 border border-purple-400 text-purple-200 font-extrabold rounded tracking-widest uppercase transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] flex items-center justify-center text-xs"
         >
           BIND ERROR TO GRIMOIRE (+SCHEDULE SRS)
         </button>

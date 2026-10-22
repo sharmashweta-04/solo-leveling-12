@@ -51,33 +51,33 @@ export default function DungeonPage() {
     }
     if (ch.topics_completed.length > 0) {
       return (
-        <span className="text-[10px] px-1.5 py-0.5 bg-blue-900/60 border border-hunter-blue text-hunter-cyan rounded">
+        <span className="text-xs px-2 py-0.5 bg-blue-900/60 border border-hunter-blue text-hunter-cyan rounded font-semibold">
           IN PROGRESS ({ch.topics_completed.length}/{ch.total_topics})
         </span>
       );
     }
     return (
-      <span className="text-[10px] px-1.5 py-0.5 bg-hunter-900 border border-hunter-800 text-hunter-gray rounded">
+      <span className="text-xs px-2 py-0.5 bg-hunter-900 border border-hunter-800 text-hunter-400 rounded">
         LOCKED 🔒
       </span>
     );
   };
 
   return (
-    <div className="min-h-screen bg-hunter-950 text-hunter-100 font-mono pb-24 max-w-md mx-auto p-4 select-none">
+    <div className="font-mono select-none">
       {/* Header */}
       <div className="flex justify-between items-center border-b border-hunter-blue/40 pb-3 mb-4">
         <div>
           <h1 className="text-lg font-extrabold text-hunter-blue tracking-wider text-shadow-blue">
             [ 37-GATE DUNGEON ]
           </h1>
-          <p className="text-[10px] text-hunter-gray">
+          <p className="text-xs text-hunter-400">
             NCERT PCB MONARCH GATES &bull; SHADOW VAULT
           </p>
         </div>
         <Link
           href="/shadows"
-          className="text-xs text-purple-300 border border-purple-500/50 bg-purple-950/40 hover:bg-purple-900/50 px-2 py-1 rounded font-bold"
+          className="text-xs text-purple-300 border border-purple-500/50 bg-purple-950/40 hover:bg-purple-900/50 px-2.5 py-1.5 rounded font-bold min-h-[44px] flex items-center"
         >
           SHADOWS 🌑
         </Link>
@@ -89,10 +89,10 @@ export default function DungeonPage() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-2.5 py-1.5 rounded border whitespace-nowrap transition-all ${
+            className={`min-h-[44px] px-3 py-1.5 rounded border whitespace-nowrap transition-all text-xs flex items-center justify-center ${
               activeTab === tab
                 ? 'border-hunter-blue bg-hunter-blue/20 text-white font-bold shadow-[0_0_10px_rgba(0,217,255,0.3)]'
-                : 'border-hunter-800 bg-hunter-950 text-hunter-gray hover:text-white'
+                : 'border-hunter-800 bg-hunter-950 text-hunter-400 hover:text-white'
             }`}
           >
             {tab === 'ALL'
@@ -118,7 +118,7 @@ export default function DungeonPage() {
             <Link
               key={ch.id}
               href={`/gate/${ch.id}`}
-              className={`block p-3 rounded-lg bg-hunter-900/80 border transition-all ${getWingBorderColor(
+              className={`min-h-[44px] block p-3 rounded-lg bg-hunter-900/80 border transition-all ${getWingBorderColor(
                 ch.subject
               )} hover:bg-hunter-900`}
             >
@@ -131,7 +131,7 @@ export default function DungeonPage() {
                 </div>
               </div>
 
-              <div className="flex justify-between items-center text-[10px] text-hunter-gray pt-1 border-t border-hunter-800">
+              <div className="flex justify-between items-center text-xs text-hunter-400 pt-1 border-t border-hunter-800">
                 <span className="uppercase">{ch.subject} WING</span>
                 <div>{getStatusBadge(ch)}</div>
               </div>

@@ -128,13 +128,13 @@ export default function ReviewPage() {
           <h1 className="text-lg font-extrabold text-hunter-blue tracking-wider text-shadow-blue">
             [ SPACED REPETITION ]
           </h1>
-          <p className="text-[10px] text-hunter-gray">
+          <p className="text-xs text-hunter-400">
             MEMORY ARCHIVES &bull; {dueCards.length - currentIndex} DUE TODAY
           </p>
         </div>
         <Link
           href="/grimoire"
-          className="text-xs text-purple-300 border border-purple-500/40 px-2 py-1 rounded bg-purple-950/20"
+          className="text-xs text-purple-300 border border-purple-500/40 px-2.5 py-1.5 rounded bg-purple-950/20 min-h-[44px] flex items-center font-bold"
         >
           GRIMOIRE 📜
         </Link>
@@ -148,13 +148,13 @@ export default function ReviewPage() {
         <div className="border border-hunter-blue/30 bg-hunter-900/60 rounded-xl p-8 text-center space-y-3">
           <div className="text-3xl animate-bounce">⚡</div>
           <h2 className="text-sm font-bold text-hunter-blue">[ MEMORY DECK SYNCHRONIZED ]</h2>
-          <p className="text-xs text-hunter-gray leading-relaxed">
+          <p className="text-xs text-hunter-400 leading-relaxed">
             No cards are currently due for review today. Add more mistake notes in the Grimoire or clear Gate Boss tests to spawn new SRS cards.
           </p>
           <div className="pt-2">
             <Link
               href="/grimoire"
-              className="inline-block px-4 py-2 bg-purple-600/30 hover:bg-purple-600/50 border border-purple-400 text-purple-200 rounded text-xs font-bold uppercase tracking-wider"
+              className="min-h-[44px] inline-flex items-center px-4 py-2 bg-purple-600/30 hover:bg-purple-600/50 border border-purple-400 text-purple-200 rounded text-xs font-bold uppercase tracking-wider"
             >
               ADD TO GRIMOIRE
             </Link>
@@ -162,7 +162,7 @@ export default function ReviewPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          <div className="flex justify-between text-[11px] text-hunter-cyan">
+          <div className="flex justify-between text-xs text-hunter-cyan">
             <span>CARD {currentIndex + 1} OF {dueCards.length}</span>
             <span>INTERVAL: {currentCard.interval_days} DAYS</span>
           </div>
@@ -173,7 +173,7 @@ export default function ReviewPage() {
             className="min-h-[220px] p-6 rounded-2xl bg-hunter-900/90 border-2 border-hunter-blue flex flex-col justify-between shadow-[0_0_25px_rgba(0,217,255,0.25)] cursor-pointer hover:border-hunter-cyan transition-all"
           >
             <div>
-              <div className="text-[10px] text-hunter-gray font-bold uppercase tracking-wider mb-2">
+              <div className="text-xs text-hunter-400 font-bold uppercase tracking-wider mb-2">
                 {currentCard.subject} &bull; GATE {currentCard.chapter_id}
               </div>
               <div className="text-sm font-semibold text-hunter-100 whitespace-pre-wrap leading-relaxed">
@@ -183,7 +183,7 @@ export default function ReviewPage() {
 
             {isFlipped ? (
               <div className="pt-4 mt-4 border-t border-hunter-blue/40">
-                <div className="text-[10px] text-hunter-green font-bold uppercase tracking-widest mb-1">
+                <div className="text-xs text-hunter-green font-bold uppercase tracking-widest mb-1">
                   [ SOLUTION / APPROACH ]
                 </div>
                 <div className="text-xs text-hunter-200 whitespace-pre-wrap leading-relaxed">
@@ -191,7 +191,7 @@ export default function ReviewPage() {
                 </div>
               </div>
             ) : (
-              <div className="text-center text-[10px] text-hunter-gray animate-pulse pt-4">
+              <div className="text-center text-xs text-hunter-400 animate-pulse pt-4">
                 [ TAP TO REVEAL ANSWER ]
               </div>
             )}
@@ -200,44 +200,44 @@ export default function ReviewPage() {
           {/* Grading Buttons */}
           {isFlipped && (
             <div className="space-y-2 pt-2 animate-in fade-in duration-200">
-              <div className="text-[10px] text-hunter-gray text-center uppercase tracking-wider">
+              <div className="text-xs text-hunter-400 text-center uppercase tracking-wider">
                 EVALUATE RETENTION ACCURACY
               </div>
               <div className="grid grid-cols-4 gap-2 text-xs">
                 <button
                   type="button"
                   onClick={() => handleGrade('Again')}
-                  className="py-2.5 rounded bg-red-950/60 border border-red-500 hover:bg-red-900/60 text-red-300 font-bold transition-all text-center"
+                  className="min-h-[48px] py-2 px-1 rounded bg-red-950/60 border border-red-500 hover:bg-red-900/60 text-red-300 font-bold transition-all text-center flex flex-col items-center justify-center"
                 >
-                  <div>AGAIN</div>
-                  <div className="text-[9px] text-red-400 font-normal">1 Day</div>
+                  <div className="text-xs font-bold">AGAIN</div>
+                  <div className="text-xs text-red-400 font-normal">1 Day</div>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => handleGrade('Hard')}
-                  className="py-2.5 rounded bg-yellow-950/60 border border-yellow-500 hover:bg-yellow-900/60 text-yellow-300 font-bold transition-all text-center"
+                  className="min-h-[48px] py-2 px-1 rounded bg-yellow-950/60 border border-yellow-500 hover:bg-yellow-900/60 text-yellow-300 font-bold transition-all text-center flex flex-col items-center justify-center"
                 >
-                  <div>HARD</div>
-                  <div className="text-[9px] text-yellow-400 font-normal">Slow</div>
+                  <div className="text-xs font-bold">HARD</div>
+                  <div className="text-xs text-yellow-400 font-normal">Slow</div>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => handleGrade('Good')}
-                  className="py-2.5 rounded bg-blue-950/60 border border-hunter-blue hover:bg-blue-900/60 text-hunter-cyan font-bold transition-all text-center"
+                  className="min-h-[48px] py-2 px-1 rounded bg-blue-950/60 border border-hunter-blue hover:bg-blue-900/60 text-hunter-cyan font-bold transition-all text-center flex flex-col items-center justify-center"
                 >
-                  <div>GOOD</div>
-                  <div className="text-[9px] text-hunter-blue font-normal">Normal</div>
+                  <div className="text-xs font-bold">GOOD</div>
+                  <div className="text-xs text-hunter-blue font-normal">Normal</div>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => handleGrade('Easy')}
-                  className="py-2.5 rounded bg-green-950/60 border border-green-500 hover:bg-green-900/60 text-green-300 font-bold transition-all text-center"
+                  className="min-h-[48px] py-2 px-1 rounded bg-green-950/60 border border-green-500 hover:bg-green-900/60 text-green-300 font-bold transition-all text-center flex flex-col items-center justify-center"
                 >
-                  <div>EASY</div>
-                  <div className="text-[9px] text-green-400 font-normal">Fast</div>
+                  <div className="text-xs font-bold">EASY</div>
+                  <div className="text-xs text-green-400 font-normal">Fast</div>
                 </button>
               </div>
             </div>

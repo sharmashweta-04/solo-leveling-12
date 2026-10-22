@@ -169,13 +169,13 @@ export default function BossRaidPage() {
           <h1 className="text-lg font-extrabold text-red-500 tracking-wider flex items-center gap-2">
             <span>[ BOSS RAID CHAMBER ]</span>
           </h1>
-          <p className="text-[10px] text-hunter-gray">
+          <p className="text-xs text-hunter-400">
             3-HOUR MOCK TEST TIMING &bull; PW APP PROTOCOL
           </p>
         </div>
         <Link
           href="/stats"
-          className="text-xs text-hunter-cyan border border-hunter-blue/40 px-2 py-1 rounded bg-hunter-blue/10"
+          className="text-xs text-hunter-cyan border border-hunter-blue/40 px-2.5 py-1.5 rounded bg-hunter-blue/10 min-h-[44px] flex items-center"
         >
           TRENDS 📊
         </Link>
@@ -187,7 +187,7 @@ export default function BossRaidPage() {
           <span>⚠️</span>
           <span>[ RAID INSTRUCTIONS: OPEN PW APP ]</span>
         </div>
-        <p className="text-hunter-200 leading-relaxed text-[11px]">
+        <p className="text-hunter-200 leading-relaxed text-xs">
           Mock tests are taken directly inside the <span className="text-hunter-cyan font-bold">PW app</span>. 
           This Chamber times your 3-hour exam without pause. When finished, submit your scores below to claim the 
           <span className="text-hunter-blue font-bold"> +500 XP</span> and 
@@ -197,8 +197,8 @@ export default function BossRaidPage() {
 
       {/* 3-Hour Raid Countdown */}
       <div className="border-2 border-red-500 bg-hunter-900/90 rounded-2xl p-6 text-center shadow-[0_0_30px_rgba(255,51,102,0.25)] mb-6">
-        <div className="text-[10px] text-red-400 font-bold tracking-widest uppercase">
-          RAID TIMER (3 HOURS)
+        <div className="text-xs text-red-400 font-bold tracking-widest uppercase">
+          RAID TIMER ({Math.round(RAID_DURATION_SECONDS / 60)} MINUTES)
         </div>
         <div className="text-5xl font-black text-red-500 tracking-tight my-4">
           {formatTimer(elapsedSeconds)}
@@ -207,9 +207,9 @@ export default function BossRaidPage() {
         {!isActive ? (
           <button
             onClick={handleStartRaid}
-            className="w-full py-3 bg-red-600 hover:bg-red-500 text-white font-extrabold rounded-lg tracking-widest uppercase transition-all shadow-[0_0_20px_rgba(255,51,102,0.4)]"
+            className="min-h-[48px] w-full py-3 bg-red-600 hover:bg-red-500 text-white font-extrabold rounded-lg tracking-widest uppercase transition-all shadow-[0_0_20px_rgba(255,51,102,0.4)] flex items-center justify-center text-xs"
           >
-            START 3-HOUR RAID
+            START {Math.round(RAID_DURATION_SECONDS / 60)}-MIN RAID
           </button>
         ) : (
           <div className="text-xs text-hunter-cyan animate-pulse">
@@ -224,7 +224,7 @@ export default function BossRaidPage() {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-[10px] text-hunter-gray block mb-1">TOTAL MARKS (/720):</label>
+            <label className="text-xs text-hunter-400 block mb-1">TOTAL MARKS (/720):</label>
             <input
               type="number"
               required
@@ -232,96 +232,96 @@ export default function BossRaidPage() {
               max={720}
               value={totalMarks}
               onChange={(e) => setTotalMarks(Number(e.target.value))}
-              className="w-full bg-hunter-950 border border-hunter-800 rounded p-2 text-hunter-100 font-bold focus:border-hunter-blue focus:outline-none"
+              className="min-h-[44px] w-full bg-hunter-950 border border-hunter-800 rounded p-2 text-xs text-hunter-100 font-bold focus:border-hunter-blue focus:outline-none"
             />
           </div>
 
           <div>
-            <label className="text-[10px] text-hunter-gray block mb-1">TIME TAKEN (MIN):</label>
+            <label className="text-xs text-hunter-400 block mb-1">TIME TAKEN (MIN):</label>
             <input
               type="number"
               required
               value={timeTaken}
               onChange={(e) => setTimeTaken(Number(e.target.value))}
-              className="w-full bg-hunter-950 border border-hunter-800 rounded p-2 text-hunter-100 font-bold focus:border-hunter-blue focus:outline-none"
+              className="min-h-[44px] w-full bg-hunter-950 border border-hunter-800 rounded p-2 text-xs text-hunter-100 font-bold focus:border-hunter-blue focus:outline-none"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-3 gap-2">
           <div>
-            <label className="text-[9px] text-hunter-gray block mb-1">ATTEMPTED:</label>
+            <label className="text-xs text-hunter-400 block mb-1">ATTEMPTED:</label>
             <input
               type="number"
               value={attempted}
               onChange={(e) => setAttempted(Number(e.target.value))}
-              className="w-full bg-hunter-950 border border-hunter-800 rounded p-1.5 text-center text-hunter-100 focus:outline-none"
+              className="min-h-[44px] w-full bg-hunter-950 border border-hunter-800 rounded p-1.5 text-center text-xs text-hunter-100 focus:outline-none"
             />
           </div>
           <div>
-            <label className="text-[9px] text-hunter-green block mb-1">CORRECT:</label>
+            <label className="text-xs text-hunter-green block mb-1">CORRECT:</label>
             <input
               type="number"
               value={correct}
               onChange={(e) => setCorrect(Number(e.target.value))}
-              className="w-full bg-hunter-950 border border-green-800 rounded p-1.5 text-center text-hunter-green focus:outline-none"
+              className="min-h-[44px] w-full bg-hunter-950 border border-green-800 rounded p-1.5 text-center text-xs text-hunter-green focus:outline-none"
             />
           </div>
           <div>
-            <label className="text-[9px] text-red-400 block mb-1">WRONG:</label>
+            <label className="text-xs text-red-400 block mb-1">WRONG:</label>
             <input
               type="number"
               value={wrong}
               onChange={(e) => setWrong(Number(e.target.value))}
-              className="w-full bg-hunter-950 border border-red-800 rounded p-1.5 text-center text-red-400 focus:outline-none"
+              className="min-h-[44px] w-full bg-hunter-950 border border-red-800 rounded p-1.5 text-center text-xs text-red-400 focus:outline-none"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-3 gap-2">
           <div>
-            <label className="text-[9px] text-blue-400 block mb-1">PHYSICS (/180):</label>
+            <label className="text-xs text-blue-400 block mb-1">PHYSICS (/180):</label>
             <input
               type="number"
               value={physicsScore}
               onChange={(e) => setPhysicsScore(Number(e.target.value))}
-              className="w-full bg-hunter-950 border border-blue-800 rounded p-1.5 text-center text-blue-300 focus:outline-none"
+              className="min-h-[44px] w-full bg-hunter-950 border border-blue-800 rounded p-1.5 text-center text-xs text-blue-300 focus:outline-none"
             />
           </div>
           <div>
-            <label className="text-[9px] text-purple-400 block mb-1">CHEMISTRY (/180):</label>
+            <label className="text-xs text-purple-400 block mb-1">CHEMISTRY (/180):</label>
             <input
               type="number"
               value={chemistryScore}
               onChange={(e) => setChemistryScore(Number(e.target.value))}
-              className="w-full bg-hunter-950 border border-purple-800 rounded p-1.5 text-center text-purple-300 focus:outline-none"
+              className="min-h-[44px] w-full bg-hunter-950 border border-purple-800 rounded p-1.5 text-center text-xs text-purple-300 focus:outline-none"
             />
           </div>
           <div>
-            <label className="text-[9px] text-green-400 block mb-1">BIOLOGY (/360):</label>
+            <label className="text-xs text-green-400 block mb-1">BIOLOGY (/360):</label>
             <input
               type="number"
               value={biologyScore}
               onChange={(e) => setBiologyScore(Number(e.target.value))}
-              className="w-full bg-hunter-950 border border-green-800 rounded p-1.5 text-center text-green-300 focus:outline-none"
+              className="min-h-[44px] w-full bg-hunter-950 border border-green-800 rounded p-1.5 text-center text-xs text-green-300 focus:outline-none"
             />
           </div>
         </div>
 
         <div>
-          <label className="text-[10px] text-hunter-gray block mb-1">MOCK ANALYSIS NOTES:</label>
+          <label className="text-xs text-hunter-400 block mb-1">MOCK ANALYSIS NOTES:</label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Record major mistake patterns, negative marks, and timing gaps..."
             rows={2}
-            className="w-full bg-hunter-950 border border-hunter-800 rounded p-2 text-hunter-100 focus:border-hunter-blue focus:outline-none"
+            className="w-full bg-hunter-950 border border-hunter-800 rounded p-2 text-xs text-hunter-100 focus:border-hunter-blue focus:outline-none"
           />
         </div>
 
         <button
           type="submit"
-          className="w-full py-3 bg-hunter-blue hover:bg-hunter-cyan text-black font-extrabold rounded tracking-widest uppercase transition-all shadow-[0_0_20px_rgba(0,217,255,0.4)]"
+          className="min-h-[48px] w-full py-3 bg-hunter-blue hover:bg-hunter-cyan text-black font-extrabold rounded tracking-widest uppercase transition-all shadow-[0_0_20px_rgba(0,217,255,0.4)] flex items-center justify-center text-xs"
         >
           CONFIRM RAID RESULT & CLAIM 90-MIN KEY
         </button>
@@ -335,12 +335,12 @@ export default function BossRaidPage() {
           </div>
           <div className="space-y-2">
             {pastMocks.map((m, idx) => (
-              <div key={idx} className="p-2 bg-hunter-950 rounded border border-hunter-800 flex justify-between items-center text-xs">
+              <div key={idx} className="p-2.5 bg-hunter-950 rounded border border-hunter-800 flex justify-between items-center text-xs min-h-[44px]">
                 <div>
                   <span className="font-bold text-hunter-blue">{m.total_marks}/720</span>
-                  <span className="text-[10px] text-hunter-gray ml-2">Day {m.day_number} &bull; {m.date}</span>
+                  <span className="text-xs text-hunter-400 ml-2">Day {m.day_number} &bull; {m.date}</span>
                 </div>
-                <div className="text-[10px] text-hunter-cyan">
+                <div className="text-xs text-hunter-cyan">
                   P:{m.physics_score} C:{m.chemistry_score} B:{m.biology_score}
                 </div>
               </div>

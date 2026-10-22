@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { db } from '@/src/db/db';
 import { seedDatabaseIfNeeded } from '@/src/db/seed';
 import { DifficultyMode } from '@/src/types';
-import { playSystemChime } from '@/src/utils/audio';
+import { playSystemChime, isSoundEnabled, setSoundEnabled } from '@/src/utils/audio';
 import gameRules from '@/config/game_rules.json';
 import Toast from '@/src/components/Toast';
 import Link from 'next/link';
@@ -14,6 +14,7 @@ export default function SettingsPage() {
   const router = useRouter();
   const [mode, setMode] = useState<DifficultyMode>('normal');
   const [startDate, setStartDate] = useState('2026-11-01');
+  const [soundOn, setSoundOn] = useState(true);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [showRules, setShowRules] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
@@ -24,9 +25,18 @@ export default function SettingsPage() {
       if (modeSetting) setMode(modeSetting.value);
       const startSetting = await db.settings.get('start_date');
       if (startSetting) setStartDate(startSetting.value);
+      setSoundOn(isSoundEnabled());
     }
     load();
   }, []);
+
+  const handleToggleSound = () => {
+    const nextVal = !soundOn;
+    setSoundOn(nextVal);
+    setSoundEnabled(nextVal);
+    if (nextVal) playSystemChime();
+    setToastMessage(`[ SYSTEM ] Audio feedback ${nextVal ? 'ACTIVATED' : 'MUTED'}.`);
+  };
 
   const handleToggleMode = async (newMode: DifficultyMode) => {
     playSystemChime();
@@ -150,42 +160,61 @@ export default function SettingsPage() {
           <h1 className="text-lg font-extrabold text-hunter-blue tracking-wider text-shadow-blue">
             [ SYSTEM SETTINGS ]
           </h1>
-          <p className="text-[10px] text-hunter-gray">
+          <p className="text-xs text-hunter-400">
             HUNTER CONFIGURATION &bull; BACKUP VAULT
           </p>
         </div>
         <Link
           href="/debug"
-          className="text-xs text-hunter-cyan border border-hunter-blue/40 px-2 py-1 rounded bg-hunter-blue/10"
+          className="text-xs text-hunter-cyan border border-hunter-blue/40 px-2.5 py-1.5 rounded bg-hunter-blue/10 min-h-[44px] flex items-center"
         >
           DEBUG 🛠️
         </Link>
       </div>
 
       <div className="space-y-4 text-xs">
+        {/* Sound Effects Preference */}
+        <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5 flex justify-between items-center">
+          <div>
+            <div className="font-bold text-hunter-100 text-xs">[ SYSTEM AUDIO EFFECTS ]</div>
+            <p className="text-xs text-hunter-400 mt-0.5">Holographic chimes for quest completion and level ups.</p>
+          </div>
+          <button
+            type="button"
+            onClick={handleToggleSound}
+            className={`min-h-[44px] px-3.5 rounded font-bold border transition-all text-xs tracking-wider uppercase flex items-center justify-center ${
+              soundOn
+                ? 'border-hunter-green bg-green-950/40 text-hunter-green shadow-[0_0_10px_rgba(0,255,136,0.3)]'
+                : 'border-hunter-800 bg-hunter-950 text-hunter-400'
+            }`}
+          >
+            {soundOn ? 'SOUND ON 🔊' : 'MUTED 🔇'}
+          </button>
+        </div>
+
         {/* Difficulty Mode Selection */}
         <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5">
-          <div className="text-xs font-bold text-hunter-blue mb-2">[ DIFFICULTY MODE ]</div>
-          <p className="text-[10px] text-hunter-gray mb-3">
+          <div className="text-xs font-bold text-hunter-blue mb-1">[ DIFFICULTY MODE ]</div>
+          <p className="text-xs text-hunter-400 mb-3">
             Alters daily study block targets between Normal (8 blocks) and Easy (6 blocks).
           </p>
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={() => handleToggleMode('normal')}
-              className={`py-2 rounded font-bold border transition-all text-center ${
+              className={`min-h-[44px] py-2 rounded font-bold border transition-all text-center flex items-center justify-center ${
                 mode === 'normal'
                   ? 'border-hunter-blue bg-hunter-blue/30 text-white shadow-[0_0_10px_rgba(0,217,255,0.4)]'
-                  : 'border-hunter-800 bg-hunter-950 text-hunter-gray'
+                  : 'border-hunter-800 bg-hunter-950 text-hunter-400'
               }`}
             >
               NORMAL (8 BLOCKS)
             </button>
             <button
               onClick={() => handleToggleMode('easy')}
-              className={`py-2 rounded font-bold border transition-all text-center ${
+              className={`min-h-[44px] py-2 rounded font-bold border transition-all text-center flex items-center justify-center ${
                 mode === 'easy'
                   ? 'border-hunter-cyan bg-hunter-cyan/30 text-white shadow-[0_0_10px_rgba(0,217,255,0.4)]'
-                  : 'border-hunter-800 bg-hunter-950 text-hunter-gray'
+                  : 'border-hunter-800 bg-hunter-950 text-hunter-400'
               }`}
             >
               EASY (6 BLOCKS)
@@ -196,12 +225,12 @@ export default function SettingsPage() {
         {/* Replay Intro */}
         <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5 flex justify-between items-center">
           <div>
-            <div className="font-bold text-hunter-100">[ REPLAY INTRO MESSAGE ]</div>
-            <p className="text-[10px] text-hunter-gray">Experience the System awakening sequence again.</p>
+            <div className="font-bold text-hunter-100 text-xs">[ REPLAY INTRO MESSAGE ]</div>
+            <p className="text-xs text-hunter-400 mt-0.5">Experience the System awakening sequence again.</p>
           </div>
           <Link
             href="/intro"
-            className="px-3 py-1.5 bg-hunter-blue/20 hover:bg-hunter-blue/40 border border-hunter-blue text-hunter-blue hover:text-white rounded text-xs font-bold uppercase tracking-wider"
+            className="min-h-[44px] px-3.5 bg-hunter-blue/20 hover:bg-hunter-blue/40 border border-hunter-blue text-hunter-blue hover:text-white rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center"
           >
             REPLAY
           </Link>
@@ -210,19 +239,19 @@ export default function SettingsPage() {
         {/* JSON Backup & Restore (Local-First Protection) */}
         <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5 space-y-3">
           <div className="text-xs font-bold text-hunter-cyan">[ JSON BACKUP & RESTORE ]</div>
-          <p className="text-[10px] text-hunter-gray leading-relaxed">
+          <p className="text-xs text-hunter-400 leading-relaxed">
             All your data is stored offline in browser IndexedDB. Export periodic JSON backups to prevent data loss.
           </p>
 
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={handleExportBackup}
-              className="py-2.5 bg-hunter-blue/20 hover:bg-hunter-blue/40 border border-hunter-blue text-hunter-blue rounded font-bold uppercase tracking-wider text-center"
+              className="min-h-[44px] py-2.5 bg-hunter-blue/20 hover:bg-hunter-blue/40 border border-hunter-blue text-hunter-blue rounded font-bold uppercase tracking-wider text-center flex items-center justify-center"
             >
               EXPORT JSON 💾
             </button>
 
-            <label className="py-2.5 bg-hunter-cyan/20 hover:bg-hunter-cyan/30 border border-hunter-cyan text-hunter-cyan rounded font-bold uppercase tracking-wider text-center cursor-pointer">
+            <label className="min-h-[44px] py-2.5 bg-hunter-cyan/20 hover:bg-hunter-cyan/30 border border-hunter-cyan text-hunter-cyan rounded font-bold uppercase tracking-wider text-center cursor-pointer flex items-center justify-center">
               IMPORT JSON 📥
               <input
                 type="file"
@@ -236,18 +265,18 @@ export default function SettingsPage() {
 
         {/* Read-Only Game Rules Viewer */}
         <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5">
-          <div className="flex justify-between items-center">
-            <div className="font-bold text-hunter-100">[ SYSTEM RULES ENCYCLOPEDIA ]</div>
+          <div className="flex justify-between items-center min-h-[44px]">
+            <div className="font-bold text-hunter-100 text-xs">[ SYSTEM RULES ENCYCLOPEDIA ]</div>
             <button
               onClick={() => setShowRules(!showRules)}
-              className="text-xs text-hunter-cyan underline"
+              className="min-h-[44px] px-2 text-xs text-hunter-cyan underline flex items-center font-bold"
             >
               {showRules ? 'HIDE' : 'VIEW'}
             </button>
           </div>
 
           {showRules && (
-            <div className="mt-3 pt-3 border-t border-hunter-800 text-[11px] space-y-2 text-hunter-200">
+            <div className="mt-2 pt-3 border-t border-hunter-800 text-xs space-y-2 text-hunter-200">
               <div className="flex justify-between">
                 <span>Game Day Boundary:</span>
                 <span className="text-hunter-blue font-bold">{gameRules.day.reset_time} to {gameRules.day.expire_time} IST</span>
@@ -279,32 +308,32 @@ export default function SettingsPage() {
         {/* Danger Zone: Purge & Reset */}
         <div className="border border-red-500/40 bg-red-950/20 rounded-lg p-3.5 space-y-2">
           <div className="text-xs font-bold text-red-400">[ DANGER ZONE: SYSTEM RESET ]</div>
-          <p className="text-[10px] text-red-300">
+          <p className="text-xs text-red-300">
             Irreversibly deletes all ledgers, progress, and cards. Export a backup first.
           </p>
 
           {!confirmReset ? (
             <button
               onClick={() => setConfirmReset(true)}
-              className="w-full py-2 bg-red-600/20 hover:bg-red-600/40 border border-red-500 text-red-300 rounded font-bold uppercase tracking-wider"
+              className="min-h-[44px] w-full py-2 bg-red-600/20 hover:bg-red-600/40 border border-red-500 text-red-300 rounded font-bold uppercase tracking-wider flex items-center justify-center"
             >
               RESET ALL DATA
             </button>
           ) : (
             <div className="space-y-2 pt-1">
-              <p className="text-[10px] text-red-400 font-bold text-center">
+              <p className="text-xs text-red-400 font-bold text-center">
                 ARE YOU ABSOLUTELY CERTAIN?
               </p>
               <div className="flex gap-2">
                 <button
                   onClick={handleResetDatabase}
-                  className="flex-1 py-2 bg-red-600 hover:bg-red-500 text-white font-extrabold rounded uppercase tracking-wider"
+                  className="min-h-[44px] flex-1 py-2 bg-red-600 hover:bg-red-500 text-white font-extrabold rounded uppercase tracking-wider flex items-center justify-center"
                 >
                   CONFIRM PURGE
                 </button>
                 <button
                   onClick={() => setConfirmReset(false)}
-                  className="flex-1 py-2 bg-hunter-800 text-hunter-gray rounded uppercase tracking-wider"
+                  className="min-h-[44px] flex-1 py-2 bg-hunter-800 text-hunter-gray rounded uppercase tracking-wider flex items-center justify-center"
                 >
                   CANCEL
                 </button>

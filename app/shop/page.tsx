@@ -182,10 +182,10 @@ export default function ShopPage() {
           <h1 className="text-lg font-extrabold text-hunter-blue tracking-wider text-shadow-blue">
             [ MONARCH&apos;S SHOP ]
           </h1>
-          <p className="text-[10px] text-hunter-gray">MANA VAULT &bull; SCREEN TIME EXCHANGES</p>
+          <p className="text-xs text-hunter-400">MANA VAULT &bull; SCREEN TIME EXCHANGES</p>
         </div>
         <div className="text-right">
-          <span className="text-[10px] text-hunter-gray block">MANA POOL</span>
+          <span className="text-xs text-hunter-400 block">MANA POOL</span>
           <span className="text-base font-bold text-hunter-cyan">{totalMP} MP</span>
         </div>
       </div>
@@ -196,12 +196,12 @@ export default function ShopPage() {
           <div className="text-xs font-bold text-red-400 tracking-wider animate-pulse">
             [ 🚨 EMERGENCY DUNGEON LOCKOUT ACTIVE ]
           </div>
-          <p className="text-[11px] text-red-200">
+          <p className="text-xs text-red-200">
             You missed 2 days within 7 days. Quests are locked until the next Boss Raid is cleared.
           </p>
           <button
             onClick={handleEmergencyBypass}
-            className="px-3 py-1.5 bg-red-600/40 hover:bg-red-600/60 border border-red-400 text-white rounded text-xs font-bold tracking-wider uppercase transition-all"
+            className="min-h-[44px] px-3.5 py-1.5 bg-red-600/40 hover:bg-red-600/60 border border-red-400 text-white rounded text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center mx-auto"
           >
             EMERGENCY BYPASS (-100 XP)
           </button>
@@ -217,7 +217,7 @@ export default function ShopPage() {
           <div className="text-3xl font-black text-hunter-green tracking-tight my-1">
             {String(remMinutes).padStart(2, '0')}:{String(remSecs).padStart(2, '0')}
           </div>
-          <p className="text-[10px] text-hunter-gray">
+          <p className="text-xs text-hunter-400">
             Enjoy guilt-free leisure. The timer will automatically lock when depleted.
           </p>
         </div>
@@ -227,7 +227,7 @@ export default function ShopPage() {
       <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5 mb-4 shadow-[0_0_15px_rgba(0,217,255,0.15)]">
         <div className="flex justify-between items-center mb-3">
           <span className="text-xs font-bold text-hunter-blue">[ SCREEN TIME KEYS ]</span>
-          <span className="text-[10px] text-hunter-cyan">
+          <span className="text-xs text-hunter-cyan font-bold">
             CAP: {Math.floor(screenTimeUnlockedSecs / 60)} / {gameRules.shop.daily_screen_cap_minutes} MIN TODAY
           </span>
         </div>
@@ -244,7 +244,7 @@ export default function ShopPage() {
                   <span className="uppercase">{k.id} KEY</span>
                   <span className="text-hunter-cyan font-normal">({k.minutes} Minutes)</span>
                 </div>
-                <div className="text-[10px] text-hunter-gray mt-0.5">
+                <div className="text-xs text-hunter-400 mt-0.5">
                   Cost: <span className="text-hunter-blue font-bold">{k.cost} MP</span>
                 </div>
               </div>
@@ -253,7 +253,7 @@ export default function ShopPage() {
                 type="button"
                 onClick={() => purchaseKey(k)}
                 disabled={totalMP < k.cost}
-                className={`px-3 py-1.5 rounded text-[11px] font-bold tracking-wider uppercase transition-all ${
+                className={`min-h-[44px] px-3.5 py-1.5 rounded text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center ${
                   totalMP >= k.cost
                     ? 'bg-hunter-blue/20 hover:bg-hunter-blue/40 border border-hunter-blue text-hunter-blue hover:text-white shadow-[0_0_10px_rgba(0,217,255,0.3)]'
                     : 'bg-hunter-900 text-hunter-600 border border-hunter-800 cursor-not-allowed'
@@ -272,14 +272,14 @@ export default function ShopPage() {
           <span className="text-xs font-bold text-hunter-cyan">[ REST DAY TOKENS ]</span>
           <span className="text-xs font-bold text-hunter-blue">{restTokens} / 3 REMAINING</span>
         </div>
-        <p className="text-[10px] text-hunter-gray mb-3 leading-relaxed">
+        <p className="text-xs text-hunter-400 mb-3 leading-relaxed">
           Activating a token shields your day from missed-quest penalties and preserves your streak intact.
         </p>
 
         <button
           onClick={handleActivateRestToken}
           disabled={restTokens <= 0 || restUsedToday}
-          className={`w-full py-2.5 rounded font-bold tracking-wider uppercase text-xs transition-all ${
+          className={`min-h-[44px] w-full py-2.5 rounded font-bold tracking-wider uppercase text-xs transition-all flex items-center justify-center ${
             restUsedToday
               ? 'bg-green-950/40 border border-hunter-green text-hunter-green cursor-default'
               : restTokens > 0
@@ -294,7 +294,7 @@ export default function ShopPage() {
       {/* Sleep Logger (>= 7h Bonus) */}
       <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5 mb-4">
         <div className="text-xs font-bold text-hunter-green mb-2">[ SLEEP & RECOVERY LOG ]</div>
-        <p className="text-[10px] text-hunter-gray mb-3">
+        <p className="text-xs text-hunter-400 mb-3">
           Log ≥ 7 hours of sleep to claim +20 XP and Vitality (VIT) stat growth.
         </p>
 
@@ -307,9 +307,9 @@ export default function ShopPage() {
             value={sleepHours}
             disabled={sleepLoggedToday}
             onChange={(e) => setSleepHours(Number(e.target.value))}
-            className="flex-1 accent-hunter-green cursor-pointer"
+            className="flex-1 accent-hunter-green cursor-pointer h-6"
           />
-          <span className="text-xs font-bold text-hunter-green w-12 text-right">
+          <span className="text-xs font-bold text-hunter-green w-14 text-right">
             {sleepHours} hrs
           </span>
         </div>
@@ -317,7 +317,7 @@ export default function ShopPage() {
         <button
           onClick={handleLogSleep}
           disabled={sleepLoggedToday}
-          className={`w-full py-2 rounded text-xs font-bold tracking-wider uppercase transition-all ${
+          className={`min-h-[44px] w-full py-2 rounded text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center ${
             sleepLoggedToday
               ? 'bg-green-950/40 border border-hunter-green text-hunter-green cursor-default'
               : 'bg-green-600/20 hover:bg-green-600/30 border border-green-500 text-green-300'
