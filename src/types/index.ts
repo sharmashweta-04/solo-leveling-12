@@ -110,6 +110,17 @@ export interface Settings {
   value: any;
 }
 
+export interface DayEvaluationRecord {
+  day: number; // PK (1..45)
+  date: string; // YYYY-MM-DD
+  evaluated_at: string; // ISO
+  status: 'cleared' | 'failed' | 'rest';
+  is_all_clear: boolean;
+  xp_delta: number;
+  streak_after: number;
+  summary: string;
+}
+
 export interface DayPlan {
   day: number;
   date: string;

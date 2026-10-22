@@ -8,7 +8,8 @@ import {
   GrimoireEntry,
   SRSCard,
   MockResult,
-  Settings
+  Settings,
+  DayEvaluationRecord
 } from '@/src/types';
 
 export class SoloLevelingDatabase extends Dexie {
@@ -21,9 +22,10 @@ export class SoloLevelingDatabase extends Dexie {
   srs_cards!: Table<SRSCard, number>;
   mock_results!: Table<MockResult, number>;
   settings!: Table<Settings, string>;
+  day_evaluations!: Table<DayEvaluationRecord, number>;
 
-  constructor() {
-    super('SoloLevelingDB');
+  constructor(dbName: string = 'SoloLevelingDB') {
+    super(dbName);
     this.version(1).stores({
       xp_ledger: '++id, date, source, created_at',
       mp_ledger: '++id, date, source, created_at',
@@ -34,6 +36,10 @@ export class SoloLevelingDatabase extends Dexie {
       srs_cards: '++id, chapter_id, subject, due_date, last_reviewed',
       mock_results: '++id, date, day_number, created_at',
       settings: 'key'
+    });
+
+    this.version(2).stores({
+      day_evaluations: 'day, evaluated_at, status, streak_after'
     });
   }
 }
