@@ -11,6 +11,7 @@ import {
   Settings,
   DayEvaluationRecord
 } from '@/src/types';
+import { SyncSnapshotData } from '@/src/engine/sync';
 
 export class SoloLevelingDatabase extends Dexie {
   xp_ledger!: Table<XPLedgerEntry, number>;
@@ -44,4 +45,101 @@ export class SoloLevelingDatabase extends Dexie {
   }
 }
 
-export const db = new SoloLevelingDatabase();
+// Registry and per-user database management
+const dbRegistry = new Map<string, SoloLevelingDatabase>();
+let activeUserId: string | null = null;
+
+// Try to initialize activeUserId from localStorage if in browser
+if (typeof window !== 'undefined') {
+  try {
+    activeUserId = localStorage.getItem('solo_active_user_id');
+  } catch {
+    // Ignore in non-browser or privacy mode
+  }
+}
+
+export function getDb(userId?: string | null): SoloLevelingDatabase {
+  const dbName = userId && userId.trim() ? `SoloLevelingDB_${userId.trim()}` : 'SoloLevelingDB';
+  if (!dbRegistry.has(dbName)) {
+    dbRegistry.set(dbName, new SoloLevelingDatabase(dbName));
+  }
+  return dbRegistry.get(dbName)!;
+}
+
+export function getActiveUserId(): string | null {
+  return activeUserId;
+}
+
+export function setActiveDbUser(userId?: string | null): SoloLevelingDatabase {
+  activeUserId = userId && userId.trim() ? userId.trim() : null;
+  if (typeof window !== 'undefined') {
+    try {
+      if (activeUserId) {
+        localStorage.setItem('solo_active_user_id', activeUserId);
+      } else {
+        localStorage.removeItem('solo_active_user_id');
+      }
+    } catch {
+      // Ignore
+    }
+  }
+  return getDb(activeUserId);
+}
+
+/**
+ * Proxy that delegates all table and method calls to the currently active database.
+ * Ensures backward compatibility with all existing imports (`import { db } from '@/src/db/db'`).
+ */
+export const db: SoloLevelingDatabase = new Proxy({} as SoloLevelingDatabase, {
+  get(_target, prop) {
+    const active = getDb(activeUserId);
+    const value = (active as any)[prop];
+    if (typeof value === 'function') {
+      return value.bind(active);
+    }
+    return value;
+  }
+});
+
+/**
+ * Helper to export the full database state as a JSON snapshot (format identical to Export Backup).
+ */
+export async function exportDatabaseToJson(database: SoloLevelingDatabase = db): Promise<SyncSnapshotData> {
+  return {
+    version: 1,
+    exported_at: new Date().toISOString(),
+    xp_ledger: await database.xp_ledger.toArray(),
+    mp_ledger: await database.mp_ledger.toArray(),
+    quest_logs: await database.quest_logs.toArray(),
+    focus_sessions: await database.focus_sessions.toArray(),
+    chapter_progress: await database.chapter_progress.toArray(),
+    grimoire: await database.grimoire.toArray(),
+    srs_cards: await database.srs_cards.toArray(),
+    mock_results: await database.mock_results.toArray(),
+    settings: await database.settings.toArray(),
+    day_evaluations: await database.day_evaluations.toArray()
+  };
+}
+
+/**
+ * Helper to atomically import a snapshot into a target database with rollback protection.
+ */
+export async function importJsonToDatabase(
+  data: SyncSnapshotData,
+  database: SoloLevelingDatabase = db
+): Promise<void> {
+  await database.transaction('rw', database.tables, async () => {
+    await Promise.all(database.tables.map((table) => table.clear()));
+
+    if (data.xp_ledger?.length) await database.xp_ledger.bulkAdd(data.xp_ledger);
+    if (data.mp_ledger?.length) await database.mp_ledger.bulkAdd(data.mp_ledger);
+    if (data.quest_logs?.length) await database.quest_logs.bulkAdd(data.quest_logs);
+    if (data.focus_sessions?.length) await database.focus_sessions.bulkAdd(data.focus_sessions);
+    if (data.chapter_progress?.length) await database.chapter_progress.bulkAdd(data.chapter_progress);
+    if (data.grimoire?.length) await database.grimoire.bulkAdd(data.grimoire);
+    if (data.srs_cards?.length) await database.srs_cards.bulkAdd(data.srs_cards);
+    if (data.mock_results?.length) await database.mock_results.bulkAdd(data.mock_results);
+    if (data.settings?.length) await database.settings.bulkAdd(data.settings);
+    if (data.day_evaluations?.length) await database.day_evaluations.bulkAdd(data.day_evaluations);
+  });
+}

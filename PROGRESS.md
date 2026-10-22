@@ -70,8 +70,22 @@
 
 ---
 
+## Prompt C: Login, Sign Up & Cloud Sync with Supabase (Completed)
+- [x] **Supabase Client Setup (`src/lib/supabase.ts`)**: Integrated `@supabase/supabase-js` with graceful fallback for offline/unconfigured environments.
+- [x] **Pure Sync Decision Engine (`src/engine/sync.ts`)**: Implemented optimistic concurrency rules, revision tracking, offline change queuing, and guard protecting against overwriting non-empty cloud saves with empty local databases.
+- [x] **Vitest Unit Tests (`src/engine/__tests__/sync.test.ts`)**: 8 tests covering cloud newer, local newer, concurrent conflict, offline queuing, initial push, and empty database guards. Total test suite increased to 34 passing tests.
+- [x] **Per-User Dexie Databases (`src/db/db.ts`)**: Dynamic multi-tenant local database support (`SoloLevelingDB_<userId>`), isolating account data while keeping guest data safe in `SoloLevelingDB`. Transparent Proxy ensures 100% backward compatibility for all pages.
+- [x] **System Window Auth Route (`/login`)**: Full Solo Leveling styled authentication portal supporting Email/Password Log In, Sign Up, Password Recovery, and Guest continuation with system messages.
+- [x] **First-Time Guest Upload Prompt**: When logging in on a device with guest progress, prompts the user to upload guest progress to their new account or start fresh.
+- [x] **Interactive Conflict Resolution Modal (`ConflictModal.tsx`)**: Compares cloud vs local save (revisions, timestamps, XP totals, quests completed) with options to keep cloud, keep local, or download both as JSON backups.
+- [x] **Settings Account Section & Version Rollback**: Displays user email, connection status, cloud revision, manual "Sync Now" button, logout, and collapsible list of historical snapshots (`player_snapshot_history`) with one-click restore.
+- [x] **Environment Template & Documentation**: Created `.env.example` and updated `docs/deploy.md` with Supabase setup and Vercel environment variables guide.
+
+---
+
 ## Verification & Status
-- **Test Suite**: 26/26 Vitest tests passing across `engine.test.ts`, `lazyEvaluation.test.ts`, and `simulation.test.ts`.
-- **Build Status**: `npm run build` succeeds with zero errors across all 52 static routes.
-- **Next Prompt**: Prompt C (Supabase login, sign up, and cloud-saved progress).
+- **Test Suite**: 34/34 Vitest tests passing across `sync.test.ts`, `engine.test.ts`, `lazyEvaluation.test.ts`, and `simulation.test.ts`.
+- **Build Status**: Verified with Next.js production build.
+- **Next Prompt**: Prompt D (Optional features: DPP/PYQ tracker, weak-chapter heatmap, etc.).
+
 
