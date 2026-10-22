@@ -73,40 +73,51 @@ export default function SettingsPage() {
         const text = e.target?.result as string;
         const data = JSON.parse(text);
 
-        if (!data.xp_ledger || !data.chapter_progress) {
-          throw new Error('Invalid backup schema');
+        // 1. Validate Schema
+        const requiredTables = ['xp_ledger', 'mp_ledger', 'quest_logs', 'chapter_progress', 'settings'];
+        const isValid =
+          data &&
+          typeof data === 'object' &&
+          typeof data.version === 'number' &&
+          requiredTables.every((t) => Array.isArray(data[t]));
+
+        if (!isValid) {
+          throw new Error('Invalid or corrupted backup JSON file.');
+        }
+
+        // 2. Offer/trigger automatic safety copy of current database first
+        try {
+          await handleExportBackup();
+        } catch {
+          // Continue if auto-export fails
         }
 
         playSystemChime();
 
-        // Clear existing tables
-        await db.xp_ledger.clear();
-        await db.mp_ledger.clear();
-        await db.quest_logs.clear();
-        await db.focus_sessions.clear();
-        await db.chapter_progress.clear();
-        await db.grimoire.clear();
-        await db.srs_cards.clear();
-        await db.mock_results.clear();
-        await db.settings.clear();
+        // 3. Atomic Transaction: Clear and BulkAdd all tables in single rollback transaction
+        await db.transaction('rw', db.tables, async () => {
+          await Promise.all(db.tables.map((table) => table.clear()));
 
-        // Restore records
-        if (data.xp_ledger?.length) await db.xp_ledger.bulkAdd(data.xp_ledger);
-        if (data.mp_ledger?.length) await db.mp_ledger.bulkAdd(data.mp_ledger);
-        if (data.quest_logs?.length) await db.quest_logs.bulkAdd(data.quest_logs);
-        if (data.focus_sessions?.length) await db.focus_sessions.bulkAdd(data.focus_sessions);
-        if (data.chapter_progress?.length) await db.chapter_progress.bulkAdd(data.chapter_progress);
-        if (data.grimoire?.length) await db.grimoire.bulkAdd(data.grimoire);
-        if (data.srs_cards?.length) await db.srs_cards.bulkAdd(data.srs_cards);
-        if (data.mock_results?.length) await db.mock_results.bulkAdd(data.mock_results);
-        if (data.settings?.length) await db.settings.bulkAdd(data.settings);
+          if (data.xp_ledger?.length) await db.xp_ledger.bulkAdd(data.xp_ledger);
+          if (data.mp_ledger?.length) await db.mp_ledger.bulkAdd(data.mp_ledger);
+          if (data.quest_logs?.length) await db.quest_logs.bulkAdd(data.quest_logs);
+          if (data.focus_sessions?.length) await db.focus_sessions.bulkAdd(data.focus_sessions);
+          if (data.chapter_progress?.length) await db.chapter_progress.bulkAdd(data.chapter_progress);
+          if (data.grimoire?.length) await db.grimoire.bulkAdd(data.grimoire);
+          if (data.srs_cards?.length) await db.srs_cards.bulkAdd(data.srs_cards);
+          if (data.mock_results?.length) await db.mock_results.bulkAdd(data.mock_results);
+          if (data.settings?.length) await db.settings.bulkAdd(data.settings);
+          if (data.day_evaluations?.length) await db.day_evaluations.bulkAdd(data.day_evaluations);
+        });
 
-        setToastMessage('[ BACKUP RESTORED ] All Hunter data successfully imported!');
-      } catch (err) {
-        setToastMessage('[ ERROR ] Failed to parse or restore backup file.');
+        setToastMessage('[ BACKUP RESTORED ] All Hunter data safely imported with atomic rollback protection!');
+      } catch (err: any) {
+        setToastMessage(`[ IMPORT FAILED ] ${err.message || 'Validation error'}. Database was rolled back safely.`);
       }
     };
     reader.readAsText(file);
+    // Reset file input
+    event.target.value = '';
   };
 
   const handleResetDatabase = async () => {
