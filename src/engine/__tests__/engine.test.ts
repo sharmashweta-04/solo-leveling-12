@@ -179,5 +179,78 @@ describe('Solo Leveling Pure Engine Tests', () => {
       expect(result.isFailed).toBe(true);
       expect(result.emergencyLockoutTriggered).toBe(true);
     });
+
+    it('clears day per cleared_requires (>= 75% focus + physical + night review) even without optional quests', () => {
+      const quests = generateDailyQuests('2026-11-01', 1, 'normal');
+      // Focus blocks: 3 PHY, 2 CHEM, 3 BIO = 8 total. 6 blocks = 75%
+      const phy = quests.find((q) => q.quest_id === 'focus_physics')!;
+      const chem = quests.find((q) => q.quest_id === 'focus_chemistry')!;
+      const bio = quests.find((q) => q.quest_id === 'focus_biology')!;
+      const physical = quests.find((q) => q.quest_id === 'physical_quest')!;
+      const night = quests.find((q) => q.quest_id === 'night_review')!;
+
+      phy.completed_blocks = 3; // 3/3
+      chem.completed_blocks = 2; // 2/2
+      bio.completed_blocks = 1; // 1/3 -> total 6/8 = 75%
+      physical.is_completed = true;
+      night.is_completed = true;
+
+      const result = evaluateDay({
+        date: '2026-11-01',
+        questLogs: quests,
+        unspentMP: 0,
+        currentStreak: 2,
+        restTokenUsed: false,
+        missedDaysInLast7: 0
+      });
+
+      expect(result.isFailed).toBe(false);
+      expect(result.isAllClear).toBe(false);
+      expect(result.newStreak).toBe(3);
+      expect(result.xpEntries.some((e) => e.source === 'daily_penalty')).toBe(false);
+    });
+
+    it('deduplicates all-clear bonus when hasAllClearBonus is true', () => {
+      const quests = generateDailyQuests('2026-11-01', 1, 'normal');
+      quests.forEach((q) => (q.is_completed = true));
+
+      const result = evaluateDay({
+        date: '2026-11-01',
+        questLogs: quests,
+        unspentMP: 0,
+        currentStreak: 3,
+        restTokenUsed: false,
+        missedDaysInLast7: 0,
+        hasAllClearBonus: true // Already awarded today upon completion
+      });
+
+      expect(result.isAllClear).toBe(true);
+      expect(result.newStreak).toBe(4);
+      // No duplicate streak_bonus in xpEntries
+      expect(result.xpEntries.some((e) => e.source === 'streak_bonus')).toBe(false);
+    });
+  });
+
+  describe('Day Types Quest Configuration', () => {
+    it('generates raid day quests correctly (Day 7 raid_part)', () => {
+      const quests = generateDailyQuests('2026-11-07', 7, 'normal');
+      const phy = quests.find((q) => q.quest_id === 'focus_physics');
+      const chem = quests.find((q) => q.quest_id === 'focus_chemistry');
+      const bio = quests.find((q) => q.quest_id === 'focus_biology');
+      const raidQuest = quests.find((q) => q.quest_id === 'boss_raid');
+      const battleExercises = quests.filter((q) => q.quest_id.startsWith('battle_'));
+
+      expect(phy?.required_blocks).toBe(2);
+      expect(chem?.required_blocks).toBe(1);
+      expect(bio?.required_blocks).toBe(2);
+      expect(raidQuest).toBeDefined();
+      expect(battleExercises.length).toBe(0); // battle_exercise is false on raid days
+    });
+
+    it('respects zero-block subjects in easy mode (Day 45 final)', () => {
+      const quests = generateDailyQuests('2026-12-15', 45, 'easy');
+      const chem = quests.find((q) => q.quest_id === 'focus_chemistry');
+      expect(chem).toBeUndefined(); // CHEM is 0 on final day in easy mode
+    });
   });
 });

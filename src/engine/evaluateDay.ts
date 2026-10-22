@@ -9,6 +9,7 @@ export interface DayEvaluationInput {
   currentStreak: number;
   restTokenUsed: boolean;
   missedDaysInLast7: number;
+  hasAllClearBonus?: boolean;
 }
 
 export interface DayEvaluationResult {
@@ -26,9 +27,10 @@ export interface DayEvaluationResult {
 
 /**
  * Pure evaluation function for a completed game day.
+ * Implements game_rules.json day_result (cleared_requires, all_clear, streak, unspent_mp_conversion).
  */
 export function evaluateDay(input: DayEvaluationInput): DayEvaluationResult {
-  const { date, questLogs, unspentMP, currentStreak, restTokenUsed, missedDaysInLast7 } = input;
+  const { date, questLogs, unspentMP, currentStreak, restTokenUsed, missedDaysInLast7, hasAllClearBonus = false } = input;
   const now = new Date().toISOString();
 
   const xpEntries: XPLedgerEntry[] = [];
@@ -36,7 +38,6 @@ export function evaluateDay(input: DayEvaluationInput): DayEvaluationResult {
 
   // Case 1: Rest token used (Honours rest token, preserves streak, no penalty)
   if (restTokenUsed) {
-    // Convert unspent MP if any
     if (unspentMP > 0) {
       const conv = convertUnspentMPToXP(unspentMP);
       xpEntries.push({
@@ -69,26 +70,41 @@ export function evaluateDay(input: DayEvaluationInput): DayEvaluationResult {
     };
   }
 
-  // Check mandatory quests completion
-  // Mandatory quests: study blocks (physics, chemistry, biology) + physical_quest
-  const mandatoryQuests = questLogs.filter((q) =>
-    ['focus_physics', 'focus_chemistry', 'focus_biology', 'physical_quest'].includes(q.quest_id)
-  );
+  // Check cleared conditions from gameRules.day_result.cleared_requires
+  const reqRules = gameRules.day_result?.cleared_requires || {
+    focus_blocks_min_ratio: 0.75,
+    physical: true,
+    night_review: true
+  };
 
-  const allMandatoryCompleted = mandatoryQuests.length > 0 && mandatoryQuests.every((q) => q.is_completed);
-  const totalCompleted = questLogs.filter((q) => q.is_completed).length;
-  const isAllClear = questLogs.length > 0 && totalCompleted === questLogs.length;
+  const focusQuests = questLogs.filter((q) => q.quest_id.startsWith('focus_'));
+  const totalReqFocus = focusQuests.reduce((sum, q) => sum + q.required_blocks, 0);
+  const totalCompFocus = focusQuests.reduce(
+    (sum, q) => sum + (q.is_completed ? q.required_blocks : (q.completed_blocks || 0)),
+    0
+  );
+  const focusRatio = totalReqFocus === 0 ? 1 : totalCompFocus / totalReqFocus;
+  const focusPassed = focusRatio >= (reqRules.focus_blocks_min_ratio ?? 0.75);
+
+  const physicalQuest = questLogs.find((q) => q.quest_id === 'physical_quest');
+  const physicalPassed = reqRules.physical ? (physicalQuest ? physicalQuest.is_completed : true) : true;
+
+  const nightReviewQuest = questLogs.find((q) => q.quest_id === 'night_review');
+  const nightReviewPassed = reqRules.night_review ? (nightReviewQuest ? nightReviewQuest.is_completed : true) : true;
+
+  const isCleared = focusPassed && physicalPassed && nightReviewPassed;
+  const isAllClear = questLogs.length > 0 && questLogs.every((q) => q.is_completed);
 
   let newStreak = currentStreak;
   let isFailed = false;
   let emergencyLockoutTriggered = false;
 
-  if (allMandatoryCompleted) {
+  if (isCleared) {
     // Success: increase streak
     newStreak = currentStreak + 1;
 
-    // All clear bonus if every single quest was cleared
-    if (isAllClear) {
+    // All-clear bonus if every quest was completed and not already awarded during the day
+    if (isAllClear && !hasAllClearBonus) {
       xpEntries.push({
         date,
         amount: gameRules.quests.all_clear_bonus.xp,
@@ -123,7 +139,7 @@ export function evaluateDay(input: DayEvaluationInput): DayEvaluationResult {
     }
   }
 
-  // Convert unspent MP to XP
+  // Convert unspent MP to XP on every evaluated day (cleared, failed, or rest-token)
   if (unspentMP > 0) {
     const conv = convertUnspentMPToXP(unspentMP);
     xpEntries.push({
@@ -142,11 +158,13 @@ export function evaluateDay(input: DayEvaluationInput): DayEvaluationResult {
     });
   }
 
-  const summary = isAllClear
-    ? `[ ALL CLEAR ] Hunter cleared all daily quests! Streak: ${newStreak} days.`
-    : allMandatoryCompleted
-    ? `[ DAY CLEARED ] Mandatory quests completed. Streak: ${newStreak} days.`
-    : `[ SYSTEM PENALTY ] Incomplete daily quest. Penalty: ${gameRules.penalties.failed_daily_quest_xp} XP applied. Streak reset to 0.`;
+  const summary = isCleared
+    ? isAllClear
+      ? `[ SYSTEM UPDATE ] Day ${date}: ALL-CLEAR! Streak extended to ${newStreak} days.`
+      : `[ SYSTEM UPDATE ] Day ${date}: CLEARED! Streak extended to ${newStreak} days.`
+    : `[ PENALTY ZONE ] Day ${date}: FAILED. -150 XP penalty. Streak reset to 0.${
+        emergencyLockoutTriggered ? ' EMERGENCY LOCKOUT TRIGGERED!' : ''
+      }`;
 
   return {
     date,

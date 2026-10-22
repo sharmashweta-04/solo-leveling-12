@@ -12,6 +12,7 @@ import { awardMP } from '@/src/engine/mana';
 import { runLazyEvaluation } from '@/src/engine/lazyEvaluation';
 import { QuestLog, DayPlan, DifficultyMode } from '@/src/types';
 import systemMessages from '@/config/system_messages.json';
+import gameRules from '@/config/game_rules.json';
 
 export interface HunterStats {
   INT: number;
@@ -160,8 +161,39 @@ export function useGameState() {
       });
     }
 
+    // Check if ALL quests for today are now completed -> Award all-clear bonus immediately
+    let bonusXP = 0;
+    const allTodayQuests = await db.quest_logs.where({ date: gameDate }).toArray();
+    const isAllClearNow = allTodayQuests.length > 0 && allTodayQuests.every((q) => q.is_completed);
+
+    if (isAllClearNow) {
+      const existingAllClear = await db.xp_ledger.where({ date: gameDate, source: 'streak_bonus' }).first();
+      if (!existingAllClear) {
+        bonusXP = awardXP(gameRules.quests.all_clear_bonus.xp, rankInfo.multiplier, streak);
+        const bonusMP = gameRules.quests.all_clear_bonus.mp;
+
+        await db.xp_ledger.add({
+          date: gameDate,
+          amount: bonusXP,
+          source: 'streak_bonus',
+          reason: 'Daily All-Clear Bonus',
+          created_at: now
+        });
+
+        if (bonusMP > 0) {
+          await db.mp_ledger.add({
+            date: gameDate,
+            amount: bonusMP,
+            source: 'quest',
+            description: 'Daily All-Clear MP Bonus',
+            created_at: now
+          });
+        }
+      }
+    }
+
     // Check level up and rank up
-    const newTotalXP = totalXP + awardedXp;
+    const newTotalXP = totalXP + awardedXp + bonusXP;
     const newLevel = computeLevel(newTotalXP);
     const newRank = computeRank(newTotalXP);
 
@@ -173,9 +205,13 @@ export function useGameState() {
     }
 
     // System toast message from config/system_messages.json
-    const toast = systemMessages.quest_complete
+    let toast = systemMessages.quest_complete
       .replace('{xp}', String(awardedXp))
       .replace('{mp}', String(mpRes.awarded));
+
+    if (bonusXP > 0) {
+      toast += ` | [ ALL-CLEAR BONUS ] +${bonusXP} XP & +${gameRules.quests.all_clear_bonus.mp} MP!`;
+    }
     setToastMessage(toast);
 
     await refreshState();

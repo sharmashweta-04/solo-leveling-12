@@ -99,14 +99,19 @@ export async function runLazyEvaluation(
 
     const failedInLast7 = past7Evaluations.filter((e) => e.status === 'failed').length;
 
-    // 6. Run pure evaluation
+    // 6. Check if all-clear bonus was already awarded
+    const dayXpEntries = await targetDb.xp_ledger.where({ date: dayStr }).toArray();
+    const hasAllClearBonus = dayXpEntries.some((e) => e.source === 'streak_bonus');
+
+    // 7. Run pure evaluation
     const evalResult = evaluateDay({
       date: dayStr,
       questLogs: quests,
       unspentMP: Math.max(0, dayMpNet),
       currentStreak,
       restTokenUsed,
-      missedDaysInLast7: failedInLast7
+      missedDaysInLast7: failedInLast7,
+      hasAllClearBonus
     });
 
     // 7. Write ledger entries

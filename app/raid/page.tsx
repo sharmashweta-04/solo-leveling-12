@@ -10,10 +10,16 @@ import gameRules from '@/config/game_rules.json';
 import systemMessages from '@/config/system_messages.json';
 import Toast from '@/src/components/Toast';
 import Link from 'next/link';
-
-const RAID_DURATION_SECONDS = gameRules.raid.duration_minutes * 60; // 3 hours = 10800s
+import planConfig from '@/config/plan_45days.json';
 
 export default function BossRaidPage() {
+  const today = currentGameDay();
+  const dayNum = getPlanDayNumber(today);
+  const planDay = planConfig.days.find((d) => d.day === Math.max(1, dayNum));
+  const dayType = (planDay?.day_type || 'raid_full') as keyof typeof gameRules.day_types;
+  const dayTypeConfig = gameRules.day_types[dayType];
+  const raidMinutes = (dayTypeConfig && 'raid_minutes' in dayTypeConfig) ? (dayTypeConfig as any).raid_minutes : 180;
+  const RAID_DURATION_SECONDS = raidMinutes * 60;
   const [isActive, setIsActive] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -31,8 +37,6 @@ export default function BossRaidPage() {
   const [notes, setNotes] = useState<string>('');
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const today = currentGameDay();
-  const dayNum = getPlanDayNumber(today);
 
   // Load past mocks & restore active session
   useEffect(() => {
@@ -129,6 +133,16 @@ export default function BossRaidPage() {
 
     // Clear emergency lockout if active
     await db.settings.put({ key: 'emergency_lockout_active', value: false });
+
+    // Mark boss_raid quest complete if present in daily quests
+    const raidQuest = await db.quest_logs.where({ date: today, quest_id: 'boss_raid' }).first();
+    if (raidQuest && !raidQuest.is_completed) {
+      await db.quest_logs.update(raidQuest.id!, {
+        is_completed: true,
+        completed_blocks: 1,
+        completed_at: nowIso
+      });
+    }
 
     const clearMsg = systemMessages.raid_clear.replace('{minutes}', String(leisureMins));
     setToastMessage(`${clearMsg} +${raidXp} XP awarded!`);
