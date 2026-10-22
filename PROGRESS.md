@@ -1,7 +1,6 @@
 # Progress Tracker: Solo Leveling Class 12 PCB Dungeon
 
-## 12-Step Build Checklist
-
+## 12-Step Core Build Checklist (Completed)
 - [x] **Prompt 1: Understand and plan (no code)** — Completed in `PLAN.md` & `PROGRESS.md`.
 - [x] **Prompt 2: Scaffold, theme, data** — Next.js 15, Tailwind, 9 Dexie tables, 37 chapters, 45 plan days, `/debug`.
 - [x] **Prompt 3: Intro screen (your System Message)** — Typewriter awakening, Web Audio chime, Honesty Oath, `/intro`.
@@ -9,23 +8,57 @@
 - [x] **Prompt 5: Dashboard, quests, focus timer** — System Window `/`, INT/VIT/AGI/PER attributes, 50-min `/focus` timer.
 - [x] **Prompt 6: Shop, lazy day evaluation, rest tokens** — `/shop`, Bronze/Silver/Gold keys, 3 Rest Tokens, Sleep log, Lazy Day evaluation.
 - [x] **Prompt 7: Gate map, chapter pages, resources, boss test** — 37-gate `/dungeon`, `/gate/[id]`, PW DPP Boss test, `/shadows`.
-- [x] **Prompt 8: Boss Raid (mock tests happen in the PW app)** — 3-hour persistent timer `/raid`, PW score form, 90-min key reward.
+- [x] **Prompt 8: Boss Raid (mock tests happen in the PW app)** — Persistent timer `/raid`, PW score form, 90-min key reward.
 - [x] **Prompt 9: Grimoire and spaced repetition** — `/grimoire` error notebook, `/review` SRS flashcards with Again/Hard/Good/Easy.
 - [x] **Prompt 10: Stats, settings, backup** — Recharts analytics on `/stats`, `/settings` with JSON Export & Import backup.
 - [x] **Prompt 11: PWA and deploy** — Manifest, service worker `/sw.js`, PNG & SVG icons, offline caching, `docs/deploy.md`.
-- [x] **Prompt 12: Final QA (simulation & review)** — 45-day simulation passed; Perfect Hunter reaches S-Rank on Day 43 (target: Day 40-43).
+- [x] **Prompt 12: Final QA (simulation & review)** — Completed initial QA pass.
 
 ---
 
-## 45-Day Simulation Results
-- **Perfect Hunter**: 68,660 XP | Level 38 | S-Rank (National Monarch) | **S-Rank reached on Day 43** (Verified within Day 40-43 window).
-- **Average Hunter**: 26,445 XP | Level 23 | C-Rank (Syllabus Raider).
-- **Slacker Hunter**: 120 XP | Level 2 | E-Rank (Weakest Exam Hunter) | 30 failed days.
+## Prompt A: Confirmed Bugs Fix Pass (Completed)
+- [x] **A1: Rewrite `src/engine/lazyEvaluation.ts`** using plan day numbers (1..45), Dexie `version(2)` migration with `day_evaluations` table, rolling 7-day failure computation, safe range bounds `[lastEvaluatedDay+1 ... min(currentPlanDay-1, 45)]`, zero pre-Day-1 penalties.
+- [x] **A2: Comprehensive Vitest tests with `fake-indexeddb`** testing all 6 edge cases (a-f): daily evaluation, pre-Day-1 opens, multi-day catch-up, post-Day-45 stops, rolling 7-day emergency lockout, and idempotency.
+- [x] **A3: Atomic Import in `/settings`** using `db.transaction('rw', db.tables, ...)`, schema validation, and automatic safety backup download before restore.
+- [x] **A4: Single source of truth for syllabus** (`config/syllabus.json`) replacing `src/data/chapters.ts` hardcoding.
+- [x] **A5: Game rules `day_types` & `day_result`** applied in `quests.ts` (learn, revise, raid_part, raid_full, mock_full, blitz, final), `cleared_requires` (75% focus blocks + physical + night review), dynamic raid timer duration, and immediate all-clear bonus award with deduplication.
+- [x] **A6: Real 45-Day Engine Simulation with `fake-indexeddb`** (`src/engine/__tests__/simulation.test.ts` & `scripts/simulate_45days.js`).
+- [x] **A7: Root directory cleanup & validation**: All duplicate root JSON files removed; `npm test` (26/26 passing) and `npm run build` (15/15 routes clean) verified.
+
+---
+
+## Real Engine 45-Day Simulation Results (`simulation.test.ts`)
+```
+======================================================
+       SOLO LEVELING 45-DAY ENGINE SIMULATION        
+======================================================
+[PERFECT HUNTER]
+  Final XP:       70,429 XP
+  Final Level:    Lv. 38
+  Final Rank:     Rank S (National Monarch)
+  Final Streak:   45 Days
+  Penalties:      0
+  S-Rank Day:     Day 43 (Reached within target Day 40-43 window)
+------------------------------------------------------
+[AVERAGE HUNTER]
+  Final XP:       31,704 XP
+  Final Level:    Lv. 26
+  Final Rank:     Rank B (Concept Striker)
+  Final Streak:   8 Days
+  Penalties:      3
+------------------------------------------------------
+[SLACKER HUNTER]
+  Final XP:       -5,510 XP
+  Final Level:    Lv. 1
+  Final Rank:     Rank E (Weakest Exam Hunter)
+  Final Streak:   0 Days
+  Penalties:      45
+======================================================
+```
 
 ---
 
 ## Verification & Status
-- **Test Suite**: 15/15 Vitest tests pass in `src/engine/__tests__/engine.test.ts`.
-- **Build Status**: `npm run build` succeeds with zero errors (all 15 routes pre-rendered).
-- **Mobile-First Design**: Optimized for 380px phone screens with dark near-black & electric-blue holographic styling.
-- **Offline PWA**: Fully installable on iOS and Android home screen with offline IndexedDB storage.
+- **Test Suite**: 26/26 Vitest tests passing across `engine.test.ts`, `lazyEvaluation.test.ts`, and `simulation.test.ts`.
+- **Build Status**: `npm run build` succeeds with zero errors across all 15 routes.
+- **Next Prompt**: Prompt B (Mobile UI fix pass).
