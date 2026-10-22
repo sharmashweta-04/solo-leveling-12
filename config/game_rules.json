@@ -39,8 +39,9 @@
   ],
   "day": {
     "reset_time": "05:00",
-    "expire_time": "23:59",
-    "timezone": "Asia/Kolkata"
+    "expire_time": "04:59",
+    "timezone": "Asia/Kolkata",
+    "_note": "Day closes at 05:00 IST. Logging stays open until 04:59 so late sessions are not lost. Evaluation of day N happens on first app open after 05:00 of day N+1."
   },
   "modes": {
     "normal": {
@@ -146,7 +147,12 @@
     "pass_percent": 75,
     "source": "self-reported score from PW DPP / chapter test (20 questions)"
   },
-  "srs_intervals_days": [1, 3, 7, 14],
+  "srs_intervals_days": [
+    1,
+    3,
+    7,
+    14
+  ],
   "raid_bonus_xp": 500,
   "level": {
     "formula": "level = floor(sqrt(total_xp / base)) + 1",
@@ -155,7 +161,7 @@
   },
   "raid": {
     "source": "PW app",
-    "duration_minutes": 180,
+    "duration_minutes": "by day_type (see day_types)",
     "fields": [
       "total_marks",
       "attempted",
@@ -167,5 +173,151 @@
       "time_taken_minutes",
       "notes"
     ]
-  }
+  },
+  "day_types": {
+    "learn": {
+      "normal": {
+        "PHY": 3,
+        "CHEM": 2,
+        "BIO": 3
+      },
+      "easy": {
+        "PHY": 2,
+        "CHEM": 2,
+        "BIO": 2
+      },
+      "battle_exercise": true
+    },
+    "revise": {
+      "normal": {
+        "PHY": 3,
+        "CHEM": 2,
+        "BIO": 3
+      },
+      "easy": {
+        "PHY": 2,
+        "CHEM": 2,
+        "BIO": 2
+      },
+      "battle_exercise": true
+    },
+    "raid_part": {
+      "normal": {
+        "PHY": 2,
+        "CHEM": 1,
+        "BIO": 2
+      },
+      "easy": {
+        "PHY": 1,
+        "CHEM": 1,
+        "BIO": 2
+      },
+      "battle_exercise": false,
+      "raid_minutes": 90,
+      "note": "Part test on chapters covered so far; the raid counts as the Battle Exercise for all subjects"
+    },
+    "raid_full": {
+      "normal": {
+        "PHY": 1,
+        "CHEM": 1,
+        "BIO": 1
+      },
+      "easy": {
+        "PHY": 1,
+        "CHEM": 1,
+        "BIO": 1
+      },
+      "battle_exercise": false,
+      "raid_minutes": 180
+    },
+    "mock_full": {
+      "normal": {
+        "PHY": 1,
+        "CHEM": 1,
+        "BIO": 1
+      },
+      "easy": {
+        "PHY": 1,
+        "CHEM": 1,
+        "BIO": 1
+      },
+      "battle_exercise": false,
+      "raid_minutes": 180
+    },
+    "analysis": {
+      "normal": {
+        "PHY": 2,
+        "CHEM": 2,
+        "BIO": 2
+      },
+      "easy": {
+        "PHY": 2,
+        "CHEM": 1,
+        "BIO": 1
+      },
+      "battle_exercise": true
+    },
+    "blitz": {
+      "normal": {
+        "PHY": 1,
+        "CHEM": 1,
+        "BIO": 2
+      },
+      "easy": {
+        "PHY": 1,
+        "CHEM": 1,
+        "BIO": 1
+      },
+      "battle_exercise": false
+    },
+    "final": {
+      "normal": {
+        "PHY": 1,
+        "CHEM": 1,
+        "BIO": 1
+      },
+      "easy": {
+        "PHY": 1,
+        "CHEM": 0,
+        "BIO": 1
+      },
+      "battle_exercise": false
+    }
+  },
+  "day_result": {
+    "cleared_requires": {
+      "focus_blocks_min_ratio": 0.75,
+      "physical": true,
+      "night_review": true
+    },
+    "all_clear": "every required quest for the day is complete",
+    "failed": "not cleared -> failed_daily_quest penalty, streak resets",
+    "streak_counts": "consecutive CLEARED days (all-clear adds the bonus XP)",
+    "rewards_timing": "XP/MP and the all-clear bonus are awarded immediately when the quest completes; evaluateDay only verifies, dedupes, converts unspent MP and applies penalties",
+    "unspent_mp_conversion": "on every evaluated day, cleared, failed or rest-token"
+  },
+  "rest_token_rules": {
+    "use": "manual button on the Quests page, current day only, before the day closes",
+    "effect": "waives penalty, keeps streak, no all-clear bonus"
+  },
+  "shadow_cleaning": {
+    "implementation": "settings.mp_blocked_game_day = next day number (NOT a ledger debit)"
+  },
+  "sleep": {
+    "rule": "Sleep logged on the morning of day D describes the night before and counts toward day D"
+  },
+  "stats": {
+    "INT": "+1 per valid focus block",
+    "AGI": "+1 per battle exercise (or raid counted as all three), +1 per 10 correct in a mock",
+    "VIT": "+1 per physical quest, +1 per sleep >= 7h",
+    "PER": "+1 per focus block with 0 interruptions, +1 per Grimoire Review day",
+    "display": "value = 10 + points; radar scaled to percent of maximum possible so far"
+  },
+  "review_tasks": {
+    "note": "Boss-test pass schedules chapter REVIEW TASKS (re-read notes + redo 5 questions) at D+1/3/7/14. SRS flashcards come only from Grimoire entries because there is no question bank."
+  },
+  "bypass": {
+    "note": "Local app cannot detect unlocking; Shop has a 'Report bypass' button for honest self-reporting"
+  },
+  "_ranks_note": "Thresholds recalibrated in the Antigravity build (S-Rank on Day 43 for a perfect player). Do not revert."
 }

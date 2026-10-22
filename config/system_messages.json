@@ -26,5 +26,15 @@
   "shadow": "[ ARISE ] Shadow extracted: {chapter}. Shadows: {count} / 37.",
   "raid_start": "[ SYSTEM ] Boss Raid initiated. Duration: 3 hours. Do not retreat.",
   "raid_clear": "[ SYSTEM ] Raid complete. Reward: Monarch's Leisure Gate ({minutes} min).",
-  "final_day": "[ SYSTEM ] Day 45. The Monarch's Eve. Rest well, Player."
+  "final_day": "[ SYSTEM ] Day 45. The Monarch's Eve. Rest well, Player.",
+  "auth": {
+    "login_header": "[ SYSTEM ] Identify yourself, Player.",
+    "signup_header": "[ SYSTEM ] Register as a new Player.",
+    "signup_done": "[ SYSTEM ] Registration complete. Check your email to verify, then log in.",
+    "login_ok": "[ SYSTEM ] Welcome back, Player. Level {level}. Your progress has been restored.",
+    "synced": "[ SYSTEM ] Progress saved to the cloud.",
+    "offline": "[ SYSTEM ] Offline. Progress is saved on this device and will sync when you reconnect.",
+    "conflict": "[ SYSTEM ] Two different saves were found. Choose which one to keep.",
+    "guest_warning": "[ WARNING ] Guest progress lives only on this device and can be lost. Create an account to keep it safe."
+  }
 }
