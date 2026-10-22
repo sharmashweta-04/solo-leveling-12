@@ -14,6 +14,26 @@ function AuthGuardWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
+  const [effectsMode, setEffectsMode] = React.useState<'full' | 'lite' | 'off'>('full');
+
+  React.useEffect(() => {
+    const updateEff = () => {
+      try {
+        const stored = localStorage.getItem('solo_visual_effects') as 'full' | 'lite' | 'off' | null;
+        if (stored) {
+          setEffectsMode(stored);
+        } else if (typeof navigator !== 'undefined' && navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) {
+          setEffectsMode('lite');
+        }
+      } catch {
+        // Ignore
+      }
+    };
+    updateEff();
+    window.addEventListener('solo_effects_changed', updateEff);
+    return () => window.removeEventListener('solo_effects_changed', updateEff);
+  }, []);
+
   const isLoginPage = pathname === '/login';
 
   useEffect(() => {
@@ -34,9 +54,11 @@ function AuthGuardWrapper({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <div className="fixed inset-0 pointer-events-none -z-10">
-        <HudBackground />
-      </div>
+      {effectsMode !== 'off' && (
+        <div className="fixed inset-0 pointer-events-none -z-10">
+          <HudBackground lite={effectsMode === 'lite'} />
+        </div>
+      )}
       <OpeningCut />
       {children}
       <ConflictModal />

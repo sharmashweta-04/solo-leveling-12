@@ -29,6 +29,7 @@ export default function SettingsPage() {
   const [mode, setMode] = useState<DifficultyMode>('normal');
   const [startDate, setStartDate] = useState('2026-11-01');
   const [soundOn, setSoundOn] = useState(true);
+  const [effectsMode, setEffectsMode] = useState<'full' | 'lite' | 'off'>('full');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [showRules, setShowRules] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
@@ -46,6 +47,14 @@ export default function SettingsPage() {
       const startSetting = await db.settings.get('start_date');
       if (startSetting) setStartDate(startSetting.value);
       setSoundOn(isSoundEnabled());
+
+      const effSetting = await db.settings.get('visual_effects');
+      if (effSetting) {
+        setEffectsMode(effSetting.value as 'full' | 'lite' | 'off');
+      } else {
+        const isLowEnd = typeof navigator !== 'undefined' && navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
+        setEffectsMode(isLowEnd ? 'lite' : 'full');
+      }
     }
     load();
   }, []);
@@ -56,6 +65,17 @@ export default function SettingsPage() {
     setSoundEnabled(nextVal);
     if (nextVal) playSystemChime();
     setToastMessage(`[ SYSTEM ] Audio feedback ${nextVal ? 'ACTIVATED' : 'MUTED'}.`);
+  };
+
+  const handleToggleEffects = async (newEff: 'full' | 'lite' | 'off') => {
+    playSystemChime();
+    setEffectsMode(newEff);
+    await db.settings.put({ key: 'visual_effects', value: newEff });
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('solo_visual_effects', newEff);
+      window.dispatchEvent(new Event('solo_effects_changed'));
+    }
+    setToastMessage(`[ SYSTEM ] Visual effects set to ${newEff.toUpperCase()}.`);
   };
 
   const handleToggleMode = async (newMode: DifficultyMode) => {
@@ -333,7 +353,7 @@ export default function SettingsPage() {
         <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5 flex justify-between items-center">
           <div>
             <div className="font-bold text-hunter-100 text-xs">[ SYSTEM AUDIO EFFECTS ]</div>
-            <p className="text-xs text-hunter-400 mt-0.5">Holographic chimes for quest completion and level ups.</p>
+            <p className="text-xs text-hunter-400 mt-0.5">Synthesized digital chimes for quest completion and level ups.</p>
           </div>
           <button
             type="button"
@@ -346,6 +366,49 @@ export default function SettingsPage() {
           >
             {soundOn ? 'SOUND ON 🔊' : 'MUTED 🔇'}
           </button>
+        </div>
+
+        {/* Visual Effects (HUD Particle Field) */}
+        <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5 space-y-2">
+          <div>
+            <div className="font-bold text-hunter-100 text-xs">[ VISUAL EFFECTS: HUD PARTICLES ]</div>
+            <p className="text-xs text-hunter-400 mt-0.5">Control 60fps canvas particles, holographic grid, and energy waves.</p>
+          </div>
+          <div className="grid grid-cols-3 gap-2 pt-1">
+            <button
+              type="button"
+              onClick={() => handleToggleEffects('full')}
+              className={`min-h-[44px] rounded font-bold border transition-all text-xs tracking-wider uppercase flex items-center justify-center ${
+                effectsMode === 'full'
+                  ? 'border-cyan-400 bg-cyan-950/60 text-cyan-300 shadow-[0_0_10px_rgba(0,255,255,0.4)]'
+                  : 'border-slate-800 bg-slate-950 text-slate-400'
+              }`}
+            >
+              FULL ✨
+            </button>
+            <button
+              type="button"
+              onClick={() => handleToggleEffects('lite')}
+              className={`min-h-[44px] rounded font-bold border transition-all text-xs tracking-wider uppercase flex items-center justify-center ${
+                effectsMode === 'lite'
+                  ? 'border-cyan-400 bg-cyan-950/60 text-cyan-300 shadow-[0_0_10px_rgba(0,255,255,0.4)]'
+                  : 'border-slate-800 bg-slate-950 text-slate-400'
+              }`}
+            >
+              LITE ⚡
+            </button>
+            <button
+              type="button"
+              onClick={() => handleToggleEffects('off')}
+              className={`min-h-[44px] rounded font-bold border transition-all text-xs tracking-wider uppercase flex items-center justify-center ${
+                effectsMode === 'off'
+                  ? 'border-slate-600 bg-slate-800 text-white shadow'
+                  : 'border-slate-800 bg-slate-950 text-slate-400'
+              }`}
+            >
+              OFF 🛑
+            </button>
+          </div>
         </div>
 
         {/* Difficulty Mode Selection */}

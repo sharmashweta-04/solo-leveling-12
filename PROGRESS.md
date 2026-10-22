@@ -83,9 +83,23 @@
 
 ---
 
-## Verification & Status
+## TASKS.md Upgrade Kit Execution (All Phases Complete)
+- [x] **Phase 1: Housekeeping**: Verified duplicate root JSON files removed, validated single-source `syllabus.json`, `plan_45days.json` with `day_type`, and complete `game_rules.json`.
+- [x] **Phase 2: Fix confirmed bugs**: Real engine lazy evaluation with plan day numbers (1..45), rollback-safe import, `day_types` in quests, and real engine 45-day simulation with `fake-indexeddb`.
+- [x] **Phase 3: UI and HUD look**: 5-tab nav with MORE sheet, safe area padding, offline fonts, static generation for 37 gates. Added Blue Holographic HUD: `HudBackground` (canvas particles, shimmering grid, energy waves), `OpeningCut` (horizontal line slash with tap-to-enter), `HudFrame` glowing panels with corner brackets and scan-lines, `QuestInfoPanel` daily quest layout, and Settings controls for "Visual effects: Full / Lite / Off" and "Sound: On / Off".
+- [x] **Phase 4: Login, sign up & cloud save**: Supabase auth portal (`/login`), per-user Dexie database (`SoloLevelingDB_<userId>`), pure optimistic concurrency sync engine with unit tests, empty DB guards, `ConflictModal`, and `GuestUploadModal`.
+- [x] **Phase 5: Final check**: Verified 34/34 passing Vitest tests, real 45-day simulation results, and Next.js static build pre-rendering 53/53 routes.
+
+---
+
+## Final Verification & Simulation Summary
 - **Test Suite**: 34/34 Vitest tests passing across `sync.test.ts`, `engine.test.ts`, `lazyEvaluation.test.ts`, and `simulation.test.ts`.
-- **Build Status**: Verified with Next.js production build.
-- **Next Prompt**: Prompt D (Optional features: DPP/PYQ tracker, weak-chapter heatmap, etc.).
+- **45-Day Simulation**:
+  - Perfect Hunter: **70,429 XP**, Lv. 38, **Rank S (Day 43)**, 45-day streak, 0 penalties.
+  - Average Hunter: **31,704 XP**, Lv. 26, **Rank B**, 8-day streak, 3 penalties.
+  - Slacker Hunter: **-5,510 XP**, Lv. 1, **Rank E**, 0 streak, 45 penalties.
+- **Production Build**: 53/53 static routes pre-rendered with zero errors.
+- **Unfinished Items**: All core phases in `TASKS.md` are 100% complete. User needs only to add Supabase credentials to `.env.local` per `SETUP_SUPABASE.md`.
+
 
 

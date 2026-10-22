@@ -36,3 +36,17 @@ Supabase or any backend, push notifications, Android companion app, Guild Master
 
 ## Definition of done for each task
 Runs without console errors, works at 380px width, has tests where applicable, and I can see the result in the browser.
+
+## Corrections after PLAN.md review
+- Chapters and topics come from `config/syllabus.json`. Do NOT parse `docs/syllabus_*.md` (no line breaks).
+- Day quotas come from `plan.day_type` plus `game_rules.day_types`. Never use one fixed block count for every day.
+- Dexie and all browser APIs must run client-side only (`'use client'`, guard `typeof window`). Static content (plan, syllabus, resources) is read from config at runtime; the seed only creates progress rows and must never overwrite progress.
+- Dynamic route `gate/[id]` needs `generateStaticParams` for the 37 ids if using static export.
+- Intro screen starts with a "TAP TO ENTER THE SYSTEM" gate so audio is allowed by the browser.
+
+## Upgrade kit rules (added later)
+- Work through TASKS.md in order without asking me questions. Use the defaults written there.
+- After each phase: run `npm test` and `npm run build`, fix errors, `git commit`, tick PROGRESS.md.
+- HUD look: use src/components/hud/* (HudBackground, HudFrame, QuestInfoPanel, OpeningCut) and src/utils/systemAudio.ts.
+- Login/cloud save: Supabase (free), snapshot sync with optimistic concurrency, per-user Dexie database. Never put a service_role key in the app.
+- If the free quota runs out, stop and write the exact next step in PROGRESS.md so I can say "continue".
