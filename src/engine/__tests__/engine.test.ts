@@ -69,17 +69,17 @@ describe('Solo Leveling Pure Engine Tests', () => {
   describe('Rank Engine (rank.ts)', () => {
     it('computes correct ranks for boundary XP values', () => {
       expect(computeRank(0).rank).toBe('E');
-      expect(computeRank(2500).rank).toBe('E');
-      expect(computeRank(2501).rank).toBe('D');
-      expect(computeRank(7000).rank).toBe('D');
-      expect(computeRank(7001).rank).toBe('C');
-      expect(computeRank(13000).rank).toBe('C');
-      expect(computeRank(13001).rank).toBe('B');
-      expect(computeRank(20000).rank).toBe('B');
-      expect(computeRank(20001).rank).toBe('A');
-      expect(computeRank(28000).rank).toBe('A');
-      expect(computeRank(28001).rank).toBe('S');
-      expect(computeRank(50000).rank).toBe('S');
+      expect(computeRank(5000).rank).toBe('E');
+      expect(computeRank(5001).rank).toBe('D');
+      expect(computeRank(15000).rank).toBe('D');
+      expect(computeRank(15001).rank).toBe('C');
+      expect(computeRank(30000).rank).toBe('C');
+      expect(computeRank(30001).rank).toBe('B');
+      expect(computeRank(48000).rank).toBe('B');
+      expect(computeRank(48001).rank).toBe('A');
+      expect(computeRank(65000).rank).toBe('A');
+      expect(computeRank(65001).rank).toBe('S');
+      expect(computeRank(100000).rank).toBe('S');
     });
   });
 

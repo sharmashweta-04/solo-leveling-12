@@ -8,31 +8,31 @@
     },
     {
       "rank": "D",
-      "min_xp": 2501,
+      "min_xp": 5001,
       "title": "Awakened Aspirant",
       "multiplier": 1.0
     },
     {
       "rank": "C",
-      "min_xp": 7001,
+      "min_xp": 15001,
       "title": "Syllabus Raider",
       "multiplier": 1.05
     },
     {
       "rank": "B",
-      "min_xp": 13001,
+      "min_xp": 30001,
       "title": "Concept Striker",
       "multiplier": 1.1
     },
     {
       "rank": "A",
-      "min_xp": 20001,
+      "min_xp": 48001,
       "title": "Board Exam Elite",
       "multiplier": 1.15
     },
     {
       "rank": "S",
-      "min_xp": 28001,
+      "min_xp": 65001,
       "title": "National Monarch",
       "multiplier": 1.2
     }
