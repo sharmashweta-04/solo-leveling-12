@@ -1,10 +1,11 @@
-const CACHE_NAME = 'solo-leveling-v1';
+const CACHE_NAME = 'solo-leveling-v2';
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
   '/icons/icon.svg',
+  '/media/bg_globe.webp',
   '/focus',
   '/dungeon',
   '/shop',
@@ -35,48 +36,56 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
 self.addEventListener('fetch', (event) => {
-  // Only handle GET requests
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
-  
-  // Do NOT intercept or cache /media/ video files (Safari requires HTTP Range requests)
-  if (url.pathname.startsWith('/media/')) {
+
+  // Do NOT intercept video streams (Safari & iOS need HTTP 206 Partial Content range requests)
+  if (url.pathname.endsWith('.webm') || url.pathname.endsWith('.mp4')) {
     return;
   }
 
-  // If navigating to a page, use network-first with cache fallback
+  // Navigation (HTML pages): Network-first with offline cache fallback
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request).catch(() => {
-        return caches.match(event.request).then((response) => {
-          return response || caches.match('/');
-        });
-      })
+      fetch(event.request)
+        .then((response) => {
+          if (response && response.status === 200) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+          }
+          return response;
+        })
+        .catch(async () => {
+          const cached = await caches.match(event.request);
+          return cached || caches.match('/');
+        })
     );
     return;
   }
 
-  // For static assets, cache-first strategy
+  // Static Assets (_next/static, icons, images): Stale-While-Revalidate
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).then((networkResponse) => {
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+      const fetchPromise = fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
+          }
           return networkResponse;
-        }
-        const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
-        });
-        return networkResponse;
-      }).catch(() => {
-        // Fallback
-        return caches.match('/');
-      });
+        })
+        .catch(() => cachedResponse);
+
+      return cachedResponse || fetchPromise;
     })
   );
 });
+

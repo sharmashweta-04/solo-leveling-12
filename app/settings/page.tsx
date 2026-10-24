@@ -42,6 +42,10 @@ export default function SettingsPage() {
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [syncingNow, setSyncingNow] = useState(false);
 
+  // PWA standalone detection
+  const [isStandalone, setIsStandalone] = useState(false);
+  const [showInstallGuide, setShowInstallGuide] = useState(false);
+
   useEffect(() => {
     async function load() {
       const modeSetting = await db.settings.get('difficulty_mode');
@@ -64,9 +68,29 @@ export default function SettingsPage() {
         const isLowEnd = typeof navigator !== 'undefined' && navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
         setEffectsMode(isLowEnd ? 'lite' : 'full');
       }
+
+      if (typeof window !== 'undefined') {
+        const isApp = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as unknown as { standalone?: boolean }).standalone;
+        setIsStandalone(Boolean(isApp));
+      }
     }
     load();
   }, []);
+
+  const handleInstallClick = async () => {
+    playSystemChime();
+    const promptEvent = (window as unknown as { __pwaInstallPrompt?: { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> } }).__pwaInstallPrompt;
+    if (promptEvent) {
+      await promptEvent.prompt();
+      const res = await promptEvent.userChoice;
+      if (res.outcome === 'accepted') {
+        setIsStandalone(true);
+        setToastMessage('[ SYSTEM ] Application successfully installed on device!');
+      }
+    } else {
+      setShowInstallGuide(!showInstallGuide);
+    }
+  };
 
   const handleToggleSound = () => {
     const nextVal = !soundOn;
@@ -526,6 +550,44 @@ export default function SettingsPage() {
                 AWAKENING 📜
               </Link>
             </div>
+          </div>
+        </HudFrame>
+
+        {/* PWA Mobile App Installation */}
+        <HudFrame title="PWA APPLICATION INSTALL" icon="📱" delay={220}>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-xs text-slate-200">
+                  {isStandalone
+                    ? 'Status: System running in Standalone App Mode.'
+                    : 'Install app to home screen for offline access & full-screen UI.'}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleInstallClick}
+                className={`min-h-[44px] px-3.5 font-bold border transition-all text-xs tracking-wider uppercase flex items-center justify-center whitespace-nowrap ${
+                  isStandalone
+                    ? 'border-emerald-400 bg-emerald-950/60 text-emerald-300'
+                    : 'border-cyan-300 bg-cyan-950/70 text-cyan-200 shadow-[0_0_12px_rgba(92,200,255,0.4)]'
+                }`}
+                style={{ fontFamily: 'var(--font-cinzel)' }}
+              >
+                {isStandalone ? 'INSTALLED ✅' : 'INSTALL APP 📱'}
+              </button>
+            </div>
+
+            {showInstallGuide && !isStandalone && (
+              <div className="border border-cyan-500/40 bg-slate-950/90 p-3 space-y-2 text-xs text-slate-200">
+                <div className="font-bold text-cyan-200" style={{ fontFamily: 'var(--font-cinzel)' }}>
+                  HOW TO INSTALL ON MOBILE:
+                </div>
+                <p>&bull; <strong className="text-cyan-300">Android (Chrome/Edge):</strong> Tap the three dots (⋮) in the browser toolbar &rarr; select <strong className="text-white">&quot;Install app&quot;</strong> or <strong className="text-white">&quot;Add to Home screen&quot;</strong>.</p>
+                <p>&bull; <strong className="text-cyan-300">iPhone / iPad (Safari):</strong> Tap the Share button (⎙ or box with arrow) &rarr; scroll down &rarr; tap <strong className="text-white">&quot;Add to Home Screen&quot;</strong> [+] &rarr; tap <strong className="text-white">&quot;Add&quot;</strong>.</p>
+                <p className="text-[#9bbacf] text-[11px] pt-1">Once installed, launch from your home screen for full-screen immersive HUD and automatic background updates.</p>
+              </div>
+            )}
           </div>
         </HudFrame>
 

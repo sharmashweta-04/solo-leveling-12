@@ -2,29 +2,67 @@
   "name": "Solo Leveling: Class 12 PCB Dungeon",
   "short_name": "Solo Leveling",
   "description": "Gamified 45-day Class 12 PCB revision system. Arise, Hunter.",
+  "id": "/",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "window-controls-overlay"],
   "orientation": "portrait",
-  "background_color": "#080c10",
-  "theme_color": "#080c10",
+  "background_color": "#030a18",
+  "theme_color": "#030a18",
   "categories": ["education", "productivity", "games"],
   "icons": [
     {
       "src": "/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/icons/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Focus Chamber",
+      "short_name": "Focus",
+      "description": "Start 50-minute study block",
+      "url": "/focus",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "37-Gate Dungeon",
+      "short_name": "Dungeon",
+      "description": "View Class 12 syllabus gates",
+      "url": "/dungeon",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Monarch Shop",
+      "short_name": "Shop",
+      "description": "Exchange Mana for Screen Time Keys",
+      "url": "/shop",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

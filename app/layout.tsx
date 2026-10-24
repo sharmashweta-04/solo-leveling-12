@@ -10,6 +10,11 @@ export const metadata: Metadata = {
   description: 'Gamified 45-day Class 12 PCB revision system. Arise, Hunter.',
   manifest: '/manifest.json',
   icons: { icon: '/icons/icon-192.png', apple: '/icons/icon-192.png' },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Solo Leveling'
+  }
 };
 
 export const viewport: Viewport = {
