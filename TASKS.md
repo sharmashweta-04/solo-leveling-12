@@ -27,6 +27,10 @@ quests follow plan.day_type, and the simulation uses the REAL engine with fake-i
    (animated particle background, HudFrame panels, QuestInfoPanel, opening horizontal cut with
    tap-to-enter, synthesized System sounds, Visual effects Full/Lite/Off and Sound on/off settings).
 
+## Phase 3b: Use the ARISE video
+Carry out the code block in docs/VIDEO_PROMPT.md (IntroVideo opening, once-per-day QuestArrival cutscene,
+settings for replay and on/off). The video files are already in public/media/.
+
 ## Phase 4: Login, sign up and cloud-saved progress (code only)
 Carry out the code block under "Step 2: paste this into Antigravity" in docs/REVIEW_AND_NEXT_PROMPTS.md.
 - Create `.env.local.example` with NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.

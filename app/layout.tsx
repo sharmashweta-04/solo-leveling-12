@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import '@/src/components/hud/hud.css';
+import '@/src/components/hud/hud-video.css';
 import PWARegistration from '@/src/components/PWARegistration';
 
 const inter = Inter({

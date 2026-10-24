@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { db } from '@/src/db/db';
-import { CHAPTERS_DATA } from '@/src/data/chapters';
 import { seedDatabaseIfNeeded } from '@/src/db/seed';
 import { ChapterProgress, Subject } from '@/src/types';
+import { sfx } from '@/src/utils/systemAudio';
 import Link from 'next/link';
+import HudFrame from '@/src/components/hud/HudFrame';
 
 export default function DungeonPage() {
   const [chapters, setChapters] = useState<ChapterProgress[]>([]);
@@ -29,9 +30,9 @@ export default function DungeonPage() {
   });
 
   const getWingBorderColor = (subject: Subject) => {
-    if (subject === 'Physics') return 'border-blue-500/40 hover:border-blue-400';
-    if (subject === 'Chemistry') return 'border-purple-500/40 hover:border-purple-400';
-    return 'border-green-500/40 hover:border-green-400';
+    if (subject === 'Physics') return 'border-blue-500/50 hover:border-blue-400 bg-blue-950/20';
+    if (subject === 'Chemistry') return 'border-purple-500/50 hover:border-purple-400 bg-purple-950/20';
+    return 'border-emerald-500/50 hover:border-emerald-400 bg-emerald-950/20';
   };
 
   const getStatusBadge = (ch: ChapterProgress) => {
@@ -44,34 +45,34 @@ export default function DungeonPage() {
     }
     if (ch.boss_cleared) {
       return (
-        <span className="text-[10px] px-1.5 py-0.5 bg-green-900/60 border border-green-400 text-green-200 rounded font-bold">
+        <span className="text-[10px] px-1.5 py-0.5 bg-emerald-900/60 border border-emerald-400 text-emerald-200 rounded font-bold">
           GATE CLEARED ⚔️
         </span>
       );
     }
     if (ch.topics_completed.length > 0) {
       return (
-        <span className="text-xs px-2 py-0.5 bg-blue-900/60 border border-hunter-blue text-hunter-cyan rounded font-semibold">
+        <span className="text-xs px-2 py-0.5 bg-blue-950 border border-blue-500 text-cyan-300 rounded font-semibold">
           IN PROGRESS ({ch.topics_completed.length}/{ch.total_topics})
         </span>
       );
     }
     return (
-      <span className="text-xs px-2 py-0.5 bg-hunter-900 border border-hunter-800 text-hunter-400 rounded">
+      <span className="text-xs px-2 py-0.5 bg-slate-900 border border-slate-700 text-slate-400 rounded">
         LOCKED 🔒
       </span>
     );
   };
 
   return (
-    <div className="font-mono select-none">
+    <div className="font-mono pb-24 max-w-md mx-auto select-none space-y-4">
       {/* Header */}
-      <div className="flex justify-between items-center border-b border-hunter-blue/40 pb-3 mb-4">
+      <div className="flex justify-between items-center border-b border-cyan-500/30 pb-3 mb-2">
         <div>
-          <h1 className="text-lg font-extrabold text-hunter-blue tracking-wider text-shadow-blue">
+          <h1 className="text-base font-extrabold text-cyan-400 tracking-wider text-shadow-blue">
             [ 37-GATE DUNGEON ]
           </h1>
-          <p className="text-xs text-hunter-400">
+          <p className="text-xs text-slate-400">
             NCERT PCB MONARCH GATES &bull; SHADOW VAULT
           </p>
         </div>
@@ -84,15 +85,18 @@ export default function DungeonPage() {
       </div>
 
       {/* Wings Filter Tabs */}
-      <div className="flex gap-1.5 mb-4 overflow-x-auto pb-1 text-xs">
+      <div className="flex gap-1.5 overflow-x-auto pb-1 text-xs">
         {(['ALL', 'Physics', 'Chemistry', 'Biology', 'SHADOWS'] as const).map((tab) => (
           <button
             key={tab}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => {
+              sfx.click();
+              setActiveTab(tab);
+            }}
             className={`min-h-[44px] px-3 py-1.5 rounded border whitespace-nowrap transition-all text-xs flex items-center justify-center ${
               activeTab === tab
-                ? 'border-hunter-blue bg-hunter-blue/20 text-white font-bold shadow-[0_0_10px_rgba(0,217,255,0.3)]'
-                : 'border-hunter-800 bg-hunter-950 text-hunter-400 hover:text-white'
+                ? 'border-cyan-400 bg-cyan-950/60 text-cyan-300 font-bold shadow-[0_0_10px_rgba(0,255,255,0.3)]'
+                : 'border-slate-800 bg-slate-950/70 text-slate-400 hover:text-white'
             }`}
           >
             {tab === 'ALL'
@@ -109,35 +113,37 @@ export default function DungeonPage() {
       </div>
 
       {loading ? (
-        <div className="text-center py-12 text-hunter-blue animate-pulse text-xs">
+        <div className="text-center py-12 text-cyan-400 animate-pulse text-xs">
           Scanning Dungeon Gates...
         </div>
       ) : (
-        <div className="space-y-2.5">
-          {filteredChapters.map((ch) => (
-            <Link
-              key={ch.id}
-              href={`/gate/${ch.id}`}
-              className={`min-h-[44px] block p-3 rounded-lg bg-hunter-900/80 border transition-all ${getWingBorderColor(
-                ch.subject
-              )} hover:bg-hunter-900`}
-            >
-              <div className="flex justify-between items-start mb-1.5">
-                <div className="flex items-center gap-2">
-                  <span className="font-extrabold text-sm text-hunter-cyan">{ch.id}</span>
-                  <span className="text-xs font-semibold text-hunter-100 truncate max-w-[200px]">
-                    {ch.name}
-                  </span>
+        <HudFrame title={`DUNGEON GATES (${filteredChapters.length})`} icon="⛩️" delay={0}>
+          <div className="space-y-2.5 max-h-[600px] overflow-y-auto pr-1">
+            {filteredChapters.map((ch) => (
+              <Link
+                key={ch.id}
+                href={`/gate/${ch.id}`}
+                className={`min-h-[44px] block p-3 rounded-lg border transition-all ${getWingBorderColor(
+                  ch.subject
+                )} hover:bg-slate-900/80 backdrop-blur-sm`}
+              >
+                <div className="flex justify-between items-start mb-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="font-extrabold text-sm text-cyan-300">{ch.id}</span>
+                    <span className="text-xs font-semibold text-slate-100 truncate max-w-[200px]">
+                      {ch.name}
+                    </span>
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex justify-between items-center text-xs text-hunter-400 pt-1 border-t border-hunter-800">
-                <span className="uppercase">{ch.subject} WING</span>
-                <div>{getStatusBadge(ch)}</div>
-              </div>
-            </Link>
-          ))}
-        </div>
+                <div className="flex justify-between items-center text-xs text-slate-400 pt-1 border-t border-slate-800">
+                  <span className="uppercase">{ch.subject} WING</span>
+                  <div>{getStatusBadge(ch)}</div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </HudFrame>
       )}
     </div>
   );

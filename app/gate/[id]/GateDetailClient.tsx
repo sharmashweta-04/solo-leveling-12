@@ -5,14 +5,14 @@ import { useRouter } from 'next/navigation';
 import { db } from '@/src/db/db';
 import { CHAPTERS_DATA } from '@/src/data/chapters';
 import { currentGameDay } from '@/src/engine/time';
-import { awardXP } from '@/src/engine/xp';
-import { playSystemChime } from '@/src/utils/audio';
+import { sfx } from '@/src/utils/systemAudio';
 import { ChapterProgress, SRSCard } from '@/src/types';
 import resourcesConfig from '@/config/resources.json';
 import systemMessages from '@/config/system_messages.json';
 import gameRules from '@/config/game_rules.json';
 import Toast from '@/src/components/Toast';
 import Link from 'next/link';
+import HudFrame from '@/src/components/hud/HudFrame';
 
 export default function GateDetailClient({ gateId }: { gateId: string }) {
   const router = useRouter();
@@ -67,9 +67,9 @@ export default function GateDetailClient({ gateId }: { gateId: string }) {
 
   if (!chapterDef) {
     return (
-      <div className="bg-hunter-950 text-hunter-blue p-6 font-mono text-center">
+      <div className="text-cyan-400 p-6 font-mono text-center">
         <h1 className="text-xl font-bold">[ GATE NOT FOUND ]</h1>
-        <Link href="/dungeon" className="text-xs text-hunter-cyan underline mt-4 inline-block min-h-[44px] flex items-center justify-center">
+        <Link href="/dungeon" className="text-xs text-cyan-300 underline mt-4 inline-block min-h-[44px] flex items-center justify-center">
           Return to Dungeon
         </Link>
       </div>
@@ -77,7 +77,7 @@ export default function GateDetailClient({ gateId }: { gateId: string }) {
   }
 
   const toggleTopic = async (topic: string) => {
-    playSystemChime();
+    sfx.click();
     const updated = completedTopics.includes(topic)
       ? completedTopics.filter((t) => t !== topic)
       : [...completedTopics, topic];
@@ -95,99 +95,86 @@ export default function GateDetailClient({ gateId }: { gateId: string }) {
   };
 
   const handleSaveNotes = async () => {
-    playSystemChime();
+    sfx.click();
     await db.chapter_progress.update(chapterDef.id, {
       notes,
       updated_at: new Date().toISOString()
     });
-    setToastMessage('[ SYSTEM ] Gate tactical notes saved.');
+    setToastMessage('[ SYSTEM ] Tactical notes saved.');
   };
 
   const handleSubmitBossTest = async () => {
-    playSystemChime();
-    const today = currentGameDay();
+    const isPassing = bossScore >= 15;
     const nowIso = new Date().toISOString();
-    const passThreshold = (gameRules.gate_boss.pass_percent / 100) * gameRules.gate_boss.questions; // 75% of 20 = 15
-    const isPass = bossScore >= passThreshold;
+    const today = currentGameDay();
 
-    if (isPass) {
-      // Gate Cleared and Shadow Extracted
-      await db.chapter_progress.update(chapterDef.id, {
-        boss_score: bossScore,
-        boss_cleared: true,
-        shadow_extracted: true,
-        status: 'shadow',
-        updated_at: nowIso
-      });
+    await db.chapter_progress.update(chapterDef.id, {
+      boss_score: bossScore,
+      boss_cleared: isPassing,
+      shadow_extracted: isPassing,
+      status: isPassing ? 'shadow' : progress?.status || 'in_progress',
+      updated_at: nowIso
+    });
 
-      // Award Boss XP (+150 XP)
-      const bossXp = awardXP(150);
+    if (isPassing) {
+      sfx.levelUp();
+      // Award Boss Test XP
       await db.xp_ledger.add({
         date: today,
-        amount: bossXp,
+        amount: 250,
         source: 'boss_test',
-        reason: `Cleared Gate Boss: ${chapterDef.id} — ${chapterDef.name} (${bossScore}/20)`,
+        reason: `Cleared Boss Test: ${chapterDef.id} - ${chapterDef.name} (${bossScore}/20)`,
         created_at: nowIso
       });
 
-      // Schedule 4 SRS Review Cards at D+1, D+3, D+7, D+14
-      const intervals = gameRules.srs_intervals_days; // [1, 3, 7, 14]
-      const [y, m, d] = today.split('-').map(Number);
-
-      const cardsToAdd: SRSCard[] = intervals.map((intv) => {
-        const dueDateObj = new Date(Date.UTC(y, m - 1, d + intv));
-        const yyyy = dueDateObj.getUTCFullYear();
-        const mm = String(dueDateObj.getUTCMonth() + 1).padStart(2, '0');
-        const dd = String(dueDateObj.getUTCDate()).padStart(2, '0');
-        const dueDate = `${yyyy}-${mm}-${dd}`;
-
+      // Schedule Spaced Repetition Flashcards at D+1, D+3, D+7, D+14
+      const intervals = gameRules.srs_intervals_days;
+      const cardsToAdd: SRSCard[] = intervals.map((gapDays) => {
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + gapDays);
         return {
           chapter_id: chapterDef.id,
           subject: chapterDef.subject,
-          front: `[ ${chapterDef.id} SHADOW REVIEW ] Key concepts from ${chapterDef.name}`,
-          back: `Review topics: ${chapterDef.topics.slice(0, 3).join('; ')}... Notes: ${notes || 'Review NCERT summary'}`,
-          interval_days: intv,
-          repetition: 0,
+          front: `Core review: ${chapterDef.name} (${gapDays}d after Boss test)`,
+          back: `Review summary notes and key formulas for ${chapterDef.name}`,
+          interval_days: gapDays,
           ease_factor: 2.5,
-          due_date: dueDate
+          repetition: 0,
+          due_date: dueDate.toISOString().slice(0, 10)
         };
       });
 
       await db.srs_cards.bulkAdd(cardsToAdd);
 
-      const totalShadows = await db.chapter_progress.where({ shadow_extracted: 1 as any }).count();
       const shadowMsg = systemMessages.shadow
-        .replace('{chapter}', `${chapterDef.id} — ${chapterDef.name}`)
-        .replace('{count}', String(totalShadows + 1));
+        .replace('{chapter}', chapterDef.name)
+        .replace('{count}', '1');
 
-      setToastMessage(shadowMsg);
-      setProgress((prev) => (prev ? { ...prev, boss_cleared: true, shadow_extracted: true } : null));
+      setToastMessage(`${shadowMsg} +250 XP awarded! Spaced repetition scheduled.`);
+      setProgress((prev) => prev ? { ...prev, boss_cleared: true, shadow_extracted: true, status: 'shadow' } : null);
     } else {
-      await db.chapter_progress.update(chapterDef.id, {
-        boss_score: bossScore,
-        updated_at: nowIso
-      });
+      sfx.penalty();
       setToastMessage(`[ SYSTEM ] Boss score ${bossScore}/20 recorded. Score ≥ 15 required for Shadow Extraction.`);
     }
   };
 
   return (
-    <div className="font-mono select-none">
+    <div className="font-mono select-none space-y-4 pb-24 max-w-md mx-auto">
       <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
 
       {/* Header */}
-      <div className="flex justify-between items-center border-b border-hunter-blue/40 pb-3 mb-4">
+      <div className="flex justify-between items-center border-b border-cyan-500/30 pb-3 mb-2">
         <div>
-          <span className="text-xs text-hunter-cyan font-bold uppercase block tracking-widest">
+          <span className="text-xs text-cyan-400 font-bold uppercase block tracking-widest">
             {chapterDef.subject} WING &bull; GATE {chapterDef.id}
           </span>
-          <h1 className="text-base font-extrabold text-hunter-blue tracking-wide text-shadow-blue">
+          <h1 className="text-base font-extrabold text-cyan-300 tracking-wide text-shadow-blue">
             {chapterDef.name}
           </h1>
         </div>
         <Link
           href="/dungeon"
-          className="text-xs text-hunter-400 border border-hunter-800 hover:border-hunter-blue px-2.5 py-1.5 rounded min-h-[44px] flex items-center"
+          className="text-xs text-slate-400 border border-slate-700 hover:border-cyan-400 px-2.5 py-1.5 rounded min-h-[44px] flex items-center"
         >
           DUNGEON ⛩️
         </Link>
@@ -195,21 +182,20 @@ export default function GateDetailClient({ gateId }: { gateId: string }) {
 
       {/* Status Banner */}
       {progress?.shadow_extracted && (
-        <div className="p-3 mb-4 rounded border border-purple-500 bg-purple-950/60 shadow-[0_0_20px_rgba(168,85,247,0.4)] text-center">
-          <div className="text-xs font-bold text-purple-300 tracking-wider">
-            [ 🌑 SHADOW MONARCH EXTRACTION COMPLETE ]
+        <HudFrame title="SHADOW MONARCH EXTRACTION" icon="🌑" delay={0}>
+          <div className="text-center">
+            <p className="text-xs text-purple-200 mt-1">
+              This chapter now serves in your Shadow Army. Spaced repetition reviews active.
+            </p>
           </div>
-          <p className="text-xs text-purple-200 mt-1">
-            This chapter now serves in your Shadow Army. Spaced repetition reviews active.
-          </p>
-        </div>
+        </HudFrame>
       )}
 
       {/* Topic Checklist */}
-      <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5 mb-4 shadow-[0_0_15px_rgba(0,217,255,0.15)]">
+      <HudFrame title="SYLLABUS TOPIC CHECKLIST" icon="📜" delay={80}>
         <div className="flex justify-between items-center mb-3">
-          <span className="text-xs font-bold text-hunter-blue">[ SYLLABUS TOPIC CHECKLIST ]</span>
-          <span className="text-xs text-hunter-cyan font-bold">
+          <span className="text-xs text-slate-300">CURRICULUM TOPICS</span>
+          <span className="text-xs text-cyan-300 font-bold">
             {completedTopics.length} / {chapterDef.topics.length} MASTERED
           </span>
         </div>
@@ -222,26 +208,25 @@ export default function GateDetailClient({ gateId }: { gateId: string }) {
                 key={idx}
                 className={`min-h-[44px] p-2.5 rounded border flex items-start gap-2.5 cursor-pointer transition-all text-xs ${
                   isDone
-                    ? 'border-hunter-green/40 bg-green-950/20 text-hunter-400 line-through'
-                    : 'border-hunter-800 bg-hunter-950 text-hunter-100 hover:border-hunter-blue/40'
+                    ? 'border-emerald-500/40 bg-emerald-950/20 text-slate-400 line-through'
+                    : 'border-slate-800 bg-slate-950/60 text-slate-100 hover:border-cyan-500/40'
                 }`}
               >
                 <input
                   type="checkbox"
                   checked={isDone}
                   onChange={() => toggleTopic(topic)}
-                  className="mt-0.5 h-4 w-4 rounded border-hunter-blue text-hunter-blue focus:ring-0 bg-black cursor-pointer"
+                  className="mt-0.5 h-4 w-4 rounded border-cyan-400 text-cyan-400 focus:ring-0 bg-black cursor-pointer"
                 />
                 <span className="leading-snug">{topic}</span>
               </label>
             );
           })}
         </div>
-      </div>
+      </HudFrame>
 
       {/* Chapter Resources from resources.json */}
-      <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5 mb-4">
-        <div className="text-xs font-bold text-hunter-cyan mb-2">[ GATE RESOURCES & VIDEOS ]</div>
+      <HudFrame title="GATE RESOURCES & VIDEOS" icon="📺" delay={160}>
         {resources.length > 0 ? (
           <div className="space-y-2">
             {resources.map((res: any, idx: number) => (
@@ -250,71 +235,66 @@ export default function GateDetailClient({ gateId }: { gateId: string }) {
                 href={res.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="min-h-[44px] p-2.5 bg-hunter-950 border border-hunter-800 hover:border-hunter-blue rounded text-xs text-hunter-blue hover:text-white transition-all flex items-center justify-between"
+                className="min-h-[44px] p-2.5 bg-slate-950/80 border border-slate-800 hover:border-cyan-400 rounded text-xs text-cyan-300 hover:text-white transition-all flex items-center justify-between"
               >
                 <span className="truncate max-w-[260px]">📺 {res.title}</span>
-                <span className="text-xs text-hunter-cyan underline font-bold">OPEN ↗</span>
+                <span className="text-xs text-cyan-400 underline font-bold">OPEN ↗</span>
               </a>
             ))}
           </div>
         ) : (
-          <p className="text-xs text-hunter-400 italic p-2 bg-hunter-950 rounded border border-hunter-800">
+          <p className="text-xs text-slate-400 italic p-2 bg-slate-950/60 rounded border border-slate-800">
             No video links configured yet. (Add link in config/resources.json)
           </p>
         )}
-      </div>
+      </HudFrame>
 
       {/* Notes Field */}
-      <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5 mb-4">
-        <div className="text-xs font-bold text-hunter-blue mb-2">[ TACTICAL GATE NOTES ]</div>
+      <HudFrame title="TACTICAL GATE NOTES" icon="📝" delay={240}>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Record key formulas, weak concepts, and chapter notes here..."
           rows={3}
-          className="w-full bg-hunter-950 border border-hunter-800 rounded p-2 text-xs text-hunter-100 focus:border-hunter-blue focus:outline-none mb-2"
+          className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-slate-100 focus:border-cyan-400 focus:outline-none mb-2"
         />
         <button
           onClick={handleSaveNotes}
-          className="min-h-[44px] w-full py-2 bg-hunter-blue/20 hover:bg-hunter-blue/30 border border-hunter-blue/50 text-hunter-blue rounded text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center"
+          className="min-h-[44px] w-full py-2 bg-cyan-600/30 hover:bg-cyan-600/50 border border-cyan-400 text-cyan-200 rounded text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center"
         >
           SAVE NOTES
         </button>
-      </div>
+      </HudFrame>
 
       {/* Gate Boss Test Form */}
-      <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5 mb-4">
-        <div className="flex justify-between items-center mb-1">
-          <span className="text-xs font-bold text-hunter-cyan">[ GATE BOSS TEST ]</span>
-          <span className="text-xs text-hunter-400">PW DPP / CHAPTER TEST</span>
-        </div>
-        <p className="text-xs text-hunter-400 mb-3">
+      <HudFrame title="GATE BOSS TEST (DPP)" icon="⚔️" delay={320}>
+        <p className="text-xs text-slate-400 mb-3">
           Self-reported score out of 20 questions. Score ≥ 75% (15/20) triggers Shadow Extraction.
         </p>
 
         <div className="flex items-center gap-3 mb-3">
-          <label className="text-xs text-hunter-400">SCORE:</label>
+          <label className="text-xs text-slate-400">SCORE:</label>
           <input
             type="number"
             min={0}
             max={20}
             value={bossScore}
             onChange={(e) => setBossScore(Math.max(0, Math.min(20, Number(e.target.value))))}
-            className="w-20 min-h-[44px] bg-hunter-950 border border-hunter-blue rounded p-1.5 text-center font-bold text-hunter-blue text-sm focus:outline-none"
+            className="w-20 min-h-[44px] bg-slate-950 border border-cyan-400 rounded p-1.5 text-center font-bold text-cyan-300 text-sm focus:outline-none"
           />
-          <span className="text-xs text-hunter-400">/ 20</span>
-          <span className="text-xs font-bold text-hunter-cyan ml-auto">
+          <span className="text-xs text-slate-400">/ 20</span>
+          <span className="text-xs font-bold text-cyan-300 ml-auto">
             {Math.round((bossScore / 20) * 100)}%
           </span>
         </div>
 
         <button
           onClick={handleSubmitBossTest}
-          className="min-h-[44px] w-full py-2.5 bg-hunter-blue/20 hover:bg-hunter-blue/40 border border-hunter-blue text-hunter-blue hover:text-white rounded text-xs font-bold tracking-widest uppercase transition-all shadow-[0_0_15px_rgba(0,217,255,0.3)] flex items-center justify-center"
+          className="min-h-[44px] w-full py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded text-xs font-bold tracking-widest uppercase transition-all shadow-[0_0_15px_rgba(6,182,212,0.4)] flex items-center justify-center"
         >
           SUBMIT BOSS TEST & EXTRACT SHADOW
         </button>
-      </div>
+      </HudFrame>
     </div>
   );
 }

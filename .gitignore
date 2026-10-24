@@ -4,4 +4,7 @@ node_modules
 .env*
 *.log
 *.zip
+solo-leveling-everything/
+solo-leveling-upgrade-kit/
 
+.vercel

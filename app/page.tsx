@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useGameState } from '@/src/hooks/useGameState';
 import IntroScreen from '@/src/components/IntroScreen';
 import Toast from '@/src/components/Toast';
@@ -7,6 +8,8 @@ import LevelUpModal from '@/src/components/LevelUpModal';
 import Link from 'next/link';
 import HudFrame from '@/src/components/hud/HudFrame';
 import QuestInfoPanel from '@/src/components/hud/QuestInfoPanel';
+import QuestArrival from '@/src/components/hud/QuestArrival';
+import type { EffectsLevel } from '@/src/components/hud/IntroVideo';
 import { sfx } from '@/src/utils/systemAudio';
 
 export default function Dashboard() {
@@ -20,6 +23,7 @@ export default function Dashboard() {
     stats,
     introCompleted,
     todayQuests,
+    currentDayNumber,
     todayPlan,
     toastMessage,
     levelUpEvent,
@@ -33,6 +37,20 @@ export default function Dashboard() {
     clearRankUpEvent,
     refreshState
   } = useGameState();
+
+  const [effectsMode, setEffectsMode] = useState<EffectsLevel>('full');
+
+  useEffect(() => {
+    const updateEff = () => {
+      try {
+        const stored = localStorage.getItem('solo_visual_effects') as EffectsLevel | null;
+        if (stored) setEffectsMode(stored);
+      } catch {}
+    };
+    updateEff();
+    window.addEventListener('solo_effects_changed', updateEff);
+    return () => window.removeEventListener('solo_effects_changed', updateEff);
+  }, []);
 
   if (loading) {
     return (
@@ -67,6 +85,9 @@ export default function Dashboard() {
 
   return (
     <div className="font-mono select-none space-y-4">
+      {!isBeforeStart && currentDayNumber >= 1 && currentDayNumber <= 45 && (
+        <QuestArrival dayKey={gameDate} effects={effectsMode} />
+      )}
       <Toast message={toastMessage} onClose={clearToast} />
       <LevelUpModal
         levelEvent={levelUpEvent}

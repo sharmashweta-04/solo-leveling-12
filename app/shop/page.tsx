@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react';
 import { db } from '@/src/db/db';
 import { currentGameDay } from '@/src/engine/time';
-import { playSystemChime } from '@/src/utils/audio';
+import { sfx } from '@/src/utils/systemAudio';
 import gameRules from '@/config/game_rules.json';
 import Toast from '@/src/components/Toast';
+import HudFrame from '@/src/components/hud/HudFrame';
 
 export default function ShopPage() {
   const [totalMP, setTotalMP] = useState(0);
@@ -71,6 +72,7 @@ export default function ShopPage() {
 
   const purchaseKey = async (keyConfig: { id: string; cost: number; minutes: number }) => {
     if (totalMP < keyConfig.cost) {
+      sfx.penalty();
       setToastMessage('[ SYSTEM WARNING ] Insufficient Mana (MP) to purchase key.');
       return;
     }
@@ -79,11 +81,12 @@ export default function ShopPage() {
     const currentMins = Math.floor(screenTimeUnlockedSecs / 60);
 
     if (currentMins + keyConfig.minutes > maxMins) {
+      sfx.penalty();
       setToastMessage(`[ SYSTEM LIMIT ] Daily screen time cap is ${maxMins} minutes. Cannot exceed.`);
       return;
     }
 
-    playSystemChime();
+    sfx.quest();
     const nowIso = new Date().toISOString();
 
     // Deduct MP from ledger
@@ -99,135 +102,122 @@ export default function ShopPage() {
     setScreenTimeUnlockedSecs(newUnlockedSecs);
     localStorage.setItem(`screen_unlocked_today_${today}`, String(newUnlockedSecs));
 
-    // Start active timer
-    const unlockDurationMs = keyConfig.minutes * 60 * 1000;
-    const endTime = Date.now() + unlockDurationMs;
-    localStorage.setItem('active_screen_unlock_end', String(endTime));
-    setActiveUnlockEndTime(endTime);
+    // Set active timer end
+    const newEndTime = Date.now() + keyConfig.minutes * 60 * 1000;
+    setActiveUnlockEndTime(newEndTime);
+    localStorage.setItem('active_screen_unlock_end', String(newEndTime));
 
-    setToastMessage(`[ KEY UNLOCKED ] ${keyConfig.minutes} minutes granted. Enjoy your monarch respite.`);
-    await loadData();
+    setTotalMP((prev) => prev - keyConfig.cost);
+    setToastMessage(`[ SYSTEM ACCESS GRANTED ] ${keyConfig.id.toUpperCase()} Key activated! ${keyConfig.minutes} min unlocked.`);
   };
 
   const handleActivateRestToken = async () => {
-    if (restTokens <= 0) {
-      setToastMessage('[ SYSTEM WARNING ] No Rest Day Tokens remaining.');
-      return;
-    }
-    if (restUsedToday) {
-      setToastMessage('[ SYSTEM ] Rest Token is already active for today.');
-      return;
-    }
+    if (restTokens <= 0 || restUsedToday) return;
 
-    playSystemChime();
-    const remaining = restTokens - 1;
-    await db.settings.put({ key: 'rest_tokens_remaining', value: remaining });
+    sfx.quest();
+    const newCount = restTokens - 1;
+    await db.settings.put({ key: 'rest_tokens_remaining', value: newCount });
     await db.settings.put({ key: `rest_day_${today}`, value: true });
 
-    setRestTokens(remaining);
+    setRestTokens(newCount);
     setRestUsedToday(true);
-    setToastMessage('[ REST PROTOCOL ACTIVE ] Today is shielded from all missed-quest penalties.');
+    setToastMessage('[ SYSTEM SHIELD ] Rest Day Shield activated. Streak protected from penalty.');
   };
 
   const handleLogSleep = async () => {
     if (sleepLoggedToday) return;
-    playSystemChime();
-    const nowIso = new Date().toISOString();
 
+    sfx.quest();
     await db.settings.put({ key: `sleep_logged_${today}`, value: true });
-    setSleepLoggedToday(true);
+    await db.settings.put({ key: `sleep_hours_${today}`, value: sleepHours });
 
     if (sleepHours >= 7) {
       await db.xp_ledger.add({
         date: today,
-        amount: gameRules.quests.sleep_7h.xp, // 20 XP
+        amount: 20,
         source: 'quest',
-        reason: `Optimal Sleep Recovery (${sleepHours}h sleep logged)`,
-        created_at: nowIso
+        reason: 'Optimal Sleep Recovery (>= 7 hours)',
+        created_at: new Date().toISOString()
       });
-      setToastMessage(`[ RECOVERY CONFIRMED ] +${gameRules.quests.sleep_7h.xp} XP and +VIT awarded!`);
+      setToastMessage('[ RECOVERY CLEAR ] Logged optimal sleep. +20 XP awarded!');
     } else {
-      setToastMessage(`[ REST LOGGED ] ${sleepHours} hours recorded.`);
+      setToastMessage('[ SYSTEM ] Sleep recovery logged.');
     }
-    await loadData();
+    setSleepLoggedToday(true);
   };
 
   const handleEmergencyBypass = async () => {
-    playSystemChime();
-    const nowIso = new Date().toISOString();
+    sfx.penalty();
     await db.xp_ledger.add({
       date: today,
-      amount: gameRules.penalties.bypass.xp, // -100 XP
+      amount: -100,
       source: 'bypass_penalty',
       reason: 'Emergency Lockout Bypass Penalty',
-      created_at: nowIso
+      created_at: new Date().toISOString()
     });
     await db.settings.put({ key: 'emergency_lockout_active', value: false });
     setEmergencyLockout(false);
-    setToastMessage('[ SYSTEM BYPASS ] Lockout bypassed. -100 XP penalty applied.');
-    await loadData();
+    setToastMessage('[ SYSTEM OVERRIDE ] Emergency Lockout lifted. Penalty of -100 XP deducted.');
   };
 
-  const remainingSeconds = activeUnlockEndTime ? Math.max(0, Math.floor((activeUnlockEndTime - Date.now()) / 1000)) : 0;
-  const remMinutes = Math.floor(remainingSeconds / 60);
-  const remSecs = remainingSeconds % 60;
+  const remSeconds = activeUnlockEndTime ? Math.max(0, Math.floor((activeUnlockEndTime - Date.now()) / 1000)) : 0;
+  const remMinutes = Math.floor(remSeconds / 60);
+  const remSecs = remSeconds % 60;
 
   return (
-    <div className="min-h-screen bg-hunter-950 text-hunter-100 font-mono pb-24 max-w-md mx-auto p-4 select-none">
+    <div className="font-mono pb-24 max-w-md mx-auto select-none space-y-4">
       <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
 
-      {/* Header */}
-      <div className="flex justify-between items-center border-b border-hunter-blue/40 pb-3 mb-4">
+      {/* Top Header */}
+      <div className="flex justify-between items-center border-b border-cyan-500/30 pb-3 mb-2">
         <div>
-          <h1 className="text-lg font-extrabold text-hunter-blue tracking-wider text-shadow-blue">
+          <h1 className="text-base font-extrabold text-cyan-400 tracking-wider text-shadow-blue">
             [ MONARCH&apos;S SHOP ]
           </h1>
-          <p className="text-xs text-hunter-400">MANA VAULT &bull; SCREEN TIME EXCHANGES</p>
+          <p className="text-xs text-slate-400">MANA VAULT &bull; SCREEN TIME EXCHANGES</p>
         </div>
         <div className="text-right">
-          <span className="text-xs text-hunter-400 block">MANA POOL</span>
-          <span className="text-base font-bold text-hunter-cyan">{totalMP} MP</span>
+          <span className="text-xs text-slate-400 block">MANA POOL</span>
+          <span className="text-sm font-bold text-cyan-300">{totalMP} MP</span>
         </div>
       </div>
 
       {/* Emergency Lockout Banner */}
       {emergencyLockout && (
-        <div className="border-2 border-red-500 bg-red-950/80 p-4 rounded-lg mb-4 text-center space-y-2">
-          <div className="text-xs font-bold text-red-400 tracking-wider animate-pulse">
-            [ 🚨 EMERGENCY DUNGEON LOCKOUT ACTIVE ]
+        <HudFrame title="EMERGENCY LOCKOUT" icon="🚨" delay={0}>
+          <div className="text-center space-y-2">
+            <p className="text-xs text-red-200">
+              You missed 2 days within 7 days. Quests are locked until the next Boss Raid is cleared.
+            </p>
+            <button
+              onClick={handleEmergencyBypass}
+              className="min-h-[44px] px-3.5 py-1.5 bg-red-600/40 hover:bg-red-600/60 border border-red-400 text-white rounded text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center mx-auto"
+            >
+              EMERGENCY BYPASS (-100 XP)
+            </button>
           </div>
-          <p className="text-xs text-red-200">
-            You missed 2 days within 7 days. Quests are locked until the next Boss Raid is cleared.
-          </p>
-          <button
-            onClick={handleEmergencyBypass}
-            className="min-h-[44px] px-3.5 py-1.5 bg-red-600/40 hover:bg-red-600/60 border border-red-400 text-white rounded text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center mx-auto"
-          >
-            EMERGENCY BYPASS (-100 XP)
-          </button>
-        </div>
+        </HudFrame>
       )}
 
       {/* Active Screen Time Countdown */}
       {activeUnlockEndTime && (
-        <div className="border border-hunter-green/50 bg-green-950/40 p-4 rounded-lg mb-4 text-center shadow-[0_0_20px_rgba(0,255,136,0.25)]">
-          <div className="text-xs text-hunter-green font-bold tracking-wider mb-1">
-            [ ACTIVE SCREEN TIME KEY ]
+        <HudFrame title="ACTIVE SCREEN TIME KEY" icon="⏳" delay={40}>
+          <div className="text-center">
+            <div className="text-3xl font-black text-emerald-400 tracking-tight my-1">
+              {String(remMinutes).padStart(2, '0')}:{String(remSecs).padStart(2, '0')}
+            </div>
+            <p className="text-xs text-slate-400">
+              Enjoy guilt-free leisure. The timer will automatically lock when depleted.
+            </p>
           </div>
-          <div className="text-3xl font-black text-hunter-green tracking-tight my-1">
-            {String(remMinutes).padStart(2, '0')}:{String(remSecs).padStart(2, '0')}
-          </div>
-          <p className="text-xs text-hunter-400">
-            Enjoy guilt-free leisure. The timer will automatically lock when depleted.
-          </p>
-        </div>
+        </HudFrame>
       )}
 
       {/* Key Exchange Cards */}
-      <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5 mb-4 shadow-[0_0_15px_rgba(0,217,255,0.15)]">
+      <HudFrame title="SCREEN TIME KEYS" icon="🔑" delay={80}>
         <div className="flex justify-between items-center mb-3">
-          <span className="text-xs font-bold text-hunter-blue">[ SCREEN TIME KEYS ]</span>
-          <span className="text-xs text-hunter-cyan font-bold">
+          <span className="text-xs text-slate-300">MANA EXCHANGE</span>
+          <span className="text-xs text-cyan-300 font-bold">
             CAP: {Math.floor(screenTimeUnlockedSecs / 60)} / {gameRules.shop.daily_screen_cap_minutes} MIN TODAY
           </span>
         </div>
@@ -236,16 +226,15 @@ export default function ShopPage() {
           {gameRules.shop.keys.map((k) => (
             <div
               key={k.id}
-              className="p-3 bg-hunter-950 rounded border border-hunter-800 flex items-center justify-between hover:border-hunter-blue/50 transition-all text-xs"
+              className="p-3 bg-slate-950/70 rounded border border-slate-800 flex items-center justify-between hover:border-cyan-500/50 transition-all text-xs"
             >
               <div>
-                <div className="font-bold text-hunter-100 flex items-center gap-1.5">
-                  <span>🔑</span>
+                <div className="font-bold text-slate-100 flex items-center gap-1.5">
                   <span className="uppercase">{k.id} KEY</span>
-                  <span className="text-hunter-cyan font-normal">({k.minutes} Minutes)</span>
+                  <span className="text-cyan-400 font-normal">({k.minutes} Minutes)</span>
                 </div>
-                <div className="text-xs text-hunter-400 mt-0.5">
-                  Cost: <span className="text-hunter-blue font-bold">{k.cost} MP</span>
+                <div className="text-xs text-slate-400 mt-0.5">
+                  Cost: <span className="text-cyan-300 font-bold">{k.cost} MP</span>
                 </div>
               </div>
 
@@ -255,8 +244,8 @@ export default function ShopPage() {
                 disabled={totalMP < k.cost}
                 className={`min-h-[44px] px-3.5 py-1.5 rounded text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center ${
                   totalMP >= k.cost
-                    ? 'bg-hunter-blue/20 hover:bg-hunter-blue/40 border border-hunter-blue text-hunter-blue hover:text-white shadow-[0_0_10px_rgba(0,217,255,0.3)]'
-                    : 'bg-hunter-900 text-hunter-600 border border-hunter-800 cursor-not-allowed'
+                    ? 'bg-cyan-600/30 hover:bg-cyan-600/50 border border-cyan-400 text-cyan-200 shadow-[0_0_10px_rgba(0,255,255,0.3)]'
+                    : 'bg-slate-900 text-slate-600 border border-slate-800 cursor-not-allowed'
                 }`}
               >
                 UNLOCK
@@ -264,15 +253,15 @@ export default function ShopPage() {
             </div>
           ))}
         </div>
-      </div>
+      </HudFrame>
 
       {/* Rest Day Tokens */}
-      <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5 mb-4">
+      <HudFrame title="REST DAY TOKENS" icon="🛡️" delay={160}>
         <div className="flex justify-between items-center mb-2">
-          <span className="text-xs font-bold text-hunter-cyan">[ REST DAY TOKENS ]</span>
-          <span className="text-xs font-bold text-hunter-blue">{restTokens} / 3 REMAINING</span>
+          <span className="text-xs text-slate-300">SHIELD VAULT</span>
+          <span className="text-xs font-bold text-cyan-400">{restTokens} / 3 REMAINING</span>
         </div>
-        <p className="text-xs text-hunter-400 mb-3 leading-relaxed">
+        <p className="text-xs text-slate-400 mb-3 leading-relaxed">
           Activating a token shields your day from missed-quest penalties and preserves your streak intact.
         </p>
 
@@ -281,20 +270,19 @@ export default function ShopPage() {
           disabled={restTokens <= 0 || restUsedToday}
           className={`min-h-[44px] w-full py-2.5 rounded font-bold tracking-wider uppercase text-xs transition-all flex items-center justify-center ${
             restUsedToday
-              ? 'bg-green-950/40 border border-hunter-green text-hunter-green cursor-default'
+              ? 'bg-emerald-950/40 border border-emerald-400 text-emerald-300 cursor-default'
               : restTokens > 0
-              ? 'bg-hunter-blue/20 hover:bg-hunter-blue/40 border border-hunter-blue text-hunter-blue shadow-[0_0_12px_rgba(0,217,255,0.3)]'
-              : 'bg-hunter-900 text-hunter-600 border border-hunter-800 cursor-not-allowed'
+              ? 'bg-cyan-600/30 hover:bg-cyan-600/50 border border-cyan-400 text-cyan-200 shadow-[0_0_12px_rgba(0,255,255,0.3)]'
+              : 'bg-slate-900 text-slate-600 border border-slate-800 cursor-not-allowed'
           }`}
         >
           {restUsedToday ? '✅ REST SHIELD ACTIVE TODAY' : `ACTIVATE REST TOKEN (${restTokens} LEFT)`}
         </button>
-      </div>
+      </HudFrame>
 
       {/* Sleep Logger (>= 7h Bonus) */}
-      <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5 mb-4">
-        <div className="text-xs font-bold text-hunter-green mb-2">[ SLEEP & RECOVERY LOG ]</div>
-        <p className="text-xs text-hunter-400 mb-3">
+      <HudFrame title="SLEEP & RECOVERY LOG" icon="💤" delay={240}>
+        <p className="text-xs text-slate-400 mb-3">
           Log ≥ 7 hours of sleep to claim +20 XP and Vitality (VIT) stat growth.
         </p>
 
@@ -307,9 +295,9 @@ export default function ShopPage() {
             value={sleepHours}
             disabled={sleepLoggedToday}
             onChange={(e) => setSleepHours(Number(e.target.value))}
-            className="flex-1 accent-hunter-green cursor-pointer h-6"
+            className="flex-1 accent-emerald-400 cursor-pointer h-6"
           />
-          <span className="text-xs font-bold text-hunter-green w-14 text-right">
+          <span className="text-xs font-bold text-emerald-400 w-14 text-right">
             {sleepHours} hrs
           </span>
         </div>
@@ -319,13 +307,13 @@ export default function ShopPage() {
           disabled={sleepLoggedToday}
           className={`min-h-[44px] w-full py-2 rounded text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center ${
             sleepLoggedToday
-              ? 'bg-green-950/40 border border-hunter-green text-hunter-green cursor-default'
-              : 'bg-green-600/20 hover:bg-green-600/30 border border-green-500 text-green-300'
+              ? 'bg-emerald-950/40 border border-emerald-400 text-emerald-300 cursor-default'
+              : 'bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500 text-emerald-300'
           }`}
         >
           {sleepLoggedToday ? '✅ SLEEP LOGGED TODAY' : 'RECORD SLEEP RECOVERY'}
         </button>
-      </div>
+      </HudFrame>
     </div>
   );
 }

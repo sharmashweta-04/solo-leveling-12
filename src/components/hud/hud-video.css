@@ -1,0 +1,3 @@
+/* Import once in app/layout.tsx. Holds the HUD "materialize" animations until the video fades, so panels build up as it reveals the app. */
+html.intro-playing .hud-frame,
+html.intro-playing .hud-scan { animation-play-state: paused; }

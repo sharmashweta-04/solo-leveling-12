@@ -7,7 +7,7 @@ import ConflictModal from '@/src/components/ConflictModal';
 import GuestUploadModal from '@/src/components/GuestUploadModal';
 import Navigation from '@/src/components/Navigation';
 import HudBackground from '@/src/components/hud/HudBackground';
-import OpeningCut from '@/src/components/hud/OpeningCut';
+import IntroVideo from '@/src/components/hud/IntroVideo';
 
 function AuthGuardWrapper({ children }: { children: React.ReactNode }) {
   const { user, isGuest, isLoading } = useAuth();
@@ -59,7 +59,7 @@ function AuthGuardWrapper({ children }: { children: React.ReactNode }) {
           <HudBackground lite={effectsMode === 'lite'} />
         </div>
       )}
-      <OpeningCut />
+      <IntroVideo effects={effectsMode} />
       {children}
       <ConflictModal />
       <GuestUploadModal />

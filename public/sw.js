@@ -40,6 +40,11 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
+  
+  // Do NOT intercept or cache /media/ video files (Safari requires HTTP Range requests)
+  if (url.pathname.startsWith('/media/')) {
+    return;
+  }
 
   // If navigating to a page, use network-first with cache fallback
   if (event.request.mode === 'navigate') {

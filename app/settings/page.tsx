@@ -30,6 +30,7 @@ export default function SettingsPage() {
   const [startDate, setStartDate] = useState('2026-11-01');
   const [soundOn, setSoundOn] = useState(true);
   const [effectsMode, setEffectsMode] = useState<'full' | 'lite' | 'off'>('full');
+  const [cutsceneOn, setCutsceneOn] = useState(true);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [showRules, setShowRules] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
@@ -47,6 +48,13 @@ export default function SettingsPage() {
       const startSetting = await db.settings.get('start_date');
       if (startSetting) setStartDate(startSetting.value);
       setSoundOn(isSoundEnabled());
+
+      try {
+        const storedCutscene = localStorage.getItem('solo_quest_cutscene');
+        if (storedCutscene !== null) {
+          setCutsceneOn(storedCutscene !== 'false');
+        }
+      } catch {}
 
       const effSetting = await db.settings.get('visual_effects');
       if (effSetting) {
@@ -76,6 +84,24 @@ export default function SettingsPage() {
       window.dispatchEvent(new Event('solo_effects_changed'));
     }
     setToastMessage(`[ SYSTEM ] Visual effects set to ${newEff.toUpperCase()}.`);
+  };
+
+  const handleToggleCutscene = () => {
+    const nextVal = !cutsceneOn;
+    setCutsceneOn(nextVal);
+    try {
+      localStorage.setItem('solo_quest_cutscene', String(nextVal));
+    } catch {}
+    if (soundOn) playSystemChime();
+    setToastMessage(`[ SYSTEM ] Daily quest arrival cutscene ${nextVal ? 'ENABLED' : 'DISABLED'}.`);
+  };
+
+  const handleReplayIntro = () => {
+    try {
+      sessionStorage.removeItem('sl_opened');
+    } catch {}
+    if (soundOn) playSystemChime();
+    window.location.href = '/';
   };
 
   const handleToggleMode = async (newMode: DifficultyMode) => {
@@ -441,18 +467,46 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Replay Intro */}
+        {/* Daily Quest Arrival Cutscene */}
         <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5 flex justify-between items-center">
           <div>
-            <div className="font-bold text-hunter-100 text-xs">[ REPLAY INTRO MESSAGE ]</div>
-            <p className="text-xs text-hunter-400 mt-0.5">Experience the System awakening sequence again.</p>
+            <div className="font-bold text-hunter-100 text-xs">[ DAILY QUEST CUTSCENE ]</div>
+            <p className="text-xs text-hunter-400 mt-0.5">Short holographic globe cutscene once per day when entering System.</p>
           </div>
-          <Link
-            href="/intro"
-            className="min-h-[44px] px-3.5 bg-hunter-blue/20 hover:bg-hunter-blue/40 border border-hunter-blue text-hunter-blue hover:text-white rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center"
+          <button
+            type="button"
+            onClick={handleToggleCutscene}
+            className={`min-h-[44px] px-3.5 rounded font-bold border transition-all text-xs tracking-wider uppercase flex items-center justify-center ${
+              cutsceneOn
+                ? 'border-cyan-400 bg-cyan-950/40 text-cyan-300 shadow-[0_0_10px_rgba(0,255,255,0.3)]'
+                : 'border-slate-800 bg-slate-950 text-slate-400'
+            }`}
           >
-            REPLAY
-          </Link>
+            {cutsceneOn ? 'ON 🎬' : 'OFF ⏭️'}
+          </button>
+        </div>
+
+        {/* Replay Intro */}
+        <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5 space-y-2">
+          <div>
+            <div className="font-bold text-hunter-100 text-xs">[ REPLAY SYSTEM INTRO ]</div>
+            <p className="text-xs text-hunter-400 mt-0.5">Re-experience the ARISE opening cutscene or awakening sequence.</p>
+          </div>
+          <div className="grid grid-cols-2 gap-2 pt-1">
+            <button
+              type="button"
+              onClick={handleReplayIntro}
+              className="min-h-[44px] px-3 bg-cyan-950/40 hover:bg-cyan-900/60 border border-cyan-400 text-cyan-300 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center shadow-[0_0_8px_rgba(0,255,255,0.3)]"
+            >
+              ARISE VIDEO 🎬
+            </button>
+            <Link
+              href="/intro"
+              className="min-h-[44px] px-3 bg-hunter-blue/20 hover:bg-hunter-blue/40 border border-hunter-blue text-hunter-blue hover:text-white rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center"
+            >
+              AWAKENING 📜
+            </Link>
+          </div>
         </div>
 
         {/* JSON Backup & Restore (Local-First Protection) */}

@@ -4,10 +4,11 @@ import { useState, useEffect } from 'react';
 import { db } from '@/src/db/db';
 import { CHAPTERS_DATA } from '@/src/data/chapters';
 import { currentGameDay } from '@/src/engine/time';
-import { playSystemChime } from '@/src/utils/audio';
+import { sfx } from '@/src/utils/systemAudio';
 import { GrimoireEntry, Subject } from '@/src/types';
 import Toast from '@/src/components/Toast';
 import Link from 'next/link';
+import HudFrame from '@/src/components/hud/HudFrame';
 
 export default function GrimoirePage() {
   const [entries, setEntries] = useState<GrimoireEntry[]>([]);
@@ -35,7 +36,7 @@ export default function GrimoirePage() {
     e.preventDefault();
     if (!question.trim() || !mistake.trim() || !correctApproach.trim()) return;
 
-    playSystemChime();
+    sfx.quest();
     const nowIso = new Date().toISOString();
 
     // 1. Add Grimoire Entry
@@ -76,162 +77,171 @@ export default function GrimoirePage() {
   };
 
   return (
-    <div className="min-h-screen bg-hunter-950 text-hunter-100 font-mono pb-24 max-w-md mx-auto p-4 select-none">
+    <div className="font-mono pb-24 max-w-md mx-auto select-none space-y-4">
       <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
 
       {/* Header */}
-      <div className="flex justify-between items-center border-b border-purple-500/40 pb-3 mb-4">
+      <div className="flex justify-between items-center border-b border-purple-500/40 pb-3 mb-2">
         <div>
-          <h1 className="text-lg font-extrabold text-purple-400 tracking-wider flex items-center gap-1.5">
+          <h1 className="text-base font-extrabold text-purple-400 tracking-wider flex items-center gap-1.5">
             <span>[ ERROR GRIMOIRE ]</span>
           </h1>
-          <p className="text-xs text-hunter-400">
+          <p className="text-xs text-slate-400">
             DEATH & MISTAKE CHRONICLES &bull; {entries.length} RECORDED
           </p>
         </div>
         <Link
           href="/review"
-          className="text-xs text-hunter-cyan border border-hunter-blue/40 px-2.5 py-1.5 rounded bg-hunter-blue/10 min-h-[44px] flex items-center font-bold"
+          className="text-xs text-cyan-300 border border-cyan-500/40 px-2.5 py-1.5 rounded bg-cyan-950/40 min-h-[44px] flex items-center font-bold"
         >
           SRS REVIEW 📜
         </Link>
       </div>
 
       {/* Error Notebook Entry Form */}
-      <form onSubmit={handleAddEntry} className="border border-purple-500/40 bg-hunter-900/80 rounded-lg p-3.5 mb-6 space-y-3 text-xs shadow-[0_0_15px_rgba(168,85,247,0.15)]">
-        <div className="text-xs font-bold text-purple-300">[ LOG FATAL QUESTION ERROR ]</div>
-
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label className="text-xs text-hunter-400 block mb-1">SUBJECT:</label>
-            <select
-              value={subject}
-              onChange={(e) => {
-                const sub = e.target.value as Subject;
-                setSubject(sub);
-                const first = CHAPTERS_DATA.find((c) => c.subject === sub);
-                if (first) setChapterId(first.id);
-              }}
-              className="min-h-[44px] w-full bg-hunter-950 border border-hunter-800 rounded p-2 text-xs text-hunter-100 focus:outline-none"
-            >
-              <option value="Physics">Physics</option>
-              <option value="Chemistry">Chemistry</option>
-              <option value="Biology">Biology</option>
-            </select>
+      <HudFrame title="RECORD FATAL MISTAKE" icon="📖" delay={0}>
+        <form onSubmit={handleAddEntry} className="space-y-3 text-xs">
+          {/* Wing Tabs */}
+          <div className="grid grid-cols-3 gap-2">
+            {(['Physics', 'Chemistry', 'Biology'] as Subject[]).map((subj) => (
+              <button
+                key={subj}
+                type="button"
+                onClick={() => {
+                  setSubject(subj);
+                  const firstCh = CHAPTERS_DATA.find((c) => c.subject === subj);
+                  if (firstCh) setChapterId(firstCh.id);
+                }}
+                className={`min-h-[44px] py-1.5 rounded text-xs font-bold uppercase transition-all flex items-center justify-center ${
+                  subject === subj
+                    ? subj === 'Physics'
+                      ? 'bg-blue-600/30 border border-blue-400 text-blue-200'
+                      : subj === 'Chemistry'
+                      ? 'bg-purple-600/30 border border-purple-400 text-purple-200'
+                      : 'bg-emerald-600/30 border border-emerald-400 text-emerald-200'
+                    : 'bg-slate-950/60 border border-slate-800 text-slate-400'
+                }`}
+              >
+                {subj}
+              </button>
+            ))}
           </div>
 
+          {/* Chapter Selector */}
           <div>
-            <label className="text-xs text-hunter-400 block mb-1">CHAPTER GATE:</label>
+            <label className="text-xs text-slate-400 block mb-1">CHAPTER GATE:</label>
             <select
               value={chapterId}
               onChange={(e) => setChapterId(e.target.value)}
-              className="min-h-[44px] w-full bg-hunter-950 border border-hunter-800 rounded p-2 text-xs text-hunter-100 focus:outline-none"
+              className="min-h-[44px] w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-slate-200 focus:border-purple-400 focus:outline-none"
             >
-              {availableChapters.map((ch) => (
-                <option key={ch.id} value={ch.id}>
-                  {ch.id} — {ch.name}
+              {availableChapters.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.id} — {c.name}
                 </option>
               ))}
             </select>
           </div>
-        </div>
 
-        <div>
-          <label className="text-xs text-hunter-400 block mb-1">ERROR TAG:</label>
-          <div className="grid grid-cols-4 gap-1.5 text-center">
-            {(['concept', 'calculation', 'formula', 'misread'] as const).map((t) => (
-              <button
-                key={t}
-                type="button"
-                onClick={() => setTag(t)}
-                className={`min-h-[44px] py-1.5 rounded uppercase text-xs font-bold border transition-all flex items-center justify-center ${
-                  tag === t
-                    ? 'border-purple-400 bg-purple-900/40 text-purple-200 shadow-[0_0_8px_rgba(168,85,247,0.4)]'
-                    : 'border-hunter-800 bg-hunter-950 text-hunter-400'
-                }`}
-              >
-                {t}
-              </button>
-            ))}
+          {/* Tag Selector */}
+          <div>
+            <label className="text-xs text-slate-400 block mb-1">MISTAKE NATURE:</label>
+            <div className="grid grid-cols-4 gap-1.5">
+              {(['concept', 'calculation', 'formula', 'misread'] as const).map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setTag(t)}
+                  className={`min-h-[44px] py-1 rounded text-xs font-bold uppercase transition-all flex items-center justify-center ${
+                    tag === t
+                      ? 'border border-purple-400 bg-purple-950/60 text-purple-300'
+                      : 'border border-slate-800 bg-slate-950/60 text-slate-400'
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
 
-        <div>
-          <label className="text-xs text-hunter-400 block mb-1">THE QUESTION:</label>
-          <textarea
-            required
-            rows={2}
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            placeholder="What question tricked or defeated you?"
-            className="w-full bg-hunter-950 border border-hunter-800 rounded p-2 text-xs text-hunter-100 focus:border-purple-500 focus:outline-none"
-          />
-        </div>
+          <div>
+            <label className="text-xs text-slate-400 block mb-1">THE QUESTION:</label>
+            <textarea
+              required
+              rows={2}
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              placeholder="What question tricked or defeated you?"
+              className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-slate-100 focus:border-purple-400 focus:outline-none"
+            />
+          </div>
 
-        <div>
-          <label className="text-xs text-red-400 block mb-1">MY FLAWED THOUGHT PROCESS (THE MISTAKE):</label>
-          <textarea
-            required
-            rows={2}
-            value={mistake}
-            onChange={(e) => setMistake(e.target.value)}
-            placeholder="Why did you pick the wrong option or miscalculate?"
-            className="w-full bg-hunter-950 border border-red-900/60 rounded p-2 text-xs text-hunter-100 focus:border-red-500 focus:outline-none"
-          />
-        </div>
+          <div>
+            <label className="text-xs text-red-400 block mb-1">MY FLAWED THOUGHT PROCESS (THE MISTAKE):</label>
+            <textarea
+              required
+              rows={2}
+              value={mistake}
+              onChange={(e) => setMistake(e.target.value)}
+              placeholder="Why did you pick the wrong option or miscalculate?"
+              className="w-full bg-slate-950 border border-red-900/60 rounded p-2 text-xs text-slate-100 focus:border-red-400 focus:outline-none"
+            />
+          </div>
 
-        <div>
-          <label className="text-xs text-hunter-green block mb-1">CORRECT HUNTER APPROACH:</label>
-          <textarea
-            required
-            rows={2}
-            value={correctApproach}
-            onChange={(e) => setCorrectApproach(e.target.value)}
-            placeholder="The definitive theorem, formula, or shortcut."
-            className="w-full bg-hunter-950 border border-green-900/60 rounded p-2 text-xs text-hunter-100 focus:border-green-500 focus:outline-none"
-          />
-        </div>
+          <div>
+            <label className="text-xs text-emerald-400 block mb-1">CORRECT HUNTER APPROACH:</label>
+            <textarea
+              required
+              rows={2}
+              value={correctApproach}
+              onChange={(e) => setCorrectApproach(e.target.value)}
+              placeholder="The definitive theorem, formula, or shortcut."
+              className="w-full bg-slate-950 border border-emerald-900/60 rounded p-2 text-xs text-slate-100 focus:border-emerald-400 focus:outline-none"
+            />
+          </div>
 
-        <button
-          type="submit"
-          className="min-h-[48px] w-full py-3 bg-purple-600/30 hover:bg-purple-600/50 border border-purple-400 text-purple-200 font-extrabold rounded tracking-widest uppercase transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] flex items-center justify-center text-xs"
-        >
-          BIND ERROR TO GRIMOIRE (+SCHEDULE SRS)
-        </button>
-      </form>
+          <button
+            type="submit"
+            className="min-h-[48px] w-full py-3 bg-purple-600/40 hover:bg-purple-600/60 border border-purple-400 text-purple-100 font-extrabold rounded tracking-widest uppercase transition-all shadow-[0_0_15px_rgba(168,85,247,0.4)] flex items-center justify-center text-xs"
+          >
+            BIND ERROR TO GRIMOIRE (+SCHEDULE SRS)
+          </button>
+        </form>
+      </HudFrame>
 
       {/* Recorded Grimoire Entries */}
-      <div className="space-y-3">
-        <div className="text-xs font-bold text-hunter-gray">[ ARCHIVED MISTAKES ]</div>
+      <HudFrame title={`GRIMOIRE VAULT (${entries.length} LOGS)`} icon="📜" delay={80}>
         {entries.length === 0 ? (
-          <p className="text-xs text-hunter-gray italic text-center py-6">
+          <p className="text-xs text-slate-500 italic text-center py-6">
             No errors recorded yet. Record mistakes from DPPs and mock tests to fuel your SRS deck.
           </p>
         ) : (
-          entries.map((entry, idx) => (
-            <div
-              key={idx}
-              className="p-3 bg-hunter-900/80 rounded border border-hunter-800 text-xs space-y-2 hover:border-purple-500/40 transition-all"
-            >
-              <div className="flex justify-between items-center text-[10px]">
-                <span className="font-bold text-purple-300">
-                  {entry.subject} &bull; {entry.chapter_id}
-                </span>
-                <span className="px-1.5 py-0.5 bg-purple-950 rounded border border-purple-500/40 text-purple-300 uppercase">
-                  {entry.tag}
-                </span>
+          <div className="space-y-2.5 max-h-[500px] overflow-y-auto pr-1">
+            {entries.map((entry, idx) => (
+              <div
+                key={idx}
+                className="p-3 bg-slate-950/80 rounded border border-slate-800 text-xs space-y-2 hover:border-purple-500/40 transition-all"
+              >
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-bold text-purple-300">
+                    {entry.subject} &bull; {entry.chapter_id}
+                  </span>
+                  <span className="px-1.5 py-0.5 bg-purple-950 rounded border border-purple-500/40 text-purple-300 uppercase text-[10px]">
+                    {entry.tag}
+                  </span>
+                </div>
+                <p className="font-semibold text-slate-100 text-xs">{entry.question}</p>
+                <div className="text-[11px] text-red-300 bg-red-950/30 p-2 rounded border border-red-900/40">
+                  <span className="font-bold">MISTAKE: </span>{entry.mistake}
+                </div>
+                <div className="text-[11px] text-emerald-300 bg-emerald-950/30 p-2 rounded border border-emerald-900/40">
+                  <span className="font-bold">CORRECT: </span>{entry.correct_approach}
+                </div>
               </div>
-              <p className="font-semibold text-hunter-100 text-[11px]">{entry.question}</p>
-              <div className="text-[10px] text-red-300 bg-red-950/20 p-2 rounded border border-red-900/40">
-                <span className="font-bold">MISTAKE: </span>{entry.mistake}
-              </div>
-              <div className="text-[10px] text-green-300 bg-green-950/20 p-2 rounded border border-green-900/40">
-                <span className="font-bold">CORRECT: </span>{entry.correct_approach}
-              </div>
-            </div>
-          ))
+            ))}
+          </div>
         )}
-      </div>
+      </HudFrame>
     </div>
   );
 }
