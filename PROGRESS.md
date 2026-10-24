@@ -126,7 +126,15 @@
   - `/stats` (Combat charts & XP accumulation curve)
   - `/settings` (Hunter account, cloud sync, audio & particle controls)
 - [x] **Verification**: All 34 tests passing (`vitest run`), Next.js 53/53 static pages compiled without errors (`npm run build`), tested at 390x844 mobile viewport with zero horizontal overflow, and captured verified screenshots.
-
-
-
+### Phase 14: Mobile PWA & Seamless Auto-Update Engine (Completed)
+- [x] **Web App Manifest v2 (`public/manifest.json`)**: Configured `id: "/"`, `scope: "/"`, `start_url: "/?source=pwa"`, `background_color: "#030a18"`, `theme_color: "#030a18"`, `display_override: ["standalone", "window-controls-overlay"]`, separate `any` and `maskable` icon definitions (192px and 512px), and native shortcuts for Focus Chamber, Dungeon Map, and System Shop.
+- [x] **Upgraded Service Worker (`public/sw.js`)**: Updated to cache version `solo-leveling-v2`, added automatic activation via `SKIP_WAITING` listener, Stale-While-Revalidate caching strategy for static resources, navigation preload with offline fallback, and bypass for media range streaming.
+- [x] **Auto-Update & Install Controller (`PWARegistration.tsx`)**:
+  - Automatically polls for service worker updates on window focus and route changes.
+  - Displays a holographic `[ SYSTEM UPGRADE READY ]` notification banner with instant `UPDATE ⚡` button.
+  - Automatically triggers seamless reload on `controllerchange`.
+  - Captures native `beforeinstallprompt` for one-tap home screen installation.
+- [x] **iOS Safari Optimization**: Added `appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'Solo Leveling' }` in `app/layout.tsx`.
+- [x] **Settings Installation Hub (`/settings`)**: Added direct PWA status detection, one-click `INSTALL SYSTEM ON DEVICE` trigger, and step-by-step installation guides for both Android/Chrome and iOS Safari.
+- [x] **Production Verification**: 34/34 tests passed, 53/53 static routes compiled, committed to GitHub `master`, and deployed to Vercel production at [https://solo-leveling-12.vercel.app](https://solo-leveling-12.vercel.app).
 
