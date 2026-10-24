@@ -99,7 +99,10 @@
   - Average Hunter: **31,704 XP**, Lv. 26, **Rank B**, 8-day streak, 3 penalties.
   - Slacker Hunter: **-5,510 XP**, Lv. 1, **Rank E**, 0 streak, 45 penalties.
 - **Production Build**: 53/53 static routes pre-rendered with zero errors.
-- **Unfinished Items**: All core phases in `TASKS.md` are 100% complete. User needs only to add Supabase credentials to `.env.local` per `SETUP_SUPABASE.md`.
+- **Live Vercel Production URL**: **[https://solo-leveling-12.vercel.app](https://solo-leveling-12.vercel.app)**
+- **Cloud Database**: Connected to Supabase project `https://arqodsmardzvvqgcggwq.supabase.co`.
+- **Status**: 100% Deployed and operational. All tasks complete.
+
 
 
 
