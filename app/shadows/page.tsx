@@ -20,38 +20,43 @@ export default function ShadowsPage() {
   }, []);
 
   return (
-    <div className="font-mono pb-24 max-w-md mx-auto select-none space-y-4">
+    <div className="pb-24 max-w-md mx-auto select-none space-y-4 px-1">
       {/* Header */}
-      <div className="flex justify-between items-center border-b border-purple-500/40 pb-3 mb-2">
+      <div className="flex justify-between items-center border-b border-[#5cc8ff]/30 pb-3 mb-2">
         <div>
-          <h1 className="text-base font-extrabold text-purple-400 tracking-wider flex items-center gap-2">
-            <span>[ SHADOW MONARCH ARMY ]</span>
+          <h1
+            className="text-lg font-bold text-cyan-200 tracking-wider text-shadow-blue flex items-center gap-2"
+            style={{ fontFamily: 'var(--font-cinzel)' }}
+          >
+            SHADOW MONARCH ARMY
           </h1>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-[#9bbacf]">
             EXTRACTED REVISION SOULS &bull; {shadows.length} / 37 ACTIVE
           </p>
         </div>
         <Link
           href="/dungeon"
-          className="text-xs text-cyan-300 border border-cyan-500/40 px-2.5 py-1.5 rounded bg-cyan-950/40 min-h-[44px] flex items-center"
+          className="text-xs text-cyan-300 border border-cyan-500/40 px-3 py-1.5 bg-cyan-950/40 min-h-[44px] flex items-center font-bold tracking-wider"
+          style={{ fontFamily: 'var(--font-cinzel)' }}
         >
           DUNGEON ⛩️
         </Link>
       </div>
 
       {loading ? (
-        <div className="text-center py-12 text-purple-400 animate-pulse text-xs">
+        <div className="text-center py-12 text-cyan-300 animate-pulse text-xs tracking-wider" style={{ fontFamily: 'var(--font-cinzel)' }}>
           Summoning Shadow Army...
         </div>
       ) : shadows.length === 0 ? (
         <HudFrame title="NO SHADOWS EXTRACTED YET" icon="🌑" delay={0}>
           <div className="text-center py-4 space-y-3">
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Clear Gate Boss tests (score ≥ 75% on PW DPPs) in the Dungeon to extract chapters into your Shadow Army.
+            <p className="text-sm text-slate-300 leading-relaxed">
+              Clear Gate Boss tests (score &ge; 75% on PW DPPs) in the Dungeon to extract chapters into your Shadow Army.
             </p>
             <Link
               href="/dungeon"
-              className="min-h-[44px] inline-flex items-center mt-2 px-4 py-2 bg-purple-600/30 hover:bg-purple-600/50 border border-purple-400 text-purple-200 rounded text-xs font-bold uppercase tracking-wider"
+              className="min-h-[44px] inline-flex items-center mt-2 px-4 py-2 bg-cyan-950/60 hover:bg-cyan-900/60 border-2 border-cyan-300 text-cyan-100 font-bold uppercase tracking-wider"
+              style={{ fontFamily: 'var(--font-cinzel)' }}
             >
               ENTER THE DUNGEON
             </Link>
@@ -64,17 +69,19 @@ export default function ShadowsPage() {
               <Link
                 key={sh.id}
                 href={`/gate/${sh.id}`}
-                className="min-h-[44px] block p-3 rounded-lg bg-slate-950/80 border border-purple-500/40 hover:border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.2)] transition-all"
+                className="hud2-row block p-3 transition-all hover:border-white"
               >
                 <div className="flex justify-between items-center mb-1">
-                  <span className="font-extrabold text-xs text-purple-300">{sh.id} &bull; {sh.name}</span>
-                  <span className="text-[10px] px-2 py-0.5 bg-purple-900/60 rounded text-purple-200 font-bold">
+                  <span className="font-bold text-xs text-cyan-200" style={{ fontFamily: 'var(--font-cinzel)' }}>
+                    {sh.id} &bull; {sh.name}
+                  </span>
+                  <span className="text-[10px] px-2 py-0.5 bg-cyan-950 border border-cyan-500/40 text-cyan-200 font-bold" style={{ fontFamily: 'var(--font-cinzel)' }}>
                     PW SCORE: {sh.boss_score}/20
                   </span>
                 </div>
-                <div className="flex justify-between text-[11px] text-slate-400 pt-1 border-t border-purple-900/40">
+                <div className="flex justify-between text-xs text-[#9bbacf] pt-1 border-t border-cyan-900/40">
                   <span className="uppercase">{sh.subject} SOLDIER</span>
-                  <span className="text-cyan-300 underline font-bold">VIEW GATE ↗</span>
+                  <span className="text-cyan-300 font-bold" style={{ fontFamily: 'var(--font-cinzel)' }}>VIEW GATE ↗</span>
                 </div>
               </Link>
             ))}

@@ -1,23 +1,25 @@
 'use client';
-// src/components/hud/HudFrame.tsx: glowing blue holographic panel that materializes with a scan line.
+// src/components/hud/HudFrame.tsx: the stepped-corner, glowing white-blue frame with the top crest from the video's QUEST INFO window.
 import type { ReactNode } from 'react';
 
-export default function HudFrame({
-  title, icon = '!', delay = 0, className = '', children,
-}: { title?: string; icon?: string; delay?: number; className?: string; children: ReactNode }) {
+export default function HudFrame({ title, icon = '!', delay = 0, className = '', children }:
+  { title?: string; icon?: string; delay?: number; className?: string; children: ReactNode }) {
   return (
-    <section className={`hud-frame ${className}`} style={{ ['--d' as string]: `${delay}ms` }}>
-      <span className="hud-corner tl" /><span className="hud-corner tr" />
-      <span className="hud-corner bl" /><span className="hud-corner br" />
-      <span className="hud-scan" aria-hidden />
-      <div className="hud-inner">
-        {title && (
-          <header className="hud-title">
-            <span className="hud-icon" aria-hidden>{icon}</span>
-            <h2>{title}</h2>
-          </header>
-        )}
-        {children}
+    <section className={`hud-frame hud2 ${className}`} style={{ ['--d' as string]: `${delay}ms` }}>
+      <svg className="hud2-crest" viewBox="0 0 64 22" aria-hidden>
+        <path d="M32 0 36 10 32 22 28 10Z M19 5 27 12 21 15Z M45 5 37 12 43 15Z" />
+      </svg>
+      <div className="hud2-edge">
+        <div className="hud2-body">
+          <span className="hud-scan" aria-hidden />
+          {title && (
+            <header className="hud2-title">
+              <span className="hud2-icon" aria-hidden><i>{icon}</i></span>
+              <h2>{title}</h2>
+            </header>
+          )}
+          {children}
+        </div>
       </div>
     </section>
   );

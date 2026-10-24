@@ -337,7 +337,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     async function initAuth() {
       try {
-        const guestFlag = typeof window !== 'undefined' && localStorage.getItem('solo_guest_mode') === 'true';
+        const guestFlag = typeof window !== 'undefined' && (localStorage.getItem('solo_guest_mode') === 'true' || window.location.search.includes('guest=1'));
 
         if (!isSupabaseConfigured()) {
           // If Supabase is not configured, fall back to guest mode

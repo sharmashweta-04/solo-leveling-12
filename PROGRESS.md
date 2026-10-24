@@ -104,6 +104,29 @@
 - **Cloud Database**: Connected to Supabase project `https://arqodsmardzvvqgcggwq.supabase.co`.
 - **Status**: 100% Deployed and operational. All tasks complete.
 
+---
+
+### Phase 13: Complete UI Redesign (`quest_panel.png` Spec)
+- [x] **Reference Analysis & Asset Ingestion**: Integrated reference images (`quest_panel.png`, `arise.png`, `globe.png`), `bg_globe.webp`, fonts, and HUD styles.
+- [x] **Typography Overhaul**: Monospace eliminated across all user screens. Replaced with Cinzel (`var(--font-cinzel)`) for headers/counts and Cormorant Garamond 600 (`var(--font-cormorant)`) at $\ge 15\text{px}$ for body text.
+- [x] **Authentic Stepped HUD Frame**: Cloned SVG spiky crest, 45-degree stepped chamfered border (`clip-path`), glowing cyan drop-shadow halo, and 1px inset boundary.
+- [x] **QuestInfoPanel & Boxed Rows**: Circled `!` header, bracketed subtitle, diamond dividers (`✦`), centered `GOAL`, boxed rows with `[done/target]`, and square checkboxes.
+- [x] **Living Blue Network Particles**: Interactive canvas drifting nodes, connecting lines, holographic globe backdrop, and light trails.
+- [x] **Transparent Containers**: Removed opaque `bg-hunter-*` blocks so the hologram globe and particle canvas shine through.
+- [x] **Screens Updated**:
+  - `/` (Dashboard: Status Window, System Standby, Gate Objectives, Daily Quest Info Panel, Hunter Status)
+  - `/dungeon` (37-Gate Directory with stepped HudFrame and boxed rows)
+  - `/shop` (Screen Time Keys, Rest Day Tokens, Sleep Recovery)
+  - `/gate/[id]` (Chapter Gate Detail: topics with square checkboxes, DPP & chapter tests)
+  - `/focus` (Focus Chamber 50-minute deep study timer)
+  - `/raid` (3-hour mock exam timer & PW score inputs)
+  - `/grimoire` (Fatal mistake records)
+  - `/review` (Spaced repetition flashcards with stepped card styling)
+  - `/shadows` (Shadow Monarch Army vault)
+  - `/stats` (Combat charts & XP accumulation curve)
+  - `/settings` (Hunter account, cloud sync, audio & particle controls)
+- [x] **Verification**: All 34 tests passing (`vitest run`), Next.js 53/53 static pages compiled without errors (`npm run build`), tested at 390x844 mobile viewport with zero horizontal overflow, and captured verified screenshots.
+
 
 
 

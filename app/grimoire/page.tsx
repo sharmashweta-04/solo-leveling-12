@@ -77,22 +77,26 @@ export default function GrimoirePage() {
   };
 
   return (
-    <div className="font-mono pb-24 max-w-md mx-auto select-none space-y-4">
+    <div className="pb-24 max-w-md mx-auto select-none space-y-4 px-1">
       <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
 
       {/* Header */}
-      <div className="flex justify-between items-center border-b border-purple-500/40 pb-3 mb-2">
+      <div className="flex justify-between items-center border-b border-[#5cc8ff]/30 pb-3 mb-2">
         <div>
-          <h1 className="text-base font-extrabold text-purple-400 tracking-wider flex items-center gap-1.5">
-            <span>[ ERROR GRIMOIRE ]</span>
+          <h1
+            className="text-lg font-bold text-cyan-200 tracking-wider text-shadow-blue flex items-center gap-1.5"
+            style={{ fontFamily: 'var(--font-cinzel)' }}
+          >
+            ERROR GRIMOIRE
           </h1>
-          <p className="text-xs text-slate-400">
-            DEATH & MISTAKE CHRONICLES &bull; {entries.length} RECORDED
+          <p className="text-xs text-[#9bbacf]">
+            DEATH &amp; MISTAKE CHRONICLES &bull; {entries.length} RECORDED
           </p>
         </div>
         <Link
           href="/review"
-          className="text-xs text-cyan-300 border border-cyan-500/40 px-2.5 py-1.5 rounded bg-cyan-950/40 min-h-[44px] flex items-center font-bold"
+          className="text-xs text-cyan-300 border border-cyan-500/40 px-3 py-1.5 bg-cyan-950/40 min-h-[44px] flex items-center font-bold tracking-wider"
+          style={{ fontFamily: 'var(--font-cinzel)' }}
         >
           SRS REVIEW 📜
         </Link>
@@ -112,15 +116,12 @@ export default function GrimoirePage() {
                   const firstCh = CHAPTERS_DATA.find((c) => c.subject === subj);
                   if (firstCh) setChapterId(firstCh.id);
                 }}
-                className={`min-h-[44px] py-1.5 rounded text-xs font-bold uppercase transition-all flex items-center justify-center ${
+                className={`min-h-[44px] py-1.5 text-xs font-bold uppercase transition-all flex items-center justify-center ${
                   subject === subj
-                    ? subj === 'Physics'
-                      ? 'bg-blue-600/30 border border-blue-400 text-blue-200'
-                      : subj === 'Chemistry'
-                      ? 'bg-purple-600/30 border border-purple-400 text-purple-200'
-                      : 'bg-emerald-600/30 border border-emerald-400 text-emerald-200'
-                    : 'bg-slate-950/60 border border-slate-800 text-slate-400'
+                    ? 'border-2 border-cyan-300 bg-cyan-950/70 text-cyan-100 shadow-[0_0_12px_rgba(92,200,255,0.4)]'
+                    : 'border border-cyan-800/40 bg-slate-950/60 text-slate-400'
                 }`}
+                style={{ fontFamily: 'var(--font-cinzel)' }}
               >
                 {subj}
               </button>
@@ -129,11 +130,11 @@ export default function GrimoirePage() {
 
           {/* Chapter Selector */}
           <div>
-            <label className="text-xs text-slate-400 block mb-1">CHAPTER GATE:</label>
+            <label className="text-xs text-cyan-300 block mb-1">CHAPTER GATE:</label>
             <select
               value={chapterId}
               onChange={(e) => setChapterId(e.target.value)}
-              className="min-h-[44px] w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-slate-200 focus:border-purple-400 focus:outline-none"
+              className="min-h-[44px] w-full bg-slate-950 border border-cyan-800/60 p-2 text-xs text-slate-200 focus:border-cyan-400 focus:outline-none"
             >
               {availableChapters.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -145,18 +146,19 @@ export default function GrimoirePage() {
 
           {/* Tag Selector */}
           <div>
-            <label className="text-xs text-slate-400 block mb-1">MISTAKE NATURE:</label>
+            <label className="text-xs text-cyan-300 block mb-1">MISTAKE NATURE:</label>
             <div className="grid grid-cols-4 gap-1.5">
               {(['concept', 'calculation', 'formula', 'misread'] as const).map((t) => (
                 <button
                   key={t}
                   type="button"
                   onClick={() => setTag(t)}
-                  className={`min-h-[44px] py-1 rounded text-xs font-bold uppercase transition-all flex items-center justify-center ${
+                  className={`min-h-[44px] py-1 text-xs font-bold uppercase transition-all flex items-center justify-center ${
                     tag === t
-                      ? 'border border-purple-400 bg-purple-950/60 text-purple-300'
-                      : 'border border-slate-800 bg-slate-950/60 text-slate-400'
+                      ? 'border-2 border-cyan-300 bg-cyan-950/70 text-cyan-200 shadow-[0_0_8px_rgba(92,200,255,0.3)]'
+                      : 'border border-cyan-900/50 bg-slate-950/60 text-slate-400'
                   }`}
+                  style={{ fontFamily: 'var(--font-cinzel)' }}
                 >
                   {t}
                 </button>
@@ -165,14 +167,14 @@ export default function GrimoirePage() {
           </div>
 
           <div>
-            <label className="text-xs text-slate-400 block mb-1">THE QUESTION:</label>
+            <label className="text-xs text-cyan-300 block mb-1">THE QUESTION:</label>
             <textarea
               required
               rows={2}
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               placeholder="What question tricked or defeated you?"
-              className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-slate-100 focus:border-purple-400 focus:outline-none"
+              className="w-full bg-slate-950 border border-cyan-800/60 p-2 text-xs text-slate-100 focus:border-cyan-400 focus:outline-none"
             />
           </div>
 
@@ -184,7 +186,7 @@ export default function GrimoirePage() {
               value={mistake}
               onChange={(e) => setMistake(e.target.value)}
               placeholder="Why did you pick the wrong option or miscalculate?"
-              className="w-full bg-slate-950 border border-red-900/60 rounded p-2 text-xs text-slate-100 focus:border-red-400 focus:outline-none"
+              className="w-full bg-slate-950 border border-red-900/60 p-2 text-xs text-slate-100 focus:border-red-400 focus:outline-none"
             />
           </div>
 
@@ -196,13 +198,14 @@ export default function GrimoirePage() {
               value={correctApproach}
               onChange={(e) => setCorrectApproach(e.target.value)}
               placeholder="The definitive theorem, formula, or shortcut."
-              className="w-full bg-slate-950 border border-emerald-900/60 rounded p-2 text-xs text-slate-100 focus:border-emerald-400 focus:outline-none"
+              className="w-full bg-slate-950 border border-emerald-900/60 p-2 text-xs text-slate-100 focus:border-emerald-400 focus:outline-none"
             />
           </div>
 
           <button
             type="submit"
-            className="min-h-[48px] w-full py-3 bg-purple-600/40 hover:bg-purple-600/60 border border-purple-400 text-purple-100 font-extrabold rounded tracking-widest uppercase transition-all shadow-[0_0_15px_rgba(168,85,247,0.4)] flex items-center justify-center text-xs"
+            className="min-h-[48px] w-full py-3 bg-cyan-950/60 hover:bg-cyan-900/60 border-2 border-cyan-300 text-cyan-100 font-bold tracking-widest uppercase transition-all shadow-[0_0_15px_rgba(92,200,255,0.4)] flex items-center justify-center text-xs"
+            style={{ fontFamily: 'var(--font-cinzel)' }}
           >
             BIND ERROR TO GRIMOIRE (+SCHEDULE SRS)
           </button>
@@ -212,7 +215,7 @@ export default function GrimoirePage() {
       {/* Recorded Grimoire Entries */}
       <HudFrame title={`GRIMOIRE VAULT (${entries.length} LOGS)`} icon="📜" delay={80}>
         {entries.length === 0 ? (
-          <p className="text-xs text-slate-500 italic text-center py-6">
+          <p className="text-xs text-slate-400 italic text-center py-6">
             No errors recorded yet. Record mistakes from DPPs and mock tests to fuel your SRS deck.
           </p>
         ) : (
@@ -220,21 +223,21 @@ export default function GrimoirePage() {
             {entries.map((entry, idx) => (
               <div
                 key={idx}
-                className="p-3 bg-slate-950/80 rounded border border-slate-800 text-xs space-y-2 hover:border-purple-500/40 transition-all"
+                className="hud2-row flex-col items-start gap-1.5 p-3 text-xs"
               >
-                <div className="flex justify-between items-center text-xs">
-                  <span className="font-bold text-purple-300">
+                <div className="w-full flex justify-between items-center text-xs">
+                  <span className="font-bold text-cyan-200" style={{ fontFamily: 'var(--font-cinzel)' }}>
                     {entry.subject} &bull; {entry.chapter_id}
                   </span>
-                  <span className="px-1.5 py-0.5 bg-purple-950 rounded border border-purple-500/40 text-purple-300 uppercase text-[10px]">
+                  <span className="px-1.5 py-0.5 bg-cyan-950 border border-cyan-500/40 text-cyan-300 uppercase text-[10px]" style={{ fontFamily: 'var(--font-cinzel)' }}>
                     {entry.tag}
                   </span>
                 </div>
                 <p className="font-semibold text-slate-100 text-xs">{entry.question}</p>
-                <div className="text-[11px] text-red-300 bg-red-950/30 p-2 rounded border border-red-900/40">
+                <div className="w-full text-xs text-red-300 bg-red-950/40 p-2 border border-red-900/40">
                   <span className="font-bold">MISTAKE: </span>{entry.mistake}
                 </div>
-                <div className="text-[11px] text-emerald-300 bg-emerald-950/30 p-2 rounded border border-emerald-900/40">
+                <div className="w-full text-xs text-emerald-300 bg-emerald-950/40 p-2 border border-emerald-900/40">
                   <span className="font-bold">CORRECT: </span>{entry.correct_approach}
                 </div>
               </div>

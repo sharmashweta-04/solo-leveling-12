@@ -29,7 +29,8 @@ export default function QuestArrival({ dayKey, effects = 'full', onDone }: { day
       const stored = localStorage.getItem('solo_quest_cutscene');
       if (stored === 'false') cutsceneEnabled = false;
     } catch { /* ignore */ }
-    if (seen || reduce || effects !== 'full' || !cutsceneEnabled) { finished.current = true; setPhase('done'); return; }
+    const skipParam = typeof window !== 'undefined' && window.location.search.includes('skipIntro=1');
+    if (seen || reduce || effects !== 'full' || !cutsceneEnabled || skipParam) { finished.current = true; setPhase('done'); return; }
     setPhase('playing');
     document.documentElement.classList.add('intro-playing');
     const v = ref.current;
@@ -48,7 +49,7 @@ export default function QuestArrival({ dayKey, effects = 'full', onDone }: { day
         <source src="/media/quest_arrival.mp4" type="video/mp4" />
       </video>
       <button type="button" onClick={finish}
-        className="absolute right-4 min-h-[44px] rounded border border-[#00BFFF]/60 bg-[#050816]/60 px-4 font-mono text-xs tracking-widest text-[#bfeaff]"
+        className="absolute right-4 min-h-[44px] rounded border border-[#5cc8ff]/60 bg-[#030a18]/75 px-4 font-[family-name:var(--font-cinzel)] font-bold text-xs tracking-widest text-[#dff3ff] shadow-[0_0_12px_rgba(92,200,255,0.5)]"
         style={{ bottom: 'max(1rem, env(safe-area-inset-bottom))' }}>SKIP</button>
     </div>
   );

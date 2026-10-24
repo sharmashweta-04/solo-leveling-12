@@ -113,15 +113,15 @@ export default function IntroScreen({ level = 1, onComplete, isReplay = false }:
   return (
     <div
       onClick={handleSkip}
-      className="fixed inset-0 z-50 flex flex-col justify-between bg-black text-hunter-blue font-mono p-6 select-none cursor-pointer overflow-y-auto"
+      className="fixed inset-0 z-50 flex flex-col justify-between bg-[#02050c]/90 text-cyan-200 p-6 select-none cursor-pointer overflow-y-auto backdrop-blur-md"
       style={{
-        backgroundImage: 'radial-gradient(circle at 50% 30%, rgba(0, 212, 255, 0.08) 0%, transparent 70%)'
+        backgroundImage: 'radial-gradient(circle at 50% 30%, rgba(92, 200, 255, 0.15) 0%, transparent 70%)'
       }}
     >
       {/* Top Banner */}
-      <div className="flex justify-between items-center border-b border-hunter-blue/40 pb-3 text-xs tracking-widest text-hunter-cyan">
+      <div className="flex justify-between items-center border-b border-[#5cc8ff]/40 pb-3 text-xs tracking-widest text-cyan-300" style={{ fontFamily: 'var(--font-cinzel)' }}>
         <span>{introConfig.header}</span>
-        {isTyping && <span className="animate-pulse text-[10px] text-hunter-gray">[ TAP ANYWHERE TO SKIP ]</span>}
+        {isTyping && <span className="animate-pulse text-[10px] text-[#9bbacf]">[ TAP ANYWHERE TO SKIP ]</span>}
       </div>
 
       {/* Main Content Area */}
@@ -135,13 +135,14 @@ export default function IntroScreen({ level = 1, onComplete, isReplay = false }:
                   key={idx}
                   className={`transition-all duration-300 ${
                     isLast
-                      ? 'text-lg sm:text-xl font-extrabold text-hunter-blue tracking-widest border-t border-b border-hunter-blue/50 py-3 text-center shadow-[0_0_20px_rgba(0,217,255,0.4)]'
-                      : 'text-sm sm:text-base leading-relaxed text-hunter-100 text-shadow-blue'
+                      ? 'text-lg sm:text-xl font-bold text-cyan-200 tracking-widest border-t border-b border-cyan-400/50 py-3 text-center shadow-[0_0_20px_rgba(92,200,255,0.4)]'
+                      : 'text-base sm:text-lg leading-relaxed text-[#dff3ff] text-shadow-blue'
                   }`}
+                  style={{ fontFamily: isLast ? 'var(--font-cinzel)' : 'inherit' }}
                 >
                   {line}
                   {idx === currentLineIndex && isTyping && (
-                    <span className="inline-block w-2 h-4 ml-1 bg-hunter-blue animate-pulse align-middle" />
+                    <span className="inline-block w-2 h-4 ml-1 bg-cyan-300 animate-pulse align-middle" />
                   )}
                 </div>
               );
@@ -152,7 +153,8 @@ export default function IntroScreen({ level = 1, onComplete, isReplay = false }:
                 <button
                   type="button"
                   onClick={handleAcceptIntro}
-                  className="w-full max-w-xs px-8 py-3 bg-hunter-blue/20 hover:bg-hunter-blue/40 text-hunter-blue hover:text-white border-2 border-hunter-blue rounded font-bold tracking-widest uppercase transition-all shadow-[0_0_25px_rgba(0,217,255,0.4)] active:scale-95"
+                  className="w-full max-w-xs px-8 py-3 bg-cyan-950/70 hover:bg-cyan-900/80 text-cyan-100 border-2 border-cyan-300 font-bold tracking-widest uppercase transition-all shadow-[0_0_25px_rgba(92,200,255,0.4)] active:scale-95"
+                  style={{ fontFamily: 'var(--font-cinzel)' }}
                 >
                   ACCEPT
                 </button>
@@ -163,26 +165,26 @@ export default function IntroScreen({ level = 1, onComplete, isReplay = false }:
 
         {/* Onboarding Step 1: Honesty Oath */}
         {step === 'oath' && (
-          <div className="space-y-6 border border-hunter-blue/50 bg-hunter-900/90 p-6 rounded shadow-[0_0_20px_rgba(0,217,255,0.3)]">
-            <h2 className="text-base text-hunter-cyan font-bold tracking-wider text-center">[ HONESTY OATH ]</h2>
-            <div className="text-xs text-hunter-200 leading-relaxed space-y-3">
+          <div className="space-y-6 border-2 border-cyan-300 bg-slate-950/90 p-6 shadow-[0_0_25px_rgba(92,200,255,0.35)]">
+            <h2 className="text-base text-cyan-200 font-bold tracking-wider text-center" style={{ fontFamily: 'var(--font-cinzel)' }}>HONESTY OATH</h2>
+            <div className="text-sm text-slate-200 leading-relaxed space-y-3">
               <p>
                 In the Solo Leveling protocol, there are no teachers, supervisors, or proctors. 
-                <span className="text-hunter-blue font-bold"> You are your own monarch.</span>
+                <span className="text-cyan-300 font-bold"> You are your own monarch.</span>
               </p>
-              <p className="border-l-2 border-hunter-blue pl-3 py-1 text-hunter-100 italic">
+              <p className="border-l-2 border-cyan-400 pl-3 py-1 text-slate-100 italic">
                 &quot;I solemnly swear to record only genuine, distraction-free study blocks. 
                 I will not fake timer entries, nor mark incomplete topics as cleared. 
                 Self-deception is the poison of every Hunter.&quot;
               </p>
             </div>
 
-            <label className="flex items-center gap-3 pt-2 text-xs text-hunter-blue cursor-pointer">
+            <label className="flex items-center gap-3 pt-2 text-sm text-cyan-300 cursor-pointer">
               <input
                 type="checkbox"
                 checked={oathChecked}
                 onChange={(e) => setOathChecked(e.target.checked)}
-                className="w-4 h-4 rounded border-hunter-blue text-hunter-blue focus:ring-0 bg-black cursor-pointer"
+                className="w-4 h-4 rounded border-cyan-400 text-cyan-500 focus:ring-0 bg-black cursor-pointer"
               />
               <span>I accept the Honesty Oath.</span>
             </label>
@@ -190,11 +192,12 @@ export default function IntroScreen({ level = 1, onComplete, isReplay = false }:
             <button
               disabled={!oathChecked}
               onClick={handleOathNext}
-              className={`w-full py-2.5 rounded font-bold tracking-wider uppercase transition-all ${
+              className={`w-full py-2.5 font-bold tracking-wider uppercase transition-all ${
                 oathChecked
-                  ? 'bg-hunter-blue/30 hover:bg-hunter-blue/50 border border-hunter-blue text-white shadow-[0_0_15px_rgba(0,217,255,0.4)]'
-                  : 'bg-hunter-800 text-hunter-600 border border-hunter-800 cursor-not-allowed'
+                  ? 'bg-cyan-950/70 hover:bg-cyan-900/80 border-2 border-cyan-300 text-cyan-100 shadow-[0_0_15px_rgba(92,200,255,0.4)]'
+                  : 'bg-slate-900 text-slate-500 border border-slate-800 cursor-not-allowed'
               }`}
+              style={{ fontFamily: 'var(--font-cinzel)' }}
             >
               CONFIRM OATH
             </button>
@@ -203,47 +206,48 @@ export default function IntroScreen({ level = 1, onComplete, isReplay = false }:
 
         {/* Onboarding Step 2: Choose Mode */}
         {step === 'mode' && (
-          <div className="space-y-6 border border-hunter-blue/50 bg-hunter-900/90 p-6 rounded shadow-[0_0_20px_rgba(0,217,255,0.3)]">
-            <h2 className="text-base text-hunter-cyan font-bold tracking-wider text-center">[ SELECT DIFFICULTY MODE ]</h2>
-            <p className="text-xs text-hunter-gray text-center">You can toggle this later in Settings.</p>
+          <div className="space-y-6 border-2 border-cyan-300 bg-slate-950/90 p-6 shadow-[0_0_25px_rgba(92,200,255,0.35)]">
+            <h2 className="text-base text-cyan-200 font-bold tracking-wider text-center" style={{ fontFamily: 'var(--font-cinzel)' }}>SELECT DIFFICULTY MODE</h2>
+            <p className="text-xs text-[#9bbacf] text-center">You can toggle this later in Settings.</p>
 
             <div className="space-y-3">
               <button
                 type="button"
                 onClick={() => setSelectedMode('normal')}
-                className={`w-full text-left p-4 rounded border transition-all ${
+                className={`w-full text-left p-4 border transition-all ${
                   selectedMode === 'normal'
-                    ? 'border-hunter-blue bg-hunter-blue/20 shadow-[0_0_15px_rgba(0,217,255,0.3)] text-hunter-100'
-                    : 'border-hunter-800 bg-hunter-950 text-hunter-400 hover:border-hunter-700'
+                    ? 'border-2 border-cyan-300 bg-cyan-950/60 shadow-[0_0_15px_rgba(92,200,255,0.4)] text-white'
+                    : 'border border-cyan-900/50 bg-slate-950 text-slate-400 hover:border-cyan-700'
                 }`}
               >
                 <div className="flex justify-between items-center mb-1">
-                  <span className="font-bold text-hunter-blue">NORMAL MODE</span>
-                  <span className="text-[10px] px-1.5 py-0.5 bg-hunter-blue/30 rounded text-hunter-cyan">Recommended</span>
+                  <span className="font-bold text-cyan-200" style={{ fontFamily: 'var(--font-cinzel)' }}>NORMAL MODE</span>
+                  <span className="text-[10px] px-1.5 py-0.5 bg-cyan-950 border border-cyan-500 text-cyan-300" style={{ fontFamily: 'var(--font-cinzel)' }}>Recommended</span>
                 </div>
-                <div className="text-xs text-hunter-300">8 study blocks (400 min / 6.7 hrs) + physical workout</div>
+                <div className="text-xs text-slate-300">8 study blocks (400 min / 6.7 hrs) + physical workout</div>
               </button>
 
               <button
                 type="button"
                 onClick={() => setSelectedMode('easy')}
-                className={`w-full text-left p-4 rounded border transition-all ${
+                className={`w-full text-left p-4 border transition-all ${
                   selectedMode === 'easy'
-                    ? 'border-hunter-cyan bg-hunter-cyan/20 shadow-[0_0_15px_rgba(0,217,255,0.3)] text-hunter-100'
-                    : 'border-hunter-800 bg-hunter-950 text-hunter-400 hover:border-hunter-700'
+                    ? 'border-2 border-cyan-300 bg-cyan-950/60 shadow-[0_0_15px_rgba(92,200,255,0.4)] text-white'
+                    : 'border border-cyan-900/50 bg-slate-950 text-slate-400 hover:border-cyan-700'
                 }`}
               >
                 <div className="flex justify-between items-center mb-1">
-                  <span className="font-bold text-hunter-cyan">EASY MODE</span>
-                  <span className="text-[10px] px-1.5 py-0.5 bg-hunter-800 rounded text-hunter-gray">Beginner</span>
+                  <span className="font-bold text-cyan-300" style={{ fontFamily: 'var(--font-cinzel)' }}>EASY MODE</span>
+                  <span className="text-[10px] px-1.5 py-0.5 bg-slate-800 text-slate-400" style={{ fontFamily: 'var(--font-cinzel)' }}>Beginner</span>
                 </div>
-                <div className="text-xs text-hunter-300">6 study blocks (300 min / 5.0 hrs) + physical workout</div>
+                <div className="text-xs text-slate-300">6 study blocks (300 min / 5.0 hrs) + physical workout</div>
               </button>
             </div>
 
             <button
               onClick={handleModeNext}
-              className="w-full py-2.5 rounded font-bold tracking-wider uppercase bg-hunter-blue/30 hover:bg-hunter-blue/50 border border-hunter-blue text-white shadow-[0_0_15px_rgba(0,217,255,0.4)]"
+              className="w-full py-2.5 font-bold tracking-wider uppercase bg-cyan-950/70 hover:bg-cyan-900/80 border-2 border-cyan-300 text-cyan-100 shadow-[0_0_15px_rgba(92,200,255,0.4)]"
+              style={{ fontFamily: 'var(--font-cinzel)' }}
             >
               PROCEED
             </button>
@@ -252,29 +256,30 @@ export default function IntroScreen({ level = 1, onComplete, isReplay = false }:
 
         {/* Onboarding Step 3: Confirm Start Date */}
         {step === 'date_confirm' && (
-          <div className="space-y-6 border border-hunter-blue/50 bg-hunter-900/90 p-6 rounded shadow-[0_0_20px_rgba(0,217,255,0.3)]">
-            <h2 className="text-base text-hunter-cyan font-bold tracking-wider text-center">[ CONFIRM REVISION PROTOCOL ]</h2>
-            <div className="space-y-3 text-xs text-hunter-200">
-              <div className="flex justify-between border-b border-hunter-800 pb-2">
-                <span className="text-hunter-gray">START DATE (DAY 1):</span>
-                <span className="font-bold text-hunter-blue">{startDate} (05:00 IST)</span>
+          <div className="space-y-6 border-2 border-cyan-300 bg-slate-950/90 p-6 shadow-[0_0_25px_rgba(92,200,255,0.35)]">
+            <h2 className="text-base text-cyan-200 font-bold tracking-wider text-center" style={{ fontFamily: 'var(--font-cinzel)' }}>CONFIRM REVISION PROTOCOL</h2>
+            <div className="space-y-3 text-xs text-slate-200">
+              <div className="flex justify-between border-b border-cyan-900/50 pb-2">
+                <span className="text-[#9bbacf]">START DATE (DAY 1):</span>
+                <span className="font-bold text-cyan-300">{startDate} (05:00 IST)</span>
               </div>
-              <div className="flex justify-between border-b border-hunter-800 pb-2">
-                <span className="text-hunter-gray">END DATE (DAY 45):</span>
-                <span className="font-bold text-hunter-cyan">2026-12-15</span>
+              <div className="flex justify-between border-b border-cyan-900/50 pb-2">
+                <span className="text-[#9bbacf]">END DATE (DAY 45):</span>
+                <span className="font-bold text-cyan-300">2026-12-15</span>
               </div>
-              <div className="flex justify-between border-b border-hunter-800 pb-2">
-                <span className="text-hunter-gray">DIFFICULTY:</span>
-                <span className="font-bold uppercase text-hunter-green">{selectedMode} MODE</span>
+              <div className="flex justify-between border-b border-cyan-900/50 pb-2">
+                <span className="text-[#9bbacf]">DIFFICULTY:</span>
+                <span className="font-bold uppercase text-emerald-400">{selectedMode} MODE</span>
               </div>
-              <p className="text-[11px] text-hunter-gray pt-2 text-center">
+              <p className="text-xs text-[#9bbacf] pt-2 text-center">
                 The System Window will unlock and track your 45-day Class 12 NCERT campaign.
               </p>
             </div>
 
             <button
               onClick={handleFinishOnboarding}
-              className="w-full py-3 rounded font-bold tracking-widest uppercase bg-hunter-blue hover:bg-hunter-cyan text-black shadow-[0_0_25px_rgba(0,217,255,0.5)] transition-all"
+              className="w-full py-3 font-bold tracking-widest uppercase bg-cyan-400 hover:bg-cyan-300 text-black shadow-[0_0_25px_rgba(92,200,255,0.5)] transition-all"
+              style={{ fontFamily: 'var(--font-cinzel)' }}
             >
               INITIALIZE SYSTEM WINDOW
             </button>
@@ -283,7 +288,7 @@ export default function IntroScreen({ level = 1, onComplete, isReplay = false }:
       </div>
 
       {/* Bottom Status */}
-      <div className="text-center text-[10px] text-hunter-gray tracking-wider">
+      <div className="text-center text-xs text-[#9bbacf] tracking-wider" style={{ fontFamily: 'var(--font-cinzel)' }}>
         SOLO LEVELING: CLASS 12 PCB DUNGEON &bull; LOCAL-FIRST PROTOCOL
       </div>
     </div>

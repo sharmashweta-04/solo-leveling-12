@@ -187,32 +187,32 @@ export default function FocusTimerPage() {
   const progressPercent = Math.min(100, (elapsedSeconds / BLOCK_DURATION_SECONDS) * 100);
 
   return (
-    <div className="font-mono pb-24 max-w-md mx-auto select-none space-y-4">
+    <div className="select-none space-y-5">
       <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
 
       {/* Header */}
-      <div className="flex justify-between items-center border-b border-cyan-500/30 pb-3 mb-2">
+      <header className="flex justify-between items-end border-b border-[#5cc8ff]/30 pb-3 pt-1">
         <div>
-          <h1 className="text-base font-extrabold text-cyan-400 tracking-wider text-shadow-blue flex items-center gap-2">
-            <span>[ FOCUS CHAMBER ]</span>
+          <h1 className="text-xl md:text-2xl font-bold font-[family-name:var(--font-cinzel)] text-[#dff3ff] tracking-wider text-shadow-blue flex items-center gap-2">
+            <span>FOCUS CHAMBER</span>
           </h1>
-          <p className="text-xs text-slate-400">
+          <p className="text-[15px] font-semibold text-[#8ab4d8] tracking-wide mt-0.5">
             50-MINUTE DEEP DIVE &bull; 90% COMPLETION RULE
           </p>
         </div>
         <Link
           href="/"
-          className="text-xs text-cyan-300 border border-cyan-500/40 px-2.5 py-1.5 rounded bg-cyan-950/30 font-bold min-h-[44px] flex items-center"
+          className="hud2-row !min-h-[44px] px-3 py-1 font-[family-name:var(--font-cinzel)] font-bold text-xs text-[#5cc8ff] border-[#5cc8ff]/50 hover:bg-[#5cc8ff]/20 flex items-center"
         >
           STATUS ⚡
         </Link>
-      </div>
+      </header>
 
       {/* Selection Form */}
       <HudFrame title="CHAMBER CONFIGURATION" icon="⚙️" delay={0}>
-        <div className="space-y-3 text-xs">
+        <div className="space-y-3">
           <div>
-            <label className="text-xs text-slate-400 block mb-1">SELECT SUBJECT:</label>
+            <label className="text-[15px] font-bold text-[#8ab4d8] block mb-1">SELECT SUBJECT:</label>
             <div className="grid grid-cols-3 gap-2">
               {(['Physics', 'Chemistry', 'Biology'] as Subject[]).map((sub) => (
                 <button
@@ -225,10 +225,10 @@ export default function FocusTimerPage() {
                     const firstCh = CHAPTERS_DATA.find((c) => c.subject === sub);
                     if (firstCh) setChapterId(firstCh.id);
                   }}
-                  className={`min-h-[44px] py-2 px-1 rounded border text-center transition-all text-xs flex items-center justify-center ${
+                  className={`min-h-[44px] py-2 px-1 rounded border text-center transition-all font-[family-name:var(--font-cinzel)] font-bold text-xs flex items-center justify-center ${
                     subject === sub
-                      ? 'border-cyan-400 bg-cyan-950/60 text-cyan-300 font-bold shadow-[0_0_10px_rgba(0,255,255,0.3)]'
-                      : 'border-slate-800 bg-slate-950/60 text-slate-400 hover:text-white'
+                      ? 'border-[#5cc8ff] bg-[#5cc8ff]/20 text-[#dff3ff] shadow-[0_0_12px_rgba(92,200,255,0.4)]'
+                      : 'border-[#1b3558]/70 bg-[#050f24]/70 text-[#8ab4d8] hover:text-[#dff3ff]'
                   } ${isActive ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {sub}
@@ -238,12 +238,12 @@ export default function FocusTimerPage() {
           </div>
 
           <div>
-            <label className="text-xs text-slate-400 block mb-1">SELECT CHAPTER GATE:</label>
+            <label className="text-[15px] font-bold text-[#8ab4d8] block mb-1">SELECT CHAPTER GATE:</label>
             <select
               value={chapterId}
               disabled={isActive}
               onChange={(e) => setChapterId(e.target.value)}
-              className="min-h-[44px] w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-slate-100 focus:border-cyan-400 focus:outline-none"
+              className="min-h-[44px] w-full bg-[#030a18] border border-[#5cc8ff]/40 rounded p-2 text-[15px] text-[#dff3ff] focus:border-[#5cc8ff] focus:outline-none font-[family-name:var(--font-cormorant)] font-semibold"
             >
               {availableChapters.map((ch) => (
                 <option key={ch.id} value={ch.id}>
@@ -258,46 +258,46 @@ export default function FocusTimerPage() {
       {/* Holographic Timer Display */}
       <HudFrame title="FOCUS CHAMBER COUNTDOWN" icon="⏱️" delay={80}>
         <div className="text-center py-2">
-          <div className="text-xs text-slate-400 tracking-widest uppercase mb-1">
+          <div className="text-[15px] font-bold font-[family-name:var(--font-cinzel)] text-[#8ab4d8] tracking-widest uppercase mb-1">
             {subject} &bull; {chapterId}
           </div>
 
-          <div className="text-5xl sm:text-6xl font-black text-cyan-300 tracking-tighter my-3 text-shadow-blue font-mono">
+          <div className="text-6xl sm:text-7xl font-bold font-[family-name:var(--font-cinzel)] text-[#dff3ff] tracking-tight my-4 text-shadow-blue drop-shadow-[0_0_20px_rgba(92,200,255,0.9)]">
             {formatTime(elapsedSeconds)}
           </div>
 
           {/* Progress bar */}
-          <div className="w-full h-3 bg-slate-950 rounded-full overflow-hidden border border-slate-800 mb-3">
+          <div className="w-full h-3 bg-[#030a18] overflow-hidden border border-[#5cc8ff]/40 mb-3">
             <div
-              className="h-full bg-gradient-to-r from-blue-600 via-cyan-400 to-emerald-400 transition-all duration-300 shadow-[0_0_10px_rgba(0,255,255,0.8)]"
+              className="h-full bg-gradient-to-r from-[#1e5aab] via-[#5cc8ff] to-[#e8f8ff] transition-all duration-300 shadow-[0_0_12px_rgba(92,200,255,0.8)]"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
 
-          <div className="flex justify-between text-xs text-slate-400 mb-4 font-mono">
+          <div className="flex justify-between text-[15px] text-[#8ab4d8] mb-4 font-semibold px-1">
             <span>PROGRESS: {Math.floor(progressPercent)}%</span>
             <span>
               {interruptions > 0 ? (
                 <span className="text-red-400 font-bold">⚠️ {interruptions} TAB SWITCHES</span>
               ) : (
-                <span className="text-emerald-400">PERFECT FOCUS</span>
+                <span className="text-[#34d399] font-bold">PERFECT FOCUS</span>
               )}
             </span>
           </div>
 
           {/* Timer Controls */}
-          <div className="flex gap-3 justify-center">
+          <div className="pt-2">
             {!isActive ? (
               <button
                 onClick={handleStartTimer}
-                className="min-h-[48px] w-full py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-extrabold rounded-lg tracking-widest uppercase transition-all shadow-[0_0_20px_rgba(6,182,212,0.4)] active:scale-95 flex items-center justify-center text-xs"
+                className="hud2-row justify-center text-center font-[family-name:var(--font-cinzel)] font-bold text-sm tracking-widest text-[#dff3ff] border-[#5cc8ff] bg-[#5cc8ff]/25 hover:bg-[#5cc8ff]/40 shadow-[0_0_15px_rgba(92,200,255,0.4)]"
               >
                 START 50-MIN FOCUS
               </button>
             ) : (
               <button
                 onClick={() => handleCompleteBlock(false)}
-                className="min-h-[48px] w-full py-3 bg-red-600/30 hover:bg-red-600/50 border border-red-500 text-red-200 font-bold rounded-lg tracking-widest uppercase transition-all flex items-center justify-center text-xs"
+                className="hud2-row justify-center text-center font-[family-name:var(--font-cinzel)] font-bold text-sm tracking-widest text-red-300 border-red-500/50 hover:bg-red-950/40"
               >
                 FINISH / ABORT BLOCK
               </button>

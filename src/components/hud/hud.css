@@ -1,48 +1,44 @@
-/* src/components/hud/hud.css: import once in app/layout.tsx. Palette: #050816 base, #00BFFF primary, #00FFFF secondary. */
-:root { --hud-bg:#050816; --hud-blue:#00BFFF; --hud-cyan:#00FFFF; --hud-ice:#bfeaff; }
+/* Replaces the old hud.css. Matches docs/reference/quest_panel.png: serif type, stepped glowing frame, boxed rows. */
+:root{
+  --ice:#dff3ff; --blue:#5cc8ff; --deep:#030a18;
+  --hud-poly:0 18px,10px 18px,10px 8px,22px 8px,22px 0,calc(50% - 40px) 0,calc(50% - 28px) 7px,calc(50% + 28px) 7px,calc(50% + 40px) 0,calc(100% - 22px) 0,calc(100% - 22px) 8px,calc(100% - 10px) 8px,calc(100% - 10px) 18px,100% 18px,100% calc(100% - 18px),calc(100% - 10px) calc(100% - 18px),calc(100% - 10px) calc(100% - 8px),calc(100% - 22px) calc(100% - 8px),calc(100% - 22px) 100%,22px 100%,22px calc(100% - 8px),10px calc(100% - 8px),10px calc(100% - 18px),0 calc(100% - 18px);
+}
+.hud2{position:relative;margin-top:10px;
+  filter:drop-shadow(0 0 3px rgba(190,235,255,.9)) drop-shadow(0 0 14px rgba(40,150,255,.6));
+  animation:hud-materialize .8s cubic-bezier(.2,.8,.2,1) var(--d,0ms) both}
+.hud2-edge{padding:4px;background:linear-gradient(180deg,#f0fbff,#7fcbff 45%,#e8f8ff);clip-path:polygon(var(--hud-poly))}
+.hud2-body{position:relative;padding:24px 18px 20px;clip-path:polygon(var(--hud-poly));
+  background:radial-gradient(120% 55% at 50% 0%,rgba(30,90,170,.30),transparent 70%),var(--deep);
+  font-family:var(--font-cormorant),Georgia,serif;color:var(--ice)}
+.hud2-body::before{content:"";position:absolute;inset:10px;border:1px solid rgba(110,170,240,.32);pointer-events:none}
+.hud2-crest{position:absolute;z-index:3;top:-12px;left:50%;width:54px;height:20px;transform:translateX(-50%);fill:#e8f8ff;filter:drop-shadow(0 0 5px #5cc8ff)}
 
-.hud-frame{position:relative;padding:10px;border-radius:14px;background:rgba(5,8,22,.72);
-  border:1px solid rgba(0,191,255,.8);
-  box-shadow:0 0 10px rgba(0,191,255,.55),0 0 34px rgba(0,191,255,.25),inset 0 0 18px rgba(0,191,255,.18);
-  backdrop-filter:blur(2px);
-  animation:hud-materialize .8s cubic-bezier(.2,.8,.2,1) var(--d,0ms) both,hud-pulse 3.4s ease-in-out calc(var(--d,0ms) + .8s) infinite}
-.hud-frame::before{content:"";position:absolute;inset:4px;border:1px solid rgba(0,255,255,.35);border-radius:10px;pointer-events:none}
-.hud-inner{position:relative;padding:14px;border:1px solid rgba(160,225,255,.5);
-  background:linear-gradient(180deg,rgba(0,45,90,.32),rgba(2,10,30,.62));font-family:'JetBrains Mono',ui-monospace,monospace;color:var(--hud-ice)}
+.hud2-title{display:flex;align-items:stretch;margin:0 0 16px;border:1px solid rgba(170,220,255,.5);background:rgba(10,30,60,.55)}
+.hud2-icon{display:grid;place-items:center;width:62px;border-right:1px solid rgba(170,220,255,.5)}
+.hud2-icon i{display:grid;place-items:center;width:30px;height:30px;border:2px solid var(--ice);border-radius:50%;font:700 18px var(--font-cinzel),serif;font-style:normal;text-shadow:0 0 8px var(--blue)}
+.hud2-title h2{flex:1;margin:0;padding:12px 8px;text-align:center;font:700 22px var(--font-cinzel),serif;letter-spacing:.1em;text-shadow:0 0 10px rgba(92,200,255,.9)}
 
-.hud-corner{position:absolute;width:16px;height:16px;border:2px solid #fff;filter:drop-shadow(0 0 4px var(--hud-cyan));pointer-events:none}
-.hud-corner.tl{top:-2px;left:-2px;border-right:0;border-bottom:0;border-top-left-radius:12px}
-.hud-corner.tr{top:-2px;right:-2px;border-left:0;border-bottom:0;border-top-right-radius:12px}
-.hud-corner.bl{bottom:-2px;left:-2px;border-right:0;border-top:0;border-bottom-left-radius:12px}
-.hud-corner.br{bottom:-2px;right:-2px;border-left:0;border-top:0;border-bottom-right-radius:12px}
+.hud2-sub{margin:0 0 12px;text-align:center;font-size:15px;font-weight:600}
+.hud2-div{position:relative;height:1px;margin:10px 0;background:linear-gradient(90deg,transparent,rgba(150,205,255,.6),transparent)}
+.hud2-div::after,.hud2-goalline::after{content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;background:var(--ice);transform:translate(-50%,-50%) rotate(45deg);box-shadow:0 0 6px var(--blue)}
+.hud2-goal{margin:14px 0 4px;text-align:center;font:700 26px var(--font-cinzel),serif;letter-spacing:.06em;text-shadow:0 0 12px rgba(92,200,255,.95)}
+.hud2-goalline{position:relative;width:96px;height:1px;margin:0 auto 14px;background:linear-gradient(90deg,transparent,var(--blue),transparent)}
+.hud2-goals{list-style:none;margin:0 0 6px;padding:0}
+.hud2-row{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;margin-bottom:6px;padding:8px 14px;
+  border:1px solid rgba(110,160,220,.45);background:rgba(5,15,35,.6);color:inherit;font:600 18px var(--font-cormorant),Georgia,serif;text-align:left;cursor:pointer}
+.hud2-label{flex:1}
+.hud2-count{font-size:16px}
+.hud2-check{display:grid;place-items:center;width:20px;height:20px;border:1.5px solid #cfe8ff;font:700 14px sans-serif;color:#fff}
+.hud2-check.on{background:rgba(92,200,255,.35);box-shadow:0 0 10px var(--blue)}
+.hud2-warning{margin:8px 0 0;text-align:center;font-size:16px;font-weight:600;line-height:1.45}
+.hud2-warning b{font-weight:700;text-shadow:0 0 8px rgba(92,200,255,.9)}
 
 .hud-scan{position:absolute;left:0;right:0;top:0;height:2px;z-index:2;pointer-events:none;
-  background:linear-gradient(90deg,transparent,#fff,var(--hud-cyan),transparent);box-shadow:0 0 14px var(--hud-cyan);
-  animation:hud-scan 1s ease-out var(--d,0ms) both}
-
-.hud-title{display:flex;align-items:stretch;margin-bottom:12px;border:1px solid rgba(160,225,255,.6);background:rgba(0,40,80,.35)}
-.hud-icon{display:grid;place-items:center;width:40px;font-weight:800;border-right:1px solid rgba(160,225,255,.6);color:#fff;text-shadow:0 0 8px var(--hud-cyan)}
-.hud-title h2{flex:1;margin:0;padding:8px 10px;text-align:center;letter-spacing:.3em;font-size:14px;color:var(--hud-ice);text-shadow:0 0 8px var(--hud-blue)}
-
-.hud-sub{text-align:center;font-size:12px;margin:0 0 16px;color:var(--hud-ice)}
-.hud-goal{text-align:center;margin:0 0 12px}
-.hud-goal span{font-size:15px;letter-spacing:.2em;text-decoration:underline;text-underline-offset:5px;text-shadow:0 0 8px var(--hud-blue)}
-.hud-goals{list-style:none;margin:0 0 16px;padding:0}
-.hud-row{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;background:none;border:0;color:inherit;font:inherit;font-size:13px;text-align:left;cursor:pointer}
-.hud-row-label{flex:1}
-.hud-row-count{opacity:.9}
-.hud-check{display:grid;place-items:center;width:18px;height:18px;border:1px solid var(--hud-ice);font-size:13px;line-height:1;color:#fff}
-.hud-check.on{background:rgba(0,191,255,.35);box-shadow:0 0 10px var(--hud-cyan)}
-.hud-warning{text-align:center;font-size:12px;line-height:1.5;margin:0;color:var(--hud-ice)}
-.hud-warning b{color:#fff;text-shadow:0 0 6px var(--hud-cyan)}
-
+  background:linear-gradient(90deg,transparent,#fff,#5cc8ff,transparent);box-shadow:0 0 14px #5cc8ff;animation:hud-scan 1s ease-out var(--d,0ms) both}
 @keyframes hud-materialize{
   0%{opacity:0;transform:scaleY(.03) scaleX(.96);filter:brightness(3)}
-  55%{opacity:1;transform:scaleY(1.02) scaleX(1);filter:brightness(1.8)}
-  100%{opacity:1;transform:none;filter:none}}
+  55%{opacity:1;transform:scaleY(1.02);filter:drop-shadow(0 0 8px #fff) brightness(1.6)}
+  100%{opacity:1;transform:none}}
 @keyframes hud-scan{0%{top:0;opacity:1}100%{top:100%;opacity:0}}
-@keyframes hud-pulse{
-  0%,100%{box-shadow:0 0 10px rgba(0,191,255,.5),0 0 30px rgba(0,191,255,.2),inset 0 0 16px rgba(0,191,255,.15)}
-  50%{box-shadow:0 0 16px rgba(0,255,255,.75),0 0 46px rgba(0,191,255,.38),inset 0 0 24px rgba(0,191,255,.26)}}
-
-@media (prefers-reduced-motion:reduce){.hud-frame,.hud-scan{animation:none}}
+html[data-effects="lite"] .hud2{filter:none;box-shadow:0 0 12px rgba(60,160,255,.5)}
+@media (prefers-reduced-motion:reduce){.hud2,.hud-scan{animation:none}}

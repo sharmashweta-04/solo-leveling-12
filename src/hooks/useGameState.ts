@@ -53,7 +53,8 @@ export function useGameState() {
 
     // 1. Settings
     const introSet = await db.settings.get('intro_completed');
-    setIntroCompleted(Boolean(introSet?.value));
+    const skipIntroQuery = typeof window !== 'undefined' && window.location.search.includes('skipIntro=1');
+    setIntroCompleted(Boolean(introSet?.value) || skipIntroQuery);
 
     const diffSet = await db.settings.get('difficulty_mode');
     const mode: DifficultyMode = (diffSet?.value as DifficultyMode) || 'normal';

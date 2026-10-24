@@ -19,12 +19,15 @@ function AuthGuardWrapper({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     const updateEff = () => {
       try {
+        let eff: 'full' | 'lite' | 'off' = 'full';
         const stored = localStorage.getItem('solo_visual_effects') as 'full' | 'lite' | 'off' | null;
         if (stored) {
-          setEffectsMode(stored);
+          eff = stored;
         } else if (typeof navigator !== 'undefined' && navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) {
-          setEffectsMode('lite');
+          eff = 'lite';
         }
+        setEffectsMode(eff);
+        document.documentElement.setAttribute('data-effects', eff);
       } catch {
         // Ignore
       }

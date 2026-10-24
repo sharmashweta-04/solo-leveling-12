@@ -147,53 +147,52 @@ export default function BossRaidPage() {
   };
 
   return (
-    <div className="font-mono pb-24 max-w-md mx-auto select-none space-y-4">
+    <div className="select-none space-y-5">
       <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
 
       {/* Header */}
-      <div className="flex justify-between items-center border-b border-red-500/40 pb-3 mb-2">
+      <header className="flex justify-between items-end border-b border-[#5cc8ff]/30 pb-3 pt-1">
         <div>
-          <h1 className="text-base font-extrabold text-red-400 tracking-wider flex items-center gap-2">
-            <span>[ BOSS RAID CHAMBER ]</span>
+          <h1 className="text-xl md:text-2xl font-bold font-[family-name:var(--font-cinzel)] text-[#dff3ff] tracking-wider text-shadow-blue flex items-center gap-2">
+            <span>BOSS RAID CHAMBER</span>
           </h1>
-          <p className="text-xs text-slate-400">
+          <p className="text-[15px] font-semibold text-[#8ab4d8] tracking-wide mt-0.5">
             3-HOUR MOCK TEST TIMING &bull; PW APP PROTOCOL
           </p>
         </div>
         <Link
           href="/stats"
-          className="text-xs text-cyan-400 border border-cyan-500/40 px-2.5 py-1.5 rounded bg-cyan-950/40 min-h-[44px] flex items-center"
+          className="hud2-row !min-h-[44px] px-3 py-1 font-[family-name:var(--font-cinzel)] font-bold text-xs text-[#5cc8ff] border-[#5cc8ff]/50 hover:bg-[#5cc8ff]/20 flex items-center"
         >
           TRENDS 📊
         </Link>
-      </div>
+      </header>
 
       {/* Briefing Card */}
-      <HudFrame title="RAID BRIEFING: OPEN PW APP" icon="⚠️" delay={0}>
-        <p className="text-slate-200 leading-relaxed text-xs">
-          Mock tests are taken directly inside the <span className="text-cyan-300 font-bold">PW app</span>. 
-          This Chamber times your 3-hour exam without pause. When finished, submit your scores below to claim the 
-          <span className="text-cyan-400 font-bold"> +500 XP</span> and 
-          <span className="text-emerald-400 font-bold"> 90-minute Monarch&apos;s Leisure Key</span>.
+      <HudFrame title="RAID BRIEFING" icon="⚠️" delay={0}>
+        <p className="hud2-sub">
+          Mock tests are taken in the <strong className="text-white">PW app</strong>. Submit your scores here to claim +500 XP and a 90-min Leisure Key.
         </p>
       </HudFrame>
 
       {/* 3-Hour Raid Countdown */}
-      <HudFrame title={`RAID TIMER (${Math.round(RAID_DURATION_SECONDS / 60)} MINUTES)`} icon="⚔️" delay={80}>
+      <HudFrame title={`RAID TIMER (${Math.round(RAID_DURATION_SECONDS / 60)} MINUTES)`} icon="⚔️" delay={60}>
         <div className="text-center py-2">
-          <div className="text-4xl sm:text-5xl font-black text-red-500 tracking-tight my-3">
+          <div className="text-5xl sm:text-6xl font-bold font-[family-name:var(--font-cinzel)] text-[#ff4d6d] tracking-wider my-3 drop-shadow-[0_0_15px_rgba(255,77,109,0.8)]">
             {formatTimer(elapsedSeconds)}
           </div>
 
           {!isActive ? (
-            <button
-              onClick={handleStartRaid}
-              className="min-h-[48px] w-full py-3 bg-red-600 hover:bg-red-500 text-white font-extrabold rounded-lg tracking-widest uppercase transition-all shadow-[0_0_20px_rgba(255,51,102,0.4)] flex items-center justify-center text-xs"
-            >
-              START {Math.round(RAID_DURATION_SECONDS / 60)}-MIN RAID
-            </button>
+            <div className="pt-2">
+              <button
+                onClick={handleStartRaid}
+                className="hud2-row justify-center text-center font-[family-name:var(--font-cinzel)] font-bold text-sm tracking-widest text-[#dff3ff] border-red-500/60 bg-red-950/40 hover:bg-red-900/60 shadow-[0_0_15px_rgba(255,77,109,0.4)]"
+              >
+                START {Math.round(RAID_DURATION_SECONDS / 60)}-MIN RAID
+              </button>
+            </div>
           ) : (
-            <div className="text-xs text-cyan-300 animate-pulse">
+            <div className="hud2-row justify-center text-center text-[#5cc8ff] text-[15px] font-bold animate-pulse">
               ⚔️ Raid in progress. Complete your test in the PW app.
             </div>
           )}
@@ -201,11 +200,11 @@ export default function BossRaidPage() {
       </HudFrame>
 
       {/* Score Submission Form */}
-      <HudFrame title="SUBMIT PW MOCK TEST RESULT" icon="📝" delay={160}>
-        <form onSubmit={handleSubmitResult} className="space-y-3 text-xs">
+      <HudFrame title="SUBMIT PW MOCK TEST RESULT" icon="📝" delay={120}>
+        <form onSubmit={handleSubmitResult} className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-slate-400 block mb-1">TOTAL MARKS (/720):</label>
+              <label className="text-[14px] font-bold text-[#8ab4d8] block mb-1">TOTAL MARKS (/720):</label>
               <input
                 type="number"
                 required
@@ -213,118 +212,122 @@ export default function BossRaidPage() {
                 max={720}
                 value={totalMarks}
                 onChange={(e) => setTotalMarks(Number(e.target.value))}
-                className="min-h-[44px] w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-slate-100 font-bold focus:border-cyan-400 focus:outline-none"
+                className="min-h-[44px] w-full bg-[#030a18] border border-[#5cc8ff]/40 rounded p-2 text-center text-lg font-bold font-[family-name:var(--font-cinzel)] text-[#5cc8ff] focus:border-[#5cc8ff] focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="text-xs text-slate-400 block mb-1">TIME TAKEN (MIN):</label>
+              <label className="text-[14px] font-bold text-[#8ab4d8] block mb-1">TIME TAKEN (MIN):</label>
               <input
                 type="number"
                 required
                 value={timeTaken}
                 onChange={(e) => setTimeTaken(Number(e.target.value))}
-                className="min-h-[44px] w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-slate-100 font-bold focus:border-cyan-400 focus:outline-none"
+                className="min-h-[44px] w-full bg-[#030a18] border border-[#5cc8ff]/40 rounded p-2 text-center text-lg font-bold font-[family-name:var(--font-cinzel)] text-[#5cc8ff] focus:border-[#5cc8ff] focus:outline-none"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-3 gap-2">
             <div>
-              <label className="text-xs text-slate-400 block mb-1">ATTEMPTED:</label>
+              <label className="text-[13px] font-bold text-[#8ab4d8] block mb-1">ATTEMPTED:</label>
               <input
                 type="number"
                 value={attempted}
                 onChange={(e) => setAttempted(Number(e.target.value))}
-                className="min-h-[44px] w-full bg-slate-950 border border-slate-700 rounded p-1.5 text-center text-xs text-slate-100 focus:outline-none"
+                className="min-h-[44px] w-full bg-[#030a18] border border-[#5cc8ff]/30 rounded p-1.5 text-center text-[15px] text-[#dff3ff] font-bold focus:outline-none"
               />
             </div>
             <div>
-              <label className="text-xs text-emerald-400 block mb-1">CORRECT:</label>
+              <label className="text-[13px] font-bold text-[#34d399] block mb-1">CORRECT:</label>
               <input
                 type="number"
                 value={correct}
                 onChange={(e) => setCorrect(Number(e.target.value))}
-                className="min-h-[44px] w-full bg-slate-950 border border-emerald-700/60 rounded p-1.5 text-center text-xs text-emerald-300 focus:outline-none"
+                className="min-h-[44px] w-full bg-[#030a18] border border-[#34d399]/40 rounded p-1.5 text-center text-[15px] text-[#34d399] font-bold focus:outline-none"
               />
             </div>
             <div>
-              <label className="text-xs text-red-400 block mb-1">WRONG:</label>
+              <label className="text-[13px] font-bold text-[#ff4d6d] block mb-1">WRONG:</label>
               <input
                 type="number"
                 value={wrong}
                 onChange={(e) => setWrong(Number(e.target.value))}
-                className="min-h-[44px] w-full bg-slate-950 border border-red-700/60 rounded p-1.5 text-center text-xs text-red-300 focus:outline-none"
+                className="min-h-[44px] w-full bg-[#030a18] border border-[#ff4d6d]/40 rounded p-1.5 text-center text-[15px] text-[#ff4d6d] font-bold focus:outline-none"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-3 gap-2">
             <div>
-              <label className="text-xs text-blue-400 block mb-1">PHYSICS (/180):</label>
+              <label className="text-[13px] font-bold text-[#7fcbff] block mb-1">PHYSICS (/180):</label>
               <input
                 type="number"
                 value={physicsScore}
                 onChange={(e) => setPhysicsScore(Number(e.target.value))}
-                className="min-h-[44px] w-full bg-slate-950 border border-blue-700/60 rounded p-1.5 text-center text-xs text-blue-300 focus:outline-none"
+                className="min-h-[44px] w-full bg-[#030a18] border border-[#7fcbff]/40 rounded p-1.5 text-center text-[15px] text-[#7fcbff] font-bold focus:outline-none"
               />
             </div>
             <div>
-              <label className="text-xs text-purple-400 block mb-1">CHEMISTRY (/180):</label>
+              <label className="text-[13px] font-bold text-[#c084fc] block mb-1">CHEMISTRY (/180):</label>
               <input
                 type="number"
                 value={chemistryScore}
                 onChange={(e) => setChemistryScore(Number(e.target.value))}
-                className="min-h-[44px] w-full bg-slate-950 border border-purple-700/60 rounded p-1.5 text-center text-xs text-purple-300 focus:outline-none"
+                className="min-h-[44px] w-full bg-[#030a18] border border-[#c084fc]/40 rounded p-1.5 text-center text-[15px] text-[#c084fc] font-bold focus:outline-none"
               />
             </div>
             <div>
-              <label className="text-xs text-emerald-400 block mb-1">BIOLOGY (/360):</label>
+              <label className="text-[13px] font-bold text-[#34d399] block mb-1">BIOLOGY (/360):</label>
               <input
                 type="number"
                 value={biologyScore}
                 onChange={(e) => setBiologyScore(Number(e.target.value))}
-                className="min-h-[44px] w-full bg-slate-950 border border-emerald-700/60 rounded p-1.5 text-center text-xs text-emerald-300 focus:outline-none"
+                className="min-h-[44px] w-full bg-[#030a18] border border-[#34d399]/40 rounded p-1.5 text-center text-[15px] text-[#34d399] font-bold focus:outline-none"
               />
             </div>
           </div>
 
           <div>
-            <label className="text-xs text-slate-400 block mb-1">MOCK ANALYSIS NOTES:</label>
+            <label className="text-[14px] font-bold text-[#8ab4d8] block mb-1">MOCK ANALYSIS NOTES:</label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Record major mistake patterns, negative marks, and timing gaps..."
               rows={2}
-              className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-slate-100 focus:border-cyan-400 focus:outline-none"
+              className="w-full bg-[#030a18] border border-[#5cc8ff]/40 rounded p-2 text-[15px] text-[#dff3ff] focus:border-[#5cc8ff] focus:outline-none font-[family-name:var(--font-cormorant)] font-semibold"
             />
           </div>
 
-          <button
-            type="submit"
-            className="min-h-[48px] w-full py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-extrabold rounded tracking-widest uppercase transition-all shadow-[0_0_15px_rgba(6,182,212,0.4)] flex items-center justify-center text-xs"
-          >
-            CONFIRM RAID RESULT & CLAIM 90-MIN KEY
-          </button>
+          <div className="pt-2">
+            <button
+              type="submit"
+              className="hud2-row justify-center text-center font-[family-name:var(--font-cinzel)] font-bold text-sm tracking-widest text-[#dff3ff] border-[#5cc8ff] bg-[#5cc8ff]/25 hover:bg-[#5cc8ff]/40 shadow-[0_0_15px_rgba(92,200,255,0.4)]"
+            >
+              CONFIRM RESULT & CLAIM 90-MIN KEY
+            </button>
+          </div>
         </form>
       </HudFrame>
 
       {/* Past Mocks Summary */}
       {pastMocks.length > 0 && (
-        <HudFrame title={`RAID HISTORY (${pastMocks.length} CLEARED)`} icon="📜" delay={240}>
-          <div className="space-y-2">
+        <HudFrame title={`RAID HISTORY (${pastMocks.length} CLEARED)`} icon="📜" delay={180}>
+          <ul className="hud2-goals">
             {pastMocks.map((m, idx) => (
-              <div key={idx} className="p-2.5 bg-slate-950/80 rounded border border-slate-800 flex justify-between items-center text-xs min-h-[44px]">
-                <div>
-                  <span className="font-bold text-cyan-300">{m.total_marks}/720</span>
-                  <span className="text-xs text-slate-400 ml-2">Day {m.day_number} &bull; {m.date}</span>
+              <li key={idx}>
+                <div className="hud2-row justify-between">
+                  <div>
+                    <span className="font-[family-name:var(--font-cinzel)] font-bold text-[#5cc8ff] text-base">{m.total_marks}/720</span>
+                    <span className="text-[14px] text-[#8ab4d8] ml-2">Day {m.day_number} &bull; {m.date}</span>
+                  </div>
+                  <div className="text-[14px] font-bold text-[#dff3ff]">
+                    P:{m.physics_score} C:{m.chemistry_score} B:{m.biology_score}
+                  </div>
                 </div>
-                <div className="text-xs text-cyan-400">
-                  P:{m.physics_score} C:{m.chemistry_score} B:{m.biology_score}
-                </div>
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </HudFrame>
       )}
     </div>

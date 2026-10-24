@@ -29,9 +29,10 @@ export default function IntroVideo({ effects = 'full', onDone }: { effects?: Eff
   useEffect(() => {
     let seen = false;
     try { seen = sessionStorage.getItem('sl_opened') === '1'; } catch { /* ignore */ }
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const saveData = (navigator as unknown as { connection?: { saveData?: boolean } }).connection?.saveData;
-    if (seen || reduce || effects === 'off' || saveData) { finished.current = true; setPhase('done'); doneRef.current?.(); return; }
+    const reduce = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const saveData = typeof navigator !== 'undefined' && (navigator as unknown as { connection?: { saveData?: boolean } }).connection?.saveData;
+    const skipParam = typeof window !== 'undefined' && window.location.search.includes('skipIntro=1');
+    if (seen || reduce || effects === 'off' || saveData || skipParam) { finished.current = true; setPhase('done'); doneRef.current?.(); return; }
     if (effects === 'lite') { setPhase('fallback'); return; }
     document.documentElement.classList.add('intro-playing');
     return () => document.documentElement.classList.remove('intro-playing');
@@ -77,14 +78,16 @@ export default function IntroVideo({ effects = 'full', onDone }: { effects?: Eff
       </video>
       {phase === 'gate' && (
         <button type="button" onClick={start} aria-label="Enter the System"
-          className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[#050816]/70 px-6 text-center font-mono">
-          <span className="animate-pulse text-sm tracking-[0.3em] text-[#00BFFF]">[ SYSTEM ]</span>
-          <span className="text-base tracking-[0.2em] text-[#bfeaff]">TAP TO ENTER THE SYSTEM</span>
+          className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[#030a18]/75 px-6 text-center font-[family-name:var(--font-cinzel)]">
+          <span className="animate-pulse text-sm font-bold tracking-[0.2em] text-[#5cc8ff] text-shadow-blue">[ SYSTEM ]</span>
+          <span className="text-base sm:text-xl font-bold tracking-[0.15em] sm:tracking-[0.25em] text-[#dff3ff] drop-shadow-[0_0_15px_rgba(92,200,255,0.95)] max-w-xs mx-auto leading-relaxed">
+            TAP TO ENTER THE SYSTEM
+          </span>
         </button>
       )}
       {phase === 'playing' && (
         <button type="button" onClick={finish}
-          className="absolute right-4 min-h-[44px] rounded border border-[#00BFFF]/60 bg-[#050816]/60 px-4 font-mono text-xs tracking-widest text-[#bfeaff]"
+          className="absolute right-4 min-h-[44px] rounded border border-[#5cc8ff]/60 bg-[#030a18]/75 px-4 font-[family-name:var(--font-cinzel)] font-bold text-xs tracking-widest text-[#dff3ff] shadow-[0_0_12px_rgba(92,200,255,0.5)]"
           style={{ bottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
           SKIP
         </button>

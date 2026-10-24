@@ -165,36 +165,38 @@ export default function ShopPage() {
   const remSecs = remSeconds % 60;
 
   return (
-    <div className="font-mono pb-24 max-w-md mx-auto select-none space-y-4">
+    <div className="select-none space-y-5">
       <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
 
       {/* Top Header */}
-      <div className="flex justify-between items-center border-b border-cyan-500/30 pb-3 mb-2">
+      <header className="flex justify-between items-end border-b border-[#5cc8ff]/30 pb-3 pt-1">
         <div>
-          <h1 className="text-base font-extrabold text-cyan-400 tracking-wider text-shadow-blue">
-            [ MONARCH&apos;S SHOP ]
+          <h1 className="text-xl md:text-2xl font-bold font-[family-name:var(--font-cinzel)] text-[#dff3ff] tracking-wider text-shadow-blue">
+            MONARCH&apos;S SHOP
           </h1>
-          <p className="text-xs text-slate-400">MANA VAULT &bull; SCREEN TIME EXCHANGES</p>
+          <p className="text-[15px] font-semibold text-[#8ab4d8] tracking-wide mt-0.5">MANA VAULT &bull; SCREEN TIME EXCHANGES</p>
         </div>
         <div className="text-right">
-          <span className="text-xs text-slate-400 block">MANA POOL</span>
-          <span className="text-sm font-bold text-cyan-300">{totalMP} MP</span>
+          <span className="text-[13px] font-bold text-[#8ab4d8] block uppercase">MANA POOL</span>
+          <span className="text-lg font-bold font-[family-name:var(--font-cinzel)] text-[#5cc8ff] text-shadow-blue">{totalMP} MP</span>
         </div>
-      </div>
+      </header>
 
       {/* Emergency Lockout Banner */}
       {emergencyLockout && (
         <HudFrame title="EMERGENCY LOCKOUT" icon="🚨" delay={0}>
           <div className="text-center space-y-2">
-            <p className="text-xs text-red-200">
+            <p className="text-[15px] text-red-200">
               You missed 2 days within 7 days. Quests are locked until the next Boss Raid is cleared.
             </p>
-            <button
-              onClick={handleEmergencyBypass}
-              className="min-h-[44px] px-3.5 py-1.5 bg-red-600/40 hover:bg-red-600/60 border border-red-400 text-white rounded text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center mx-auto"
-            >
-              EMERGENCY BYPASS (-100 XP)
-            </button>
+            <div className="pt-2">
+              <button
+                onClick={handleEmergencyBypass}
+                className="hud2-row justify-center text-center font-[family-name:var(--font-cinzel)] font-bold text-sm tracking-widest text-red-300 border-red-500/50 hover:bg-red-950/40"
+              >
+                EMERGENCY BYPASS (-100 XP)
+              </button>
+            </div>
           </div>
         </HudFrame>
       )}
@@ -203,10 +205,10 @@ export default function ShopPage() {
       {activeUnlockEndTime && (
         <HudFrame title="ACTIVE SCREEN TIME KEY" icon="⏳" delay={40}>
           <div className="text-center">
-            <div className="text-3xl font-black text-emerald-400 tracking-tight my-1">
+            <div className="text-4xl font-bold font-[family-name:var(--font-cinzel)] text-[#34d399] tracking-wider my-2 drop-shadow-[0_0_12px_rgba(52,211,153,0.8)]">
               {String(remMinutes).padStart(2, '0')}:{String(remSecs).padStart(2, '0')}
             </div>
-            <p className="text-xs text-slate-400">
+            <p className="text-[15px] text-[#8ab4d8] font-semibold">
               Enjoy guilt-free leisure. The timer will automatically lock when depleted.
             </p>
           </div>
@@ -215,78 +217,67 @@ export default function ShopPage() {
 
       {/* Key Exchange Cards */}
       <HudFrame title="SCREEN TIME KEYS" icon="🔑" delay={80}>
-        <div className="flex justify-between items-center mb-3">
-          <span className="text-xs text-slate-300">MANA EXCHANGE</span>
-          <span className="text-xs text-cyan-300 font-bold">
+        <div className="flex justify-between items-center mb-3 px-1 text-[15px] font-semibold text-[#8ab4d8]">
+          <span>MANA EXCHANGE</span>
+          <span className="font-[family-name:var(--font-cinzel)] font-bold text-[#5cc8ff]">
             CAP: {Math.floor(screenTimeUnlockedSecs / 60)} / {gameRules.shop.daily_screen_cap_minutes} MIN TODAY
           </span>
         </div>
 
-        <div className="space-y-2.5">
+        <ul className="hud2-goals">
           {gameRules.shop.keys.map((k) => (
-            <div
-              key={k.id}
-              className="p-3 bg-slate-950/70 rounded border border-slate-800 flex items-center justify-between hover:border-cyan-500/50 transition-all text-xs"
-            >
-              <div>
-                <div className="font-bold text-slate-100 flex items-center gap-1.5">
-                  <span className="uppercase">{k.id} KEY</span>
-                  <span className="text-cyan-400 font-normal">({k.minutes} Minutes)</span>
-                </div>
-                <div className="text-xs text-slate-400 mt-0.5">
-                  Cost: <span className="text-cyan-300 font-bold">{k.cost} MP</span>
-                </div>
-              </div>
-
+            <li key={k.id}>
               <button
                 type="button"
                 onClick={() => purchaseKey(k)}
                 disabled={totalMP < k.cost}
-                className={`min-h-[44px] px-3.5 py-1.5 rounded text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center ${
-                  totalMP >= k.cost
-                    ? 'bg-cyan-600/30 hover:bg-cyan-600/50 border border-cyan-400 text-cyan-200 shadow-[0_0_10px_rgba(0,255,255,0.3)]'
-                    : 'bg-slate-900 text-slate-600 border border-slate-800 cursor-not-allowed'
-                }`}
+                className={`hud2-row justify-between ${totalMP < k.cost ? 'opacity-50 cursor-not-allowed' : 'hover:border-[#5cc8ff]'}`}
               >
-                UNLOCK
+                <div className="flex-1 text-left">
+                  <span className="font-bold uppercase tracking-wider text-[#dff3ff]">{k.id} KEY</span>
+                  <span className="text-[#8ab4d8] text-sm ml-2">({k.minutes} min)</span>
+                </div>
+                <div className="font-[family-name:var(--font-cinzel)] font-bold text-[#5cc8ff] text-base">
+                  [{k.cost} MP]
+                </div>
               </button>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </HudFrame>
 
       {/* Rest Day Tokens */}
-      <HudFrame title="REST DAY TOKENS" icon="🛡️" delay={160}>
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-xs text-slate-300">SHIELD VAULT</span>
-          <span className="text-xs font-bold text-cyan-400">{restTokens} / 3 REMAINING</span>
+      <HudFrame title="REST DAY TOKENS" icon="🛡️" delay={140}>
+        <div className="flex justify-between items-center mb-2 px-1 text-[15px] font-semibold text-[#8ab4d8]">
+          <span>SHIELD VAULT</span>
+          <span className="font-[family-name:var(--font-cinzel)] font-bold text-[#5cc8ff]">{restTokens} / 3 REMAINING</span>
         </div>
-        <p className="text-xs text-slate-400 mb-3 leading-relaxed">
+        <p className="text-[15px] text-[#8ab4d8] mb-3 leading-relaxed px-1">
           Activating a token shields your day from missed-quest penalties and preserves your streak intact.
         </p>
 
         <button
           onClick={handleActivateRestToken}
           disabled={restTokens <= 0 || restUsedToday}
-          className={`min-h-[44px] w-full py-2.5 rounded font-bold tracking-wider uppercase text-xs transition-all flex items-center justify-center ${
+          className={`hud2-row justify-center text-center font-[family-name:var(--font-cinzel)] font-bold text-sm tracking-widest ${
             restUsedToday
-              ? 'bg-emerald-950/40 border border-emerald-400 text-emerald-300 cursor-default'
+              ? 'border-emerald-400 bg-emerald-950/40 text-emerald-300 cursor-default'
               : restTokens > 0
-              ? 'bg-cyan-600/30 hover:bg-cyan-600/50 border border-cyan-400 text-cyan-200 shadow-[0_0_12px_rgba(0,255,255,0.3)]'
-              : 'bg-slate-900 text-slate-600 border border-slate-800 cursor-not-allowed'
+              ? 'border-[#5cc8ff] text-[#dff3ff] hover:bg-[#5cc8ff]/20'
+              : 'opacity-50 cursor-not-allowed'
           }`}
         >
-          {restUsedToday ? '✅ REST SHIELD ACTIVE TODAY' : `ACTIVATE REST TOKEN (${restTokens} LEFT)`}
+          {restUsedToday ? 'REST SHIELD ACTIVE TODAY ✓' : `ACTIVATE REST TOKEN (${restTokens} LEFT)`}
         </button>
       </HudFrame>
 
       {/* Sleep Logger (>= 7h Bonus) */}
-      <HudFrame title="SLEEP & RECOVERY LOG" icon="💤" delay={240}>
-        <p className="text-xs text-slate-400 mb-3">
+      <HudFrame title="SLEEP RECOVERY LOG" icon="💤" delay={200}>
+        <p className="text-[15px] text-[#8ab4d8] mb-3 px-1 leading-relaxed">
           Log ≥ 7 hours of sleep to claim +20 XP and Vitality (VIT) stat growth.
         </p>
 
-        <div className="flex items-center gap-3 mb-3">
+        <div className="hud2-row justify-between mb-3">
           <input
             type="range"
             min={4}
@@ -295,23 +286,23 @@ export default function ShopPage() {
             value={sleepHours}
             disabled={sleepLoggedToday}
             onChange={(e) => setSleepHours(Number(e.target.value))}
-            className="flex-1 accent-emerald-400 cursor-pointer h-6"
+            className="flex-1 accent-[#5cc8ff] cursor-pointer h-6 mr-3"
           />
-          <span className="text-xs font-bold text-emerald-400 w-14 text-right">
-            {sleepHours} hrs
+          <span className="font-[family-name:var(--font-cinzel)] font-bold text-lg text-[#34d399] w-16 text-right">
+            {sleepHours}h
           </span>
         </div>
 
         <button
           onClick={handleLogSleep}
           disabled={sleepLoggedToday}
-          className={`min-h-[44px] w-full py-2 rounded text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center ${
+          className={`hud2-row justify-center text-center font-[family-name:var(--font-cinzel)] font-bold text-sm tracking-widest ${
             sleepLoggedToday
-              ? 'bg-emerald-950/40 border border-emerald-400 text-emerald-300 cursor-default'
-              : 'bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500 text-emerald-300'
+              ? 'border-emerald-400 bg-emerald-950/40 text-emerald-300 cursor-default'
+              : 'border-[#5cc8ff] text-[#dff3ff] hover:bg-[#5cc8ff]/20'
           }`}
         >
-          {sleepLoggedToday ? '✅ SLEEP LOGGED TODAY' : 'RECORD SLEEP RECOVERY'}
+          {sleepLoggedToday ? 'SLEEP LOGGED TODAY ✓' : 'RECORD SLEEP RECOVERY'}
         </button>
       </HudFrame>
     </div>

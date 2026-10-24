@@ -84,7 +84,7 @@ export default function Dashboard() {
   }));
 
   return (
-    <div className="font-mono select-none space-y-4">
+    <div className="select-none space-y-5">
       {!isBeforeStart && currentDayNumber >= 1 && currentDayNumber <= 45 && (
         <QuestArrival dayKey={gameDate} effects={effectsMode} />
       )}
@@ -99,61 +99,73 @@ export default function Dashboard() {
       />
 
       {/* Top Header: System Window Status */}
-      <header className="flex justify-between items-center border-b border-cyan-500/30 pb-3 mb-2">
+      <header className="flex justify-between items-end border-b border-[#5cc8ff]/30 pb-3 pt-1">
         <div>
-          <h1 className="text-base font-extrabold text-cyan-400 tracking-wider text-shadow-blue flex items-center gap-1.5">
-            <span>[ STATUS WINDOW ]</span>
+          <h1 className="text-xl md:text-2xl font-bold font-[family-name:var(--font-cinzel)] text-[#dff3ff] tracking-wider text-shadow-blue flex items-center gap-2">
+            <span>STATUS WINDOW</span>
           </h1>
-          <p className="text-xs text-slate-400 tracking-wide mt-0.5">
+          <p className="text-[15px] font-semibold text-[#8ab4d8] tracking-wide mt-0.5">
             {todayPlan ? `DAY ${todayPlan.day} OF 45` : `PRE-SEASON`} &bull; {gameDate}
           </p>
         </div>
         <div className="text-right">
-          <div className="text-xs font-bold text-cyan-300">{streak} DAY STREAK 🔥</div>
-          <div className="text-xs text-cyan-500 font-semibold">{totalMP} MP AVAILABLE</div>
+          <div className="text-[15px] font-bold font-[family-name:var(--font-cinzel)] text-[#5cc8ff] drop-shadow-[0_0_8px_rgba(92,200,255,0.7)]">
+            {streak} DAY STREAK 🔥
+          </div>
+          <div className="text-[15px] text-[#8ab4d8] font-semibold">
+            {totalMP} MP AVAILABLE
+          </div>
         </div>
       </header>
 
       {/* Before Day 1: Prominent Empty State */}
       {isBeforeStart && (
-        <HudFrame title="SYSTEM STANDBY: GATE COUNTDOWN" icon="⏳" delay={0}>
-          <p className="text-xs text-slate-200 mt-1 leading-relaxed">
+        <HudFrame title="SYSTEM STANDBY" icon="⏳" delay={0}>
+          <p className="hud2-sub">
             The 45-Day PCB Dungeon commences on <strong className="text-white">2026-11-01 at 05:00 IST</strong>.
-            Your Hunter Awakening ritual is complete. Review syllabus topics ahead of time or study in the Dungeon.
           </p>
-          <div className="my-3 text-center text-sm font-bold text-cyan-400 bg-slate-950/80 p-2.5 rounded-lg border border-cyan-500/40 tracking-widest shadow-inner">
+          <div className="hud2-div" />
+          <div className="hud2-row my-2 justify-center text-center font-[family-name:var(--font-cinzel)] text-lg font-bold text-[#5cc8ff]">
             {countdownToStart.days}d {countdownToStart.hours}h {countdownToStart.minutes}m {countdownToStart.seconds}s
           </div>
-          <Link
-            href="/dungeon"
-            className="min-h-[44px] w-full bg-cyan-600/20 hover:bg-cyan-600/40 border border-cyan-500 text-cyan-300 hover:text-white rounded-lg text-xs font-bold tracking-wider uppercase flex items-center justify-center transition-all"
-          >
-            EXPLORE SYLLABUS GATES ⛩️
-          </Link>
+          <div className="pt-2">
+            <Link
+              href="/dungeon"
+              className="hud2-row justify-center text-center font-[family-name:var(--font-cinzel)] font-bold text-sm tracking-widest text-[#dff3ff] hover:bg-[#5cc8ff]/20 transition-all"
+            >
+              EXPLORE SYLLABUS GATES ⛩️
+            </Link>
+          </div>
         </HudFrame>
       )}
 
       {/* 1. Today's 45-Day Plan Schedule */}
       {todayPlan && (
-        <HudFrame title="TODAY'S GATE OBJECTIVES" icon="⚔️" delay={80}>
-          <div className="flex justify-between items-center mb-2.5">
-            <span className="text-xs text-slate-300 italic">{todayPlan.label}</span>
-            <span className="text-xs text-cyan-300 font-bold">DAY {todayPlan.day} OF 45</span>
+        <HudFrame title="GATE OBJECTIVES" icon="⚔️" delay={60}>
+          <div className="flex justify-between items-center mb-2 px-1 text-[15px] font-semibold text-[#8ab4d8]">
+            <span className="italic">{todayPlan.label}</span>
+            <span className="font-[family-name:var(--font-cinzel)] font-bold text-[#5cc8ff]">DAY {todayPlan.day} OF 45</span>
           </div>
-          <div className="grid grid-cols-3 gap-2 text-center text-xs">
-            <div className="bg-blue-950/50 border border-blue-500/40 p-2 rounded">
-              <span className="text-xs text-blue-400 block font-semibold mb-0.5">PHYSICS</span>
-              <span className="font-bold text-white text-xs">{todayPlan.PHY.join(', ') || '—'}</span>
-            </div>
-            <div className="bg-purple-950/50 border border-purple-500/40 p-2 rounded">
-              <span className="text-xs text-purple-400 block font-semibold mb-0.5">CHEMISTRY</span>
-              <span className="font-bold text-white text-xs">{todayPlan.CHEM.join(', ') || '—'}</span>
-            </div>
-            <div className="bg-emerald-950/50 border border-emerald-500/40 p-2 rounded">
-              <span className="text-xs text-emerald-400 block font-semibold mb-0.5">BIOLOGY</span>
-              <span className="font-bold text-white text-xs">{todayPlan.BIO.join(', ') || '—'}</span>
-            </div>
-          </div>
+          <ul className="hud2-goals">
+            <li>
+              <div className="hud2-row">
+                <span className="hud2-label font-bold text-[#7fcbff]">PHYSICS</span>
+                <span className="hud2-count text-[#dff3ff] font-semibold">{todayPlan.PHY.join(', ') || '—'}</span>
+              </div>
+            </li>
+            <li>
+              <div className="hud2-row">
+                <span className="hud2-label font-bold text-[#c084fc]">CHEMISTRY</span>
+                <span className="hud2-count text-[#dff3ff] font-semibold">{todayPlan.CHEM.join(', ') || '—'}</span>
+              </div>
+            </li>
+            <li>
+              <div className="hud2-row">
+                <span className="hud2-label font-bold text-[#34d399]">BIOLOGY</span>
+                <span className="hud2-count text-[#dff3ff] font-semibold">{todayPlan.BIO.join(', ') || '—'}</span>
+              </div>
+            </li>
+          </ul>
         </HudFrame>
       )}
 
@@ -162,43 +174,47 @@ export default function Dashboard() {
         heading="QUEST INFO"
         subtitle="Daily Quest: Preparation to Become Strong has arrived."
         items={questItems}
-        warning="Failure to complete daily quests will result in a penalty of -150 XP."
+        warning="Failure to complete the daily quest will result in an appropriate penalty."
         onToggle={handleToggleQuest}
       />
 
       {/* 3. Hunter Rank & Level Card */}
-      <HudFrame title="HUNTER STATUS" icon="⚡" delay={160}>
-        <div className="flex items-center justify-between mb-3">
+      <HudFrame title="HUNTER STATUS" icon="⚡" delay={120}>
+        <div className="flex items-center justify-between mb-3 px-1">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-lg bg-slate-950 border-2 border-cyan-400 flex flex-col items-center justify-center shadow-[0_0_12px_rgba(0,255,255,0.4)]">
-              <span className="text-[10px] text-cyan-300 font-bold leading-none">RANK</span>
-              <span className="text-xl font-black text-white leading-tight">{rankInfo.rank}</span>
+            <div className="w-14 h-14 border border-[#5cc8ff] bg-[#050f24]/80 flex flex-col items-center justify-center shadow-[0_0_15px_rgba(92,200,255,0.4)]">
+              <span className="text-[10px] font-bold font-[family-name:var(--font-cinzel)] text-[#5cc8ff] leading-none">RANK</span>
+              <span className="text-2xl font-bold font-[family-name:var(--font-cinzel)] text-white leading-tight">{rankInfo.rank}</span>
             </div>
             <div>
-              <div className="text-xs text-slate-400 uppercase tracking-wider">{rankInfo.title}</div>
-              <div className="text-sm font-bold text-white tracking-wide">
+              <div className="text-[14px] text-[#8ab4d8] font-bold uppercase tracking-wider">{rankInfo.title}</div>
+              <div className="text-lg font-bold font-[family-name:var(--font-cinzel)] text-[#dff3ff] tracking-wide">
                 HUNTER LEVEL {levelInfo.level}
               </div>
-              <div className="text-xs text-cyan-400 font-semibold">
+              <div className="text-[14px] text-[#5cc8ff] font-semibold">
                 XP Multiplier: {rankInfo.multiplier}x
               </div>
             </div>
           </div>
           <div className="text-right">
-            <span className="text-xs text-slate-400 block">TOTAL EXP</span>
-            <span className="text-sm font-bold text-cyan-300">{totalXP.toLocaleString()}</span>
+            <span className="text-[13px] text-[#8ab4d8] font-semibold block uppercase">TOTAL EXP</span>
+            <span className="text-lg font-bold font-[family-name:var(--font-cinzel)] text-[#5cc8ff] text-shadow-blue">
+              {totalXP.toLocaleString()}
+            </span>
           </div>
         </div>
 
         {/* Level XP Bar */}
-        <div>
-          <div className="flex justify-between text-xs text-slate-400 mb-1">
+        <div className="px-1 pt-1">
+          <div className="flex justify-between text-[14px] text-[#8ab4d8] mb-1 font-semibold">
             <span>EXP TO LEVEL {levelInfo.level + 1}</span>
-            <span>{levelInfo.xpInCurrentLevel} / {levelInfo.nextLevelXp - levelInfo.currentLevelXp} XP ({levelInfo.progressPercent}%)</span>
+            <span className="font-[family-name:var(--font-cinzel)] font-bold text-[#dff3ff]">
+              {levelInfo.xpInCurrentLevel} / {levelInfo.nextLevelXp - levelInfo.currentLevelXp} XP ({levelInfo.progressPercent}%)
+            </span>
           </div>
-          <div className="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+          <div className="w-full h-2.5 bg-[#030a18] overflow-hidden border border-[#5cc8ff]/40">
             <div
-              className="h-full bg-gradient-to-r from-blue-600 via-cyan-400 to-emerald-400 transition-all duration-500 shadow-[0_0_8px_rgba(0,255,255,0.7)]"
+              className="h-full bg-gradient-to-r from-[#1e5aab] via-[#5cc8ff] to-[#e8f8ff] transition-all duration-500 shadow-[0_0_10px_rgba(92,200,255,0.8)]"
               style={{ width: `${levelInfo.progressPercent}%` }}
             />
           </div>
@@ -206,54 +222,58 @@ export default function Dashboard() {
       </HudFrame>
 
       {/* 4. Hunter Attributes (INT, VIT, AGI, PER) */}
-      <HudFrame title="CORE ATTRIBUTES" icon="📊" delay={240}>
-        <div className="grid grid-cols-2 gap-3 text-xs">
+      <HudFrame title="CORE ATTRIBUTES" icon="📊" delay={180}>
+        <div className="space-y-2">
           {/* INT */}
-          <div className="bg-slate-950/60 p-2.5 rounded border border-blue-500/30">
-            <div className="flex justify-between text-blue-400 font-bold mb-1">
-              <span>INT (Intellect)</span>
-              <span>{stats.INT}</span>
+          <div className="hud2-row justify-between">
+            <div className="flex-1 mr-3">
+              <div className="flex justify-between text-[16px] font-bold text-[#7fcbff] mb-1">
+                <span>INT (Intellect)</span>
+                <span className="font-[family-name:var(--font-cinzel)]">{stats.INT}</span>
+              </div>
+              <div className="w-full h-1.5 bg-[#030a18] overflow-hidden border border-[#5cc8ff]/30">
+                <div className="h-full bg-[#5cc8ff]" style={{ width: `${Math.min(100, stats.INT * 2)}%` }} />
+              </div>
             </div>
-            <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
-              <div className="h-full bg-blue-500 rounded-full" style={{ width: `${Math.min(100, stats.INT * 2)}%` }} />
-            </div>
-            <span className="text-[11px] text-slate-400 mt-1 block">Focus blocks mastered</span>
           </div>
 
           {/* VIT */}
-          <div className="bg-slate-950/60 p-2.5 rounded border border-emerald-500/30">
-            <div className="flex justify-between text-emerald-400 font-bold mb-1">
-              <span>VIT (Vitality)</span>
-              <span>{stats.VIT}</span>
+          <div className="hud2-row justify-between">
+            <div className="flex-1 mr-3">
+              <div className="flex justify-between text-[16px] font-bold text-[#34d399] mb-1">
+                <span>VIT (Vitality)</span>
+                <span className="font-[family-name:var(--font-cinzel)]">{stats.VIT}</span>
+              </div>
+              <div className="w-full h-1.5 bg-[#030a18] overflow-hidden border border-[#34d399]/30">
+                <div className="h-full bg-[#34d399]" style={{ width: `${Math.min(100, stats.VIT * 2)}%` }} />
+              </div>
             </div>
-            <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
-              <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${Math.min(100, stats.VIT * 2)}%` }} />
-            </div>
-            <span className="text-[11px] text-slate-400 mt-1 block">Physical training & sleep</span>
           </div>
 
           {/* AGI */}
-          <div className="bg-slate-950/60 p-2.5 rounded border border-amber-500/30">
-            <div className="flex justify-between text-amber-400 font-bold mb-1">
-              <span>AGI (Agility)</span>
-              <span>{stats.AGI}</span>
+          <div className="hud2-row justify-between">
+            <div className="flex-1 mr-3">
+              <div className="flex justify-between text-[16px] font-bold text-[#fbbf24] mb-1">
+                <span>AGI (Agility)</span>
+                <span className="font-[family-name:var(--font-cinzel)]">{stats.AGI}</span>
+              </div>
+              <div className="w-full h-1.5 bg-[#030a18] overflow-hidden border border-[#fbbf24]/30">
+                <div className="h-full bg-[#fbbf24]" style={{ width: `${Math.min(100, stats.AGI * 2)}%` }} />
+              </div>
             </div>
-            <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
-              <div className="h-full bg-amber-500 rounded-full" style={{ width: `${Math.min(100, stats.AGI * 2)}%` }} />
-            </div>
-            <span className="text-[11px] text-slate-400 mt-1 block">Speed & daily consistency</span>
           </div>
 
           {/* PER */}
-          <div className="bg-slate-950/60 p-2.5 rounded border border-purple-500/30">
-            <div className="flex justify-between text-purple-400 font-bold mb-1">
-              <span>PER (Perception)</span>
-              <span>{stats.PER}</span>
+          <div className="hud2-row justify-between">
+            <div className="flex-1 mr-3">
+              <div className="flex justify-between text-[16px] font-bold text-[#c084fc] mb-1">
+                <span>PER (Perception)</span>
+                <span className="font-[family-name:var(--font-cinzel)]">{stats.PER}</span>
+              </div>
+              <div className="w-full h-1.5 bg-[#030a18] overflow-hidden border border-[#c084fc]/30">
+                <div className="h-full bg-[#c084fc]" style={{ width: `${Math.min(100, stats.PER * 2)}%` }} />
+              </div>
             </div>
-            <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
-              <div className="h-full bg-purple-500 rounded-full" style={{ width: `${Math.min(100, stats.PER * 2)}%` }} />
-            </div>
-            <span className="text-[11px] text-slate-400 mt-1 block">Grimoire error retention</span>
           </div>
         </div>
       </HudFrame>

@@ -159,138 +159,139 @@ export default function GateDetailClient({ gateId }: { gateId: string }) {
   };
 
   return (
-    <div className="font-mono select-none space-y-4 pb-24 max-w-md mx-auto">
+    <div className="select-none space-y-5">
       <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
 
       {/* Header */}
-      <div className="flex justify-between items-center border-b border-cyan-500/30 pb-3 mb-2">
+      <header className="flex justify-between items-end border-b border-[#5cc8ff]/30 pb-3 pt-1">
         <div>
-          <span className="text-xs text-cyan-400 font-bold uppercase block tracking-widest">
+          <span className="text-xs font-bold font-[family-name:var(--font-cinzel)] text-[#5cc8ff] uppercase block tracking-widest">
             {chapterDef.subject} WING &bull; GATE {chapterDef.id}
           </span>
-          <h1 className="text-base font-extrabold text-cyan-300 tracking-wide text-shadow-blue">
+          <h1 className="text-xl md:text-2xl font-bold font-[family-name:var(--font-cinzel)] text-[#dff3ff] tracking-wider text-shadow-blue">
             {chapterDef.name}
           </h1>
         </div>
         <Link
           href="/dungeon"
-          className="text-xs text-slate-400 border border-slate-700 hover:border-cyan-400 px-2.5 py-1.5 rounded min-h-[44px] flex items-center"
+          className="hud2-row !min-h-[44px] px-3 py-1 font-[family-name:var(--font-cinzel)] font-bold text-xs text-[#5cc8ff] border-[#5cc8ff]/50 hover:bg-[#5cc8ff]/20 flex items-center"
         >
           DUNGEON ⛩️
         </Link>
-      </div>
+      </header>
 
       {/* Status Banner */}
       {progress?.shadow_extracted && (
-        <HudFrame title="SHADOW MONARCH EXTRACTION" icon="🌑" delay={0}>
-          <div className="text-center">
-            <p className="text-xs text-purple-200 mt-1">
-              This chapter now serves in your Shadow Army. Spaced repetition reviews active.
+        <HudFrame title="SHADOW MONARCH" icon="🌑" delay={0}>
+          <div className="text-center py-1">
+            <p className="text-[16px] font-semibold text-[#c084fc] drop-shadow-[0_0_8px_rgba(192,132,252,0.8)]">
+              This chapter serves in your Shadow Army. Spaced repetition reviews active.
             </p>
           </div>
         </HudFrame>
       )}
 
       {/* Topic Checklist */}
-      <HudFrame title="SYLLABUS TOPIC CHECKLIST" icon="📜" delay={80}>
-        <div className="flex justify-between items-center mb-3">
-          <span className="text-xs text-slate-300">CURRICULUM TOPICS</span>
-          <span className="text-xs text-cyan-300 font-bold">
+      <HudFrame title="SYLLABUS TOPIC CHECKLIST" icon="📜" delay={60}>
+        <div className="flex justify-between items-center mb-3 px-1 text-[15px] font-semibold text-[#8ab4d8]">
+          <span>CURRICULUM TOPICS</span>
+          <span className="font-[family-name:var(--font-cinzel)] font-bold text-[#5cc8ff]">
             {completedTopics.length} / {chapterDef.topics.length} MASTERED
           </span>
         </div>
 
-        <div className="space-y-2">
+        <ul className="hud2-goals">
           {chapterDef.topics.map((topic, idx) => {
             const isDone = completedTopics.includes(topic);
             return (
-              <label
-                key={idx}
-                className={`min-h-[44px] p-2.5 rounded border flex items-start gap-2.5 cursor-pointer transition-all text-xs ${
-                  isDone
-                    ? 'border-emerald-500/40 bg-emerald-950/20 text-slate-400 line-through'
-                    : 'border-slate-800 bg-slate-950/60 text-slate-100 hover:border-cyan-500/40'
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  checked={isDone}
-                  onChange={() => toggleTopic(topic)}
-                  className="mt-0.5 h-4 w-4 rounded border-cyan-400 text-cyan-400 focus:ring-0 bg-black cursor-pointer"
-                />
-                <span className="leading-snug">{topic}</span>
-              </label>
+              <li key={idx}>
+                <button
+                  type="button"
+                  onClick={() => toggleTopic(topic)}
+                  className="hud2-row justify-between text-left"
+                >
+                  <span className={`hud2-label text-[15px] ${isDone ? 'line-through text-[#8ab4d8]' : 'text-[#dff3ff]'}`}>
+                    {topic}
+                  </span>
+                  <span className={`hud2-check ${isDone ? 'on' : ''}`}>
+                    {isDone ? '✓' : ''}
+                  </span>
+                </button>
+              </li>
             );
           })}
-        </div>
+        </ul>
       </HudFrame>
 
       {/* Chapter Resources from resources.json */}
-      <HudFrame title="GATE RESOURCES & VIDEOS" icon="📺" delay={160}>
+      <HudFrame title="GATE RESOURCES & VIDEOS" icon="📺" delay={120}>
         {resources.length > 0 ? (
-          <div className="space-y-2">
+          <ul className="hud2-goals">
             {resources.map((res: any, idx: number) => (
-              <a
-                key={idx}
-                href={res.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="min-h-[44px] p-2.5 bg-slate-950/80 border border-slate-800 hover:border-cyan-400 rounded text-xs text-cyan-300 hover:text-white transition-all flex items-center justify-between"
-              >
-                <span className="truncate max-w-[260px]">📺 {res.title}</span>
-                <span className="text-xs text-cyan-400 underline font-bold">OPEN ↗</span>
-              </a>
+              <li key={idx}>
+                <a
+                  href={res.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hud2-row justify-between hover:border-[#5cc8ff]"
+                >
+                  <span className="truncate max-w-[260px] font-semibold text-[15px] text-[#dff3ff]">📺 {res.title}</span>
+                  <span className="font-[family-name:var(--font-cinzel)] font-bold text-xs text-[#5cc8ff]">OPEN ↗</span>
+                </a>
+              </li>
             ))}
-          </div>
+          </ul>
         ) : (
-          <p className="text-xs text-slate-400 italic p-2 bg-slate-950/60 rounded border border-slate-800">
-            No video links configured yet. (Add link in config/resources.json)
+          <p className="hud2-row justify-center text-center text-[#8ab4d8] text-[15px] italic">
+            No video links configured yet for this gate.
           </p>
         )}
       </HudFrame>
 
       {/* Notes Field */}
-      <HudFrame title="TACTICAL GATE NOTES" icon="📝" delay={240}>
+      <HudFrame title="TACTICAL GATE NOTES" icon="📝" delay={180}>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Record key formulas, weak concepts, and chapter notes here..."
           rows={3}
-          className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-slate-100 focus:border-cyan-400 focus:outline-none mb-2"
+          className="w-full bg-[#030a18] border border-[#5cc8ff]/40 rounded p-3 text-[15px] text-[#dff3ff] focus:border-[#5cc8ff] focus:outline-none mb-3 font-[family-name:var(--font-cormorant)]"
         />
         <button
           onClick={handleSaveNotes}
-          className="min-h-[44px] w-full py-2 bg-cyan-600/30 hover:bg-cyan-600/50 border border-cyan-400 text-cyan-200 rounded text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center"
+          className="hud2-row justify-center text-center font-[family-name:var(--font-cinzel)] font-bold text-sm tracking-widest text-[#dff3ff] hover:bg-[#5cc8ff]/20"
         >
           SAVE NOTES
         </button>
       </HudFrame>
 
       {/* Gate Boss Test Form */}
-      <HudFrame title="GATE BOSS TEST (DPP)" icon="⚔️" delay={320}>
-        <p className="text-xs text-slate-400 mb-3">
+      <HudFrame title="GATE BOSS TEST (DPP)" icon="⚔️" delay={240}>
+        <p className="text-[15px] text-[#8ab4d8] mb-3 px-1 leading-relaxed">
           Self-reported score out of 20 questions. Score ≥ 75% (15/20) triggers Shadow Extraction.
         </p>
 
-        <div className="flex items-center gap-3 mb-3">
-          <label className="text-xs text-slate-400">SCORE:</label>
-          <input
-            type="number"
-            min={0}
-            max={20}
-            value={bossScore}
-            onChange={(e) => setBossScore(Math.max(0, Math.min(20, Number(e.target.value))))}
-            className="w-20 min-h-[44px] bg-slate-950 border border-cyan-400 rounded p-1.5 text-center font-bold text-cyan-300 text-sm focus:outline-none"
-          />
-          <span className="text-xs text-slate-400">/ 20</span>
-          <span className="text-xs font-bold text-cyan-300 ml-auto">
-            {Math.round((bossScore / 20) * 100)}%
-          </span>
+        <div className="hud2-row justify-between mb-3">
+          <label className="text-[15px] font-bold text-[#8ab4d8]">YOUR SCORE:</label>
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              min={0}
+              max={20}
+              value={bossScore}
+              onChange={(e) => setBossScore(Math.max(0, Math.min(20, Number(e.target.value))))}
+              className="w-16 min-h-[44px] bg-[#030a18] border border-[#5cc8ff] text-center font-[family-name:var(--font-cinzel)] font-bold text-[#5cc8ff] text-lg focus:outline-none"
+            />
+            <span className="text-[15px] font-semibold text-[#8ab4d8]">/ 20</span>
+            <span className="font-[family-name:var(--font-cinzel)] font-bold text-[#34d399] ml-2 text-base">
+              ({Math.round((bossScore / 20) * 100)}%)
+            </span>
+          </div>
         </div>
 
         <button
           onClick={handleSubmitBossTest}
-          className="min-h-[44px] w-full py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded text-xs font-bold tracking-widest uppercase transition-all shadow-[0_0_15px_rgba(6,182,212,0.4)] flex items-center justify-center"
+          className="hud2-row justify-center text-center font-[family-name:var(--font-cinzel)] font-bold text-sm tracking-widest text-[#dff3ff] border-[#5cc8ff] bg-[#5cc8ff]/20 hover:bg-[#5cc8ff]/30 shadow-[0_0_15px_rgba(92,200,255,0.4)]"
         >
           SUBMIT BOSS TEST & EXTRACT SHADOW
         </button>

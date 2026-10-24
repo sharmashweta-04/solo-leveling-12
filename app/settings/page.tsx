@@ -11,6 +11,7 @@ import Toast from '@/src/components/Toast';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth, HistoryRecord } from '@/src/context/AuthContext';
+import HudFrame from '@/src/components/hud/HudFrame';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -254,22 +255,26 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-hunter-950 text-hunter-100 font-mono pb-24 max-w-md mx-auto p-4 select-none">
+    <div className="pb-24 max-w-md mx-auto p-2 select-none space-y-4">
       <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
 
       {/* Header */}
-      <div className="flex justify-between items-center border-b border-hunter-blue/40 pb-3 mb-4">
+      <div className="flex justify-between items-center border-b border-[#5cc8ff]/30 pb-3 mb-2">
         <div>
-          <h1 className="text-lg font-extrabold text-hunter-blue tracking-wider text-shadow-blue">
-            [ SYSTEM SETTINGS ]
+          <h1
+            className="text-lg font-bold text-cyan-200 tracking-wider text-shadow-blue"
+            style={{ fontFamily: 'var(--font-cinzel)' }}
+          >
+            SYSTEM SETTINGS
           </h1>
-          <p className="text-xs text-hunter-400">
+          <p className="text-xs text-[#9bbacf]">
             HUNTER CONFIGURATION &bull; VAULT &bull; CLOUD SYNC
           </p>
         </div>
         <Link
           href="/debug"
-          className="text-xs text-hunter-cyan border border-hunter-blue/40 px-2.5 py-1.5 rounded bg-hunter-blue/10 min-h-[44px] flex items-center"
+          className="text-xs text-cyan-300 border border-cyan-500/40 px-3 py-1.5 bg-cyan-950/40 min-h-[44px] flex items-center font-bold tracking-wider"
+          style={{ fontFamily: 'var(--font-cinzel)' }}
         >
           DEBUG 🛠️
         </Link>
@@ -277,332 +282,352 @@ export default function SettingsPage() {
 
       <div className="space-y-4 text-xs">
         {/* Account & Cloud Sync Section */}
-        <div className="border border-cyan-500/40 bg-slate-900/90 rounded-lg p-3.5 space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
-              <span className={`w-2 h-2 rounded-full ${user ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
-              [ HUNTER ACCOUNT ]
+        <HudFrame title="HUNTER ACCOUNT & CLOUD SYNC" icon="🛡️" delay={0}>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="text-xs font-bold text-cyan-300 uppercase tracking-wider flex items-center gap-1.5" style={{ fontFamily: 'var(--font-cinzel)' }}>
+                <span className={`w-2 h-2 rounded-full ${user ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
+                <span>STATUS</span>
+              </div>
+              {user && (
+                <span className="text-[11px] px-2 py-0.5 bg-cyan-950 border border-cyan-500/40 text-cyan-300 font-bold" style={{ fontFamily: 'var(--font-cinzel)' }}>
+                  {syncStatus === 'syncing' ? 'Syncing...' : syncStatus === 'offline' ? 'Offline' : syncStatus === 'error' ? 'Sync Alert' : 'Cloud Connected'}
+                </span>
+              )}
             </div>
-            {user && (
-              <span className="text-[11px] px-2 py-0.5 rounded bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 font-mono">
-                {syncStatus === 'syncing' ? 'Syncing...' : syncStatus === 'offline' ? 'Offline' : syncStatus === 'error' ? 'Sync Alert' : 'Cloud Connected'}
-              </span>
+
+            {user ? (
+              <div className="space-y-2">
+                <div className="text-slate-200 text-xs">
+                  Logged in as: <span className="text-cyan-200 font-bold">{user.email}</span>
+                </div>
+                <div className="flex justify-between text-[#9bbacf] text-xs">
+                  <span>Cloud Revision: <strong className="text-cyan-300">Rev #{cloudRevision}</strong></span>
+                  <span>Last Synced: <strong className="text-slate-200">{lastSyncedAt ? lastSyncedAt.toLocaleTimeString() : 'Initial sync pending'}</strong></span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={handleManualSync}
+                    disabled={syncingNow}
+                    className="min-h-[44px] bg-cyan-950/60 hover:bg-cyan-900/60 border-2 border-cyan-300 text-cyan-100 font-bold uppercase tracking-wider flex items-center justify-center transition-colors disabled:opacity-50"
+                    style={{ fontFamily: 'var(--font-cinzel)' }}
+                  >
+                    {syncingNow ? 'SYNCING...' : 'SYNC NOW 🔄'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={logout}
+                    className="min-h-[44px] bg-red-950/50 hover:bg-red-900/60 border border-red-500/60 text-red-300 font-bold uppercase tracking-wider flex items-center justify-center transition-colors"
+                    style={{ fontFamily: 'var(--font-cinzel)' }}
+                  >
+                    LOG OUT 🚪
+                  </button>
+                </div>
+
+                {/* Version History Rollback */}
+                <div className="pt-2 border-t border-cyan-900/40">
+                  <button
+                    type="button"
+                    onClick={handleLoadHistory}
+                    className="w-full text-left text-cyan-300 hover:text-cyan-200 text-xs flex items-center justify-between py-1"
+                    style={{ fontFamily: 'var(--font-cinzel)' }}
+                  >
+                    <span>RESTORE PREVIOUS VERSION</span>
+                    <span>{showHistory ? '▲ Hide' : '▼ View History'}</span>
+                  </button>
+
+                  {showHistory && (
+                    <div className="mt-2 space-y-2 max-h-48 overflow-y-auto pr-1">
+                      {loadingHistory ? (
+                        <div className="text-slate-400 py-2">Loading cloud history snapshots...</div>
+                      ) : historyList.length === 0 ? (
+                        <div className="text-slate-400 py-2">No previous version history recorded yet. Snapshots are stored every 12 hours.</div>
+                      ) : (
+                        historyList.map((rec) => (
+                          <div
+                            key={rec.id}
+                            className="hud2-row justify-between text-xs p-2"
+                          >
+                            <div>
+                              <div className="text-slate-200 font-bold">Revision #{rec.revision}</div>
+                              <div className="text-[#9bbacf] text-[10px]">{new Date(rec.saved_at).toLocaleString()}</div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleRestoreVersion(rec)}
+                              className="px-2.5 py-1 bg-cyan-950 hover:bg-cyan-900 border border-cyan-500 text-cyan-200 uppercase font-bold text-[10px]"
+                              style={{ fontFamily: 'var(--font-cinzel)' }}
+                            >
+                              Restore
+                            </button>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="text-amber-300/90 leading-relaxed text-xs">
+                  {systemMessages.auth.guest_warning}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => router.push('/login')}
+                  className="w-full min-h-[44px] bg-cyan-950/70 hover:bg-cyan-900/80 border-2 border-cyan-300 text-cyan-100 font-bold uppercase tracking-wider flex items-center justify-center transition-colors shadow-[0_0_15px_rgba(92,200,255,0.4)]"
+                  style={{ fontFamily: 'var(--font-cinzel)' }}
+                >
+                  LOG IN / CREATE ACCOUNT 🛡️
+                </button>
+              </div>
             )}
           </div>
-
-          {user ? (
-            <div className="space-y-2">
-              <div className="text-slate-300">
-                Logged in as: <span className="text-white font-bold">{user.email}</span>
-              </div>
-              <div className="flex justify-between text-slate-400 text-[11px]">
-                <span>Cloud Revision: <strong className="text-cyan-300">Rev #{cloudRevision}</strong></span>
-                <span>Last Synced: <strong className="text-slate-200">{lastSyncedAt ? lastSyncedAt.toLocaleTimeString() : 'Initial sync pending'}</strong></span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 pt-1">
-                <button
-                  type="button"
-                  onClick={handleManualSync}
-                  disabled={syncingNow}
-                  className="min-h-[44px] bg-cyan-600/30 hover:bg-cyan-600/50 border border-cyan-500 text-cyan-300 rounded font-bold uppercase tracking-wider flex items-center justify-center transition-colors disabled:opacity-50"
-                >
-                  {syncingNow ? 'SYNCING...' : 'SYNC NOW 🔄'}
-                </button>
-                <button
-                  type="button"
-                  onClick={logout}
-                  className="min-h-[44px] bg-red-950/40 hover:bg-red-900/60 border border-red-500/50 text-red-300 rounded font-bold uppercase tracking-wider flex items-center justify-center transition-colors"
-                >
-                  LOG OUT 🚪
-                </button>
-              </div>
-
-              {/* Version History Rollback */}
-              <div className="pt-2 border-t border-slate-800">
-                <button
-                  type="button"
-                  onClick={handleLoadHistory}
-                  className="w-full text-left text-cyan-400 hover:text-cyan-300 text-xs font-mono flex items-center justify-between py-1"
-                >
-                  <span>[ RESTORE PREVIOUS VERSION ]</span>
-                  <span>{showHistory ? '▲ Hide' : '▼ View History'}</span>
-                </button>
-
-                {showHistory && (
-                  <div className="mt-2 space-y-2 max-h-48 overflow-y-auto pr-1">
-                    {loadingHistory ? (
-                      <div className="text-slate-500 py-2">Loading cloud history snapshots...</div>
-                    ) : historyList.length === 0 ? (
-                      <div className="text-slate-500 py-2">No previous version history recorded yet. Snapshots are stored every 12 hours.</div>
-                    ) : (
-                      historyList.map((rec) => (
-                        <div
-                          key={rec.id}
-                          className="flex items-center justify-between p-2 rounded bg-slate-950/80 border border-slate-800 text-[11px]"
-                        >
-                          <div>
-                            <div className="text-slate-200 font-bold">Revision #{rec.revision}</div>
-                            <div className="text-slate-500">{new Date(rec.saved_at).toLocaleString()}</div>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => handleRestoreVersion(rec)}
-                            className="px-2.5 py-1 bg-cyan-950 hover:bg-cyan-900 border border-cyan-600 text-cyan-300 rounded uppercase font-bold text-[10px]"
-                          >
-                            Restore
-                          </button>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              <div className="text-amber-300/90 leading-relaxed font-mono">
-                {systemMessages.auth.guest_warning}
-              </div>
-              <button
-                type="button"
-                onClick={() => router.push('/login')}
-                className="w-full min-h-[44px] bg-cyan-600 hover:bg-cyan-500 text-white rounded font-bold uppercase tracking-wider flex items-center justify-center transition-colors shadow-[0_0_12px_rgba(6,182,212,0.3)]"
-              >
-                LOG IN / CREATE ACCOUNT 🛡️
-              </button>
-            </div>
-          )}
-        </div>
+        </HudFrame>
 
         {/* Sound Effects Preference */}
-        <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5 flex justify-between items-center">
-          <div>
-            <div className="font-bold text-hunter-100 text-xs">[ SYSTEM AUDIO EFFECTS ]</div>
-            <p className="text-xs text-hunter-400 mt-0.5">Synthesized digital chimes for quest completion and level ups.</p>
+        <HudFrame title="SYSTEM AUDIO EFFECTS" icon="🔊" delay={40}>
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-xs text-[#9bbacf]">Synthesized digital chimes for quest completion and level ups.</p>
+            </div>
+            <button
+              type="button"
+              onClick={handleToggleSound}
+              className={`min-h-[44px] px-3.5 font-bold border transition-all text-xs tracking-wider uppercase flex items-center justify-center ${
+                soundOn
+                  ? 'border-cyan-300 bg-cyan-950/70 text-cyan-200 shadow-[0_0_12px_rgba(92,200,255,0.4)]'
+                  : 'border-slate-800 bg-slate-950 text-slate-400'
+              }`}
+              style={{ fontFamily: 'var(--font-cinzel)' }}
+            >
+              {soundOn ? 'SOUND ON 🔊' : 'MUTED 🔇'}
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={handleToggleSound}
-            className={`min-h-[44px] px-3.5 rounded font-bold border transition-all text-xs tracking-wider uppercase flex items-center justify-center ${
-              soundOn
-                ? 'border-hunter-green bg-green-950/40 text-hunter-green shadow-[0_0_10px_rgba(0,255,136,0.3)]'
-                : 'border-hunter-800 bg-hunter-950 text-hunter-400'
-            }`}
-          >
-            {soundOn ? 'SOUND ON 🔊' : 'MUTED 🔇'}
-          </button>
-        </div>
+        </HudFrame>
 
         {/* Visual Effects (HUD Particle Field) */}
-        <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5 space-y-2">
-          <div>
-            <div className="font-bold text-hunter-100 text-xs">[ VISUAL EFFECTS: HUD PARTICLES ]</div>
-            <p className="text-xs text-hunter-400 mt-0.5">Control 60fps canvas particles, holographic grid, and energy waves.</p>
+        <HudFrame title="VISUAL EFFECTS: HUD PARTICLES" icon="✨" delay={80}>
+          <div className="space-y-2">
+            <p className="text-xs text-[#9bbacf]">Control canvas nodes, drifting lines, light trails, and energy grid.</p>
+            <div className="grid grid-cols-3 gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => handleToggleEffects('full')}
+                className={`min-h-[44px] font-bold border transition-all text-xs tracking-wider uppercase flex items-center justify-center ${
+                  effectsMode === 'full'
+                    ? 'border-2 border-cyan-300 bg-cyan-950/80 text-cyan-200 shadow-[0_0_12px_rgba(92,200,255,0.4)]'
+                    : 'border border-cyan-900/50 bg-slate-950 text-slate-400'
+                }`}
+                style={{ fontFamily: 'var(--font-cinzel)' }}
+              >
+                FULL ✨
+              </button>
+              <button
+                type="button"
+                onClick={() => handleToggleEffects('lite')}
+                className={`min-h-[44px] font-bold border transition-all text-xs tracking-wider uppercase flex items-center justify-center ${
+                  effectsMode === 'lite'
+                    ? 'border-2 border-cyan-300 bg-cyan-950/80 text-cyan-200 shadow-[0_0_12px_rgba(92,200,255,0.4)]'
+                    : 'border border-cyan-900/50 bg-slate-950 text-slate-400'
+                }`}
+                style={{ fontFamily: 'var(--font-cinzel)' }}
+              >
+                LITE ⚡
+              </button>
+              <button
+                type="button"
+                onClick={() => handleToggleEffects('off')}
+                className={`min-h-[44px] font-bold border transition-all text-xs tracking-wider uppercase flex items-center justify-center ${
+                  effectsMode === 'off'
+                    ? 'border-2 border-white bg-slate-800 text-white shadow'
+                    : 'border border-cyan-900/50 bg-slate-950 text-slate-400'
+                }`}
+                style={{ fontFamily: 'var(--font-cinzel)' }}
+              >
+                OFF 🛑
+              </button>
+            </div>
           </div>
-          <div className="grid grid-cols-3 gap-2 pt-1">
-            <button
-              type="button"
-              onClick={() => handleToggleEffects('full')}
-              className={`min-h-[44px] rounded font-bold border transition-all text-xs tracking-wider uppercase flex items-center justify-center ${
-                effectsMode === 'full'
-                  ? 'border-cyan-400 bg-cyan-950/60 text-cyan-300 shadow-[0_0_10px_rgba(0,255,255,0.4)]'
-                  : 'border-slate-800 bg-slate-950 text-slate-400'
-              }`}
-            >
-              FULL ✨
-            </button>
-            <button
-              type="button"
-              onClick={() => handleToggleEffects('lite')}
-              className={`min-h-[44px] rounded font-bold border transition-all text-xs tracking-wider uppercase flex items-center justify-center ${
-                effectsMode === 'lite'
-                  ? 'border-cyan-400 bg-cyan-950/60 text-cyan-300 shadow-[0_0_10px_rgba(0,255,255,0.4)]'
-                  : 'border-slate-800 bg-slate-950 text-slate-400'
-              }`}
-            >
-              LITE ⚡
-            </button>
-            <button
-              type="button"
-              onClick={() => handleToggleEffects('off')}
-              className={`min-h-[44px] rounded font-bold border transition-all text-xs tracking-wider uppercase flex items-center justify-center ${
-                effectsMode === 'off'
-                  ? 'border-slate-600 bg-slate-800 text-white shadow'
-                  : 'border-slate-800 bg-slate-950 text-slate-400'
-              }`}
-            >
-              OFF 🛑
-            </button>
-          </div>
-        </div>
+        </HudFrame>
 
         {/* Difficulty Mode Selection */}
-        <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5">
-          <div className="text-xs font-bold text-hunter-blue mb-1">[ DIFFICULTY MODE ]</div>
-          <p className="text-xs text-hunter-400 mb-3">
+        <HudFrame title="DIFFICULTY MODE" icon="⚔️" delay={120}>
+          <p className="text-xs text-[#9bbacf] mb-3">
             Alters daily study block targets between Normal (8 blocks) and Easy (6 blocks).
           </p>
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={() => handleToggleMode('normal')}
-              className={`min-h-[44px] py-2 rounded font-bold border transition-all text-center flex items-center justify-center ${
+              className={`min-h-[44px] py-2 font-bold border transition-all text-center flex items-center justify-center text-xs tracking-wider ${
                 mode === 'normal'
-                  ? 'border-hunter-blue bg-hunter-blue/30 text-white shadow-[0_0_10px_rgba(0,217,255,0.4)]'
-                  : 'border-hunter-800 bg-hunter-950 text-hunter-400'
+                  ? 'border-2 border-cyan-300 bg-cyan-950/80 text-cyan-200 shadow-[0_0_12px_rgba(92,200,255,0.4)]'
+                  : 'border border-cyan-900/50 bg-slate-950 text-slate-400'
               }`}
+              style={{ fontFamily: 'var(--font-cinzel)' }}
             >
               NORMAL (8 BLOCKS)
             </button>
             <button
               onClick={() => handleToggleMode('easy')}
-              className={`min-h-[44px] py-2 rounded font-bold border transition-all text-center flex items-center justify-center ${
+              className={`min-h-[44px] py-2 font-bold border transition-all text-center flex items-center justify-center text-xs tracking-wider ${
                 mode === 'easy'
-                  ? 'border-hunter-cyan bg-hunter-cyan/30 text-white shadow-[0_0_10px_rgba(0,217,255,0.4)]'
-                  : 'border-hunter-800 bg-hunter-950 text-hunter-400'
+                  ? 'border-2 border-cyan-300 bg-cyan-950/80 text-cyan-200 shadow-[0_0_12px_rgba(92,200,255,0.4)]'
+                  : 'border border-cyan-900/50 bg-slate-950 text-slate-400'
               }`}
+              style={{ fontFamily: 'var(--font-cinzel)' }}
             >
               EASY (6 BLOCKS)
             </button>
           </div>
-        </div>
+        </HudFrame>
 
         {/* Daily Quest Arrival Cutscene */}
-        <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5 flex justify-between items-center">
-          <div>
-            <div className="font-bold text-hunter-100 text-xs">[ DAILY QUEST CUTSCENE ]</div>
-            <p className="text-xs text-hunter-400 mt-0.5">Short holographic globe cutscene once per day when entering System.</p>
-          </div>
-          <button
-            type="button"
-            onClick={handleToggleCutscene}
-            className={`min-h-[44px] px-3.5 rounded font-bold border transition-all text-xs tracking-wider uppercase flex items-center justify-center ${
-              cutsceneOn
-                ? 'border-cyan-400 bg-cyan-950/40 text-cyan-300 shadow-[0_0_10px_rgba(0,255,255,0.3)]'
-                : 'border-slate-800 bg-slate-950 text-slate-400'
-            }`}
-          >
-            {cutsceneOn ? 'ON 🎬' : 'OFF ⏭️'}
-          </button>
-        </div>
-
-        {/* Replay Intro */}
-        <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5 space-y-2">
-          <div>
-            <div className="font-bold text-hunter-100 text-xs">[ REPLAY SYSTEM INTRO ]</div>
-            <p className="text-xs text-hunter-400 mt-0.5">Re-experience the ARISE opening cutscene or awakening sequence.</p>
-          </div>
-          <div className="grid grid-cols-2 gap-2 pt-1">
+        <HudFrame title="DAILY QUEST CUTSCENE" icon="🎬" delay={160}>
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-xs text-[#9bbacf]">Holographic globe cutscene once per day when entering System.</p>
+            </div>
             <button
               type="button"
-              onClick={handleReplayIntro}
-              className="min-h-[44px] px-3 bg-cyan-950/40 hover:bg-cyan-900/60 border border-cyan-400 text-cyan-300 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center shadow-[0_0_8px_rgba(0,255,255,0.3)]"
+              onClick={handleToggleCutscene}
+              className={`min-h-[44px] px-3.5 font-bold border transition-all text-xs tracking-wider uppercase flex items-center justify-center ${
+                cutsceneOn
+                  ? 'border-cyan-300 bg-cyan-950/70 text-cyan-200 shadow-[0_0_12px_rgba(92,200,255,0.3)]'
+                  : 'border-slate-800 bg-slate-950 text-slate-400'
+              }`}
+              style={{ fontFamily: 'var(--font-cinzel)' }}
             >
-              ARISE VIDEO 🎬
+              {cutsceneOn ? 'ON 🎬' : 'OFF ⏭️'}
             </button>
-            <Link
-              href="/intro"
-              className="min-h-[44px] px-3 bg-hunter-blue/20 hover:bg-hunter-blue/40 border border-hunter-blue text-hunter-blue hover:text-white rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center"
-            >
-              AWAKENING 📜
-            </Link>
           </div>
-        </div>
+        </HudFrame>
+
+        {/* Replay Intro */}
+        <HudFrame title="REPLAY SYSTEM INTRO" icon="📜" delay={200}>
+          <div className="space-y-2">
+            <p className="text-xs text-[#9bbacf]">Re-experience the ARISE opening cutscene or awakening sequence.</p>
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <button
+                type="button"
+                onClick={handleReplayIntro}
+                className="min-h-[44px] px-3 bg-cyan-950/60 hover:bg-cyan-900/60 border border-cyan-400 text-cyan-200 font-bold uppercase tracking-wider flex items-center justify-center shadow-[0_0_8px_rgba(92,200,255,0.3)] text-xs"
+                style={{ fontFamily: 'var(--font-cinzel)' }}
+              >
+                ARISE VIDEO 🎬
+              </button>
+              <Link
+                href="/intro"
+                className="min-h-[44px] px-3 bg-cyan-950/40 hover:bg-cyan-900/50 border border-cyan-500/60 text-cyan-300 font-bold uppercase tracking-wider flex items-center justify-center text-xs"
+                style={{ fontFamily: 'var(--font-cinzel)' }}
+              >
+                AWAKENING 📜
+              </Link>
+            </div>
+          </div>
+        </HudFrame>
 
         {/* JSON Backup & Restore (Local-First Protection) */}
-        <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5 space-y-3">
-          <div className="text-xs font-bold text-hunter-cyan">[ JSON BACKUP & RESTORE ]</div>
-          <p className="text-xs text-hunter-400 leading-relaxed">
-            All your data is stored offline in browser IndexedDB. Export periodic JSON backups to prevent data loss.
-          </p>
+        <HudFrame title="JSON BACKUP & RESTORE" icon="💾" delay={240}>
+          <div className="space-y-3">
+            <p className="text-xs text-[#9bbacf] leading-relaxed">
+              All your data is stored offline in browser IndexedDB. Export periodic JSON backups to prevent data loss.
+            </p>
 
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={handleExportBackup}
-              className="min-h-[44px] py-2.5 bg-hunter-blue/20 hover:bg-hunter-blue/40 border border-hunter-blue text-hunter-blue rounded font-bold uppercase tracking-wider text-center flex items-center justify-center"
-            >
-              EXPORT JSON 💾
-            </button>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={handleExportBackup}
+                className="min-h-[44px] py-2.5 bg-cyan-950/60 hover:bg-cyan-900/60 border border-cyan-400 text-cyan-200 font-bold uppercase tracking-wider text-center flex items-center justify-center text-xs"
+                style={{ fontFamily: 'var(--font-cinzel)' }}
+              >
+                EXPORT JSON 💾
+              </button>
 
-            <label className="min-h-[44px] py-2.5 bg-hunter-cyan/20 hover:bg-hunter-cyan/30 border border-hunter-cyan text-hunter-cyan rounded font-bold uppercase tracking-wider text-center cursor-pointer flex items-center justify-center">
-              IMPORT JSON 📥
-              <input
-                type="file"
-                accept=".json"
-                onChange={handleImportBackup}
-                className="hidden"
-              />
-            </label>
+              <label className="min-h-[44px] py-2.5 bg-cyan-950/40 hover:bg-cyan-900/50 border border-cyan-500/60 text-cyan-300 font-bold uppercase tracking-wider text-center cursor-pointer flex items-center justify-center text-xs" style={{ fontFamily: 'var(--font-cinzel)' }}>
+                IMPORT JSON 📥
+                <input
+                  type="file"
+                  accept=".json"
+                  onChange={handleImportBackup}
+                  className="hidden"
+                />
+              </label>
+            </div>
           </div>
-        </div>
+        </HudFrame>
 
         {/* Rulebook Modal Trigger */}
-        <div className="border border-hunter-blue/40 bg-hunter-900/80 rounded-lg p-3.5 flex justify-between items-center">
-          <div>
-            <div className="font-bold text-hunter-100 text-xs">[ SYSTEM DIRECTIVES & FORMULAS ]</div>
-            <p className="text-xs text-hunter-400 mt-0.5">Review XP formulas, Mana caps, Ranks, and Streak penalties.</p>
-          </div>
-          <button
-            onClick={() => {
-              playSystemChime();
-              setShowRules(!showRules);
-            }}
-            className="min-h-[44px] px-3.5 bg-hunter-800 hover:bg-hunter-700 border border-hunter-700 text-hunter-300 hover:text-white rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center"
-          >
-            {showRules ? 'CLOSE' : 'VIEW'}
-          </button>
-        </div>
-
-        {showRules && (
-          <div className="border border-hunter-blue bg-hunter-950 p-4 rounded-lg space-y-3">
-            <h3 className="font-bold text-hunter-cyan text-xs uppercase">[ SYSTEM PROTOCOLS ]</h3>
-            <div className="space-y-2 text-xs text-hunter-300">
-              <p>&bull; <strong className="text-hunter-100">Study Block:</strong> 50 min deep focus = 50 XP + 5 MP</p>
-              <p>&bull; <strong className="text-hunter-100">Physical Conditioning:</strong> Daily workout = 50 XP + 10 MP</p>
-              <p>&bull; <strong className="text-hunter-100">Night Review:</strong> Review errors & flashcards = 50 XP + 5 MP</p>
-              <p>&bull; <strong className="text-hunter-100">Daily Quest Clear Bonus:</strong> Completing all 3 quests = +150 XP</p>
-              <p>&bull; <strong className="text-hunter-100">Lazy Day Evaluation:</strong> App automatically evaluates past days, updates streak, applies penalties for missed days, and converts unspent MP to XP at 5:00 AM.</p>
-              <p>&bull; <strong className="text-hunter-100">Emergency Lockout:</strong> Triggered if you fail 2 consecutive days. Must complete a 100-rep physical quest to unlock the system.</p>
+        <HudFrame title="SYSTEM DIRECTIVES & PROTOCOLS" icon="⚡" delay={280}>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <p className="text-xs text-[#9bbacf]">Review XP formulas, Mana caps, Ranks, and Streak penalties.</p>
+              <button
+                onClick={() => {
+                  playSystemChime();
+                  setShowRules(!showRules);
+                }}
+                className="min-h-[44px] px-3.5 bg-cyan-950 hover:bg-cyan-900 border border-cyan-500 text-cyan-200 font-bold uppercase tracking-wider flex items-center justify-center text-xs"
+                style={{ fontFamily: 'var(--font-cinzel)' }}
+              >
+                {showRules ? 'CLOSE' : 'VIEW'}
+              </button>
             </div>
+
+            {showRules && (
+              <div className="border border-cyan-500/40 bg-slate-950/80 p-3 space-y-2 text-xs text-slate-200">
+                <p>&bull; <strong className="text-cyan-200">Study Block:</strong> 50 min deep focus = 50 XP + 5 MP</p>
+                <p>&bull; <strong className="text-cyan-200">Physical Conditioning:</strong> Daily workout = 50 XP + 10 MP</p>
+                <p>&bull; <strong className="text-cyan-200">Night Review:</strong> Review errors & flashcards = 50 XP + 5 MP</p>
+                <p>&bull; <strong className="text-cyan-200">Daily Quest Clear Bonus:</strong> Completing all 3 quests = +150 XP</p>
+                <p>&bull; <strong className="text-cyan-200">Lazy Day Evaluation:</strong> App automatically evaluates past days, updates streak, applies penalties for missed days, and converts unspent MP to XP at 5:00 AM.</p>
+                <p>&bull; <strong className="text-cyan-200">Emergency Lockout:</strong> Triggered if you fail 2 consecutive days. Must complete a 100-rep physical quest to unlock the system.</p>
+              </div>
+            )}
           </div>
-        )}
+        </HudFrame>
 
         {/* Danger Zone: Hard Reset */}
-        <div className="border border-red-500/30 bg-red-950/20 rounded-lg p-3.5 space-y-2">
-          <div className="text-xs font-bold text-red-400">[ SYSTEM PURGE PROTOCOL ]</div>
-          <p className="text-xs text-hunter-400">
-            Permanently purges all local data and reinitializes factory defaults.
-          </p>
+        <HudFrame title="SYSTEM PURGE PROTOCOL" icon="⚠️" delay={320}>
+          <div className="space-y-2">
+            <p className="text-xs text-[#9bbacf]">
+              Permanently purges all local data and reinitializes factory defaults.
+            </p>
 
-          {!confirmReset ? (
-            <button
-              onClick={() => setConfirmReset(true)}
-              className="min-h-[44px] w-full py-2 bg-red-950/50 hover:bg-red-900/60 border border-red-500/50 text-red-400 rounded font-bold uppercase tracking-wider text-center flex items-center justify-center"
-            >
-              PURGE LOCAL DATABASE
-            </button>
-          ) : (
-            <div className="space-y-2">
-              <div className="text-red-400 text-xs font-bold text-center">
-                ARE YOU SURE, PLAYER? THIS ACTION CANNOT BE UNDONE.
+            {!confirmReset ? (
+              <button
+                onClick={() => setConfirmReset(true)}
+                className="min-h-[44px] w-full py-2 bg-red-950/50 hover:bg-red-900/60 border border-red-500/50 text-red-400 font-bold uppercase tracking-wider text-center flex items-center justify-center text-xs"
+                style={{ fontFamily: 'var(--font-cinzel)' }}
+              >
+                PURGE LOCAL DATABASE
+              </button>
+            ) : (
+              <div className="space-y-2">
+                <div className="text-red-400 text-xs font-bold text-center">
+                  ARE YOU SURE, PLAYER? THIS ACTION CANNOT BE UNDONE.
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={handleResetDatabase}
+                    className="min-h-[44px] py-2 bg-red-600 hover:bg-red-500 text-white font-bold uppercase tracking-wider text-center flex items-center justify-center text-xs"
+                    style={{ fontFamily: 'var(--font-cinzel)' }}
+                  >
+                    YES, PURGE ALL
+                  </button>
+                  <button
+                    onClick={() => setConfirmReset(false)}
+                    className="min-h-[44px] py-2 bg-slate-800 text-slate-300 font-bold uppercase tracking-wider text-center flex items-center justify-center text-xs"
+                    style={{ fontFamily: 'var(--font-cinzel)' }}
+                  >
+                    CANCEL
+                  </button>
+                </div>
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={handleResetDatabase}
-                  className="min-h-[44px] py-2 bg-red-600 hover:bg-red-500 text-white rounded font-bold uppercase tracking-wider text-center flex items-center justify-center"
-                >
-                  YES, PURGE ALL
-                </button>
-                <button
-                  onClick={() => setConfirmReset(false)}
-                  className="min-h-[44px] py-2 bg-hunter-800 text-hunter-300 rounded font-bold uppercase tracking-wider text-center flex items-center justify-center"
-                >
-                  CANCEL
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        </HudFrame>
       </div>
     </div>
   );

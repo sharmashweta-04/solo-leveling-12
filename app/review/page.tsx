@@ -117,41 +117,46 @@ export default function ReviewPage() {
   const currentCard = dueCards[currentIndex];
 
   return (
-    <div className="font-mono pb-24 max-w-md mx-auto select-none space-y-4">
+    <div className="pb-24 max-w-md mx-auto select-none space-y-4 px-1">
       <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
 
       {/* Header */}
-      <div className="flex justify-between items-center border-b border-cyan-500/30 pb-3 mb-2">
+      <div className="flex justify-between items-center border-b border-[#5cc8ff]/30 pb-3 mb-2">
         <div>
-          <h1 className="text-base font-extrabold text-cyan-400 tracking-wider text-shadow-blue">
-            [ SPACED REPETITION ]
+          <h1
+            className="text-lg font-bold text-cyan-200 tracking-wider text-shadow-blue"
+            style={{ fontFamily: 'var(--font-cinzel)' }}
+          >
+            SPACED REPETITION
           </h1>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-[#9bbacf]">
             MEMORY ARCHIVES &bull; {dueCards.length - currentIndex} DUE TODAY
           </p>
         </div>
         <Link
           href="/grimoire"
-          className="text-xs text-purple-300 border border-purple-500/40 px-2.5 py-1.5 rounded bg-purple-950/30 min-h-[44px] flex items-center font-bold"
+          className="text-xs text-cyan-300 border border-cyan-500/40 px-3 py-1.5 bg-cyan-950/40 min-h-[44px] flex items-center font-bold tracking-wider"
+          style={{ fontFamily: 'var(--font-cinzel)' }}
         >
           GRIMOIRE 📜
         </Link>
       </div>
 
       {loading ? (
-        <div className="text-center py-12 text-cyan-400 animate-pulse text-xs">
+        <div className="text-center py-12 text-cyan-300 animate-pulse text-xs tracking-wider" style={{ fontFamily: 'var(--font-cinzel)' }}>
           Loading Memory Decks...
         </div>
       ) : !currentCard ? (
         <HudFrame title="MEMORY DECK SYNCHRONIZED" icon="⚡" delay={0}>
           <div className="text-center py-4 space-y-3">
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-sm text-slate-300 leading-relaxed">
               No cards are currently due for review today. Add more mistake notes in the Grimoire or clear Gate Boss tests to spawn new SRS cards.
             </p>
             <div className="pt-2">
               <Link
                 href="/grimoire"
-                className="min-h-[44px] inline-flex items-center px-4 py-2 bg-purple-600/30 hover:bg-purple-600/50 border border-purple-400 text-purple-200 rounded text-xs font-bold uppercase tracking-wider"
+                className="min-h-[44px] inline-flex items-center px-4 py-2 bg-cyan-950/60 hover:bg-cyan-900/60 border-2 border-cyan-300 text-cyan-100 font-bold uppercase tracking-wider"
+                style={{ fontFamily: 'var(--font-cinzel)' }}
               >
                 ADD TO GRIMOIRE
               </Link>
@@ -160,7 +165,7 @@ export default function ReviewPage() {
         </HudFrame>
       ) : (
         <div className="space-y-4">
-          <div className="flex justify-between text-xs text-cyan-300 font-mono">
+          <div className="flex justify-between text-xs text-cyan-300" style={{ fontFamily: 'var(--font-cinzel)' }}>
             <span>CARD {currentIndex + 1} OF {dueCards.length}</span>
             <span>INTERVAL: {currentCard.interval_days} DAYS</span>
           </div>
@@ -171,10 +176,11 @@ export default function ReviewPage() {
               sfx.click();
               setIsFlipped(!isFlipped);
             }}
-            className="min-h-[220px] p-6 rounded-2xl bg-slate-900/80 border-2 border-cyan-400 flex flex-col justify-between shadow-[0_0_25px_rgba(0,255,255,0.25)] cursor-pointer hover:border-cyan-300 transition-all backdrop-blur-md"
+            className="min-h-[220px] p-6 bg-slate-950/80 border-2 border-cyan-300 flex flex-col justify-between shadow-[0_0_20px_rgba(92,200,255,0.35)] cursor-pointer hover:border-white transition-all backdrop-blur-md"
+            style={{ clipPath: 'polygon(0 8px, 8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px))' }}
           >
             <div>
-              <div className="text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">
+              <div className="text-xs text-cyan-300 font-bold uppercase tracking-wider mb-2" style={{ fontFamily: 'var(--font-cinzel)' }}>
                 {currentCard.subject} &bull; GATE {currentCard.chapter_id}
               </div>
               <div className="text-sm font-semibold text-slate-100 whitespace-pre-wrap leading-relaxed">
@@ -184,15 +190,15 @@ export default function ReviewPage() {
 
             {isFlipped ? (
               <div className="pt-4 mt-4 border-t border-cyan-500/40">
-                <div className="text-xs text-emerald-400 font-bold uppercase tracking-widest mb-1">
-                  [ SOLUTION / APPROACH ]
+                <div className="text-xs text-emerald-400 font-bold uppercase tracking-widest mb-1" style={{ fontFamily: 'var(--font-cinzel)' }}>
+                  SOLUTION / APPROACH
                 </div>
                 <div className="text-xs text-slate-200 whitespace-pre-wrap leading-relaxed">
                   {currentCard.back}
                 </div>
               </div>
             ) : (
-              <div className="text-center text-xs text-cyan-400 animate-pulse pt-4">
+              <div className="text-center text-xs text-cyan-300 animate-pulse pt-4 tracking-widest" style={{ fontFamily: 'var(--font-cinzel)' }}>
                 [ TAP TO REVEAL ANSWER ]
               </div>
             )}
@@ -205,36 +211,36 @@ export default function ReviewPage() {
                 <button
                   type="button"
                   onClick={() => handleGrade('Again')}
-                  className="min-h-[48px] py-2 px-1 rounded bg-red-950/60 border border-red-500 hover:bg-red-900/60 text-red-300 font-bold transition-all text-center flex flex-col items-center justify-center"
+                  className="min-h-[48px] py-2 px-1 bg-red-950/60 border border-red-500 hover:bg-red-900/60 text-red-300 font-bold transition-all text-center flex flex-col items-center justify-center"
                 >
-                  <div className="text-xs font-bold">AGAIN</div>
+                  <div className="text-xs font-bold" style={{ fontFamily: 'var(--font-cinzel)' }}>AGAIN</div>
                   <div className="text-[10px] text-red-400 font-normal">1 Day</div>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => handleGrade('Hard')}
-                  className="min-h-[48px] py-2 px-1 rounded bg-amber-950/60 border border-amber-500 hover:bg-amber-900/60 text-amber-300 font-bold transition-all text-center flex flex-col items-center justify-center"
+                  className="min-h-[48px] py-2 px-1 bg-amber-950/60 border border-amber-500 hover:bg-amber-900/60 text-amber-300 font-bold transition-all text-center flex flex-col items-center justify-center"
                 >
-                  <div className="text-xs font-bold">HARD</div>
+                  <div className="text-xs font-bold" style={{ fontFamily: 'var(--font-cinzel)' }}>HARD</div>
                   <div className="text-[10px] text-amber-400 font-normal">+{Math.round(currentCard.interval_days * 1.2)}d</div>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => handleGrade('Good')}
-                  className="min-h-[48px] py-2 px-1 rounded bg-blue-950/60 border border-blue-500 hover:bg-blue-900/60 text-blue-300 font-bold transition-all text-center flex flex-col items-center justify-center"
+                  className="min-h-[48px] py-2 px-1 bg-blue-950/60 border border-blue-500 hover:bg-blue-900/60 text-blue-300 font-bold transition-all text-center flex flex-col items-center justify-center"
                 >
-                  <div className="text-xs font-bold">GOOD</div>
+                  <div className="text-xs font-bold" style={{ fontFamily: 'var(--font-cinzel)' }}>GOOD</div>
                   <div className="text-[10px] text-blue-400 font-normal">Next step</div>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => handleGrade('Easy')}
-                  className="min-h-[48px] py-2 px-1 rounded bg-emerald-950/60 border border-emerald-500 hover:bg-emerald-900/60 text-emerald-300 font-bold transition-all text-center flex flex-col items-center justify-center"
+                  className="min-h-[48px] py-2 px-1 bg-emerald-950/60 border border-emerald-500 hover:bg-emerald-900/60 text-emerald-300 font-bold transition-all text-center flex flex-col items-center justify-center"
                 >
-                  <div className="text-xs font-bold">EASY</div>
+                  <div className="text-xs font-bold" style={{ fontFamily: 'var(--font-cinzel)' }}>EASY</div>
                   <div className="text-[10px] text-emerald-400 font-normal">Bonus</div>
                 </button>
               </div>
