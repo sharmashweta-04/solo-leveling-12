@@ -1,15 +1,25 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+function cleanSupabaseUrl(url: string): string {
+  if (!url) return '';
+  let cleaned = url.trim();
+  // Trim trailing /rest/v1 or /rest/v1/ and trailing slashes if accidentally included
+  cleaned = cleaned.replace(/\/rest\/v1\/?$/, '');
+  cleaned = cleaned.replace(/\/+$/, '');
+  return cleaned;
+}
+
+const rawSupabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseUrl = cleanSupabaseUrl(rawSupabaseUrl);
+const supabaseAnonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '').trim();
 
 export function isSupabaseConfigured(): boolean {
   return Boolean(
     supabaseUrl &&
-    supabaseUrl.trim() !== '' &&
+    supabaseUrl !== '' &&
     supabaseUrl.startsWith('http') &&
     supabaseAnonKey &&
-    supabaseAnonKey.trim() !== ''
+    supabaseAnonKey !== ''
   );
 }
 
